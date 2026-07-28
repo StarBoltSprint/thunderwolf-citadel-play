@@ -446,15 +446,15 @@
     .side-nav-item {
       display: flex;
       align-items: center;
-      gap: 0.7rem;
+      gap: 0.55rem;
       width: 100%;
-      padding: 0.72rem 0.85rem;
+      padding: 0.55rem 0.7rem;
       border-radius: 12px;
       border: 1px solid transparent;
       background: transparent;
       color: var(--text-muted);
       font-family: inherit;
-      font-size: 0.88rem;
+      font-size: 0.8rem;
       font-weight: 600;
       letter-spacing: 0.01em;
       cursor: pointer;
@@ -542,31 +542,93 @@
       padding: 0.65rem clamp(0.85rem, 1.6vw, 1.5rem) 3.5rem;
     }
 
-    /* View panels — hide every panel that is not the active shell view */
-    .shell[data-view="home"] .view-panel-forges,
-    .shell[data-view="home"] .view-panel-videos,
-    .shell[data-view="home"] .view-panel-creator,
-    .shell[data-view="home"] .view-panel-player { display: none; }
+    /* View panels — only the active shell view is visible */
+    .view-panel-forges,
+    .view-panel-videos,
+    .view-panel-creator,
+    .view-panel-chambers,
+    .view-panel-balconies,
+    .view-panel-codex-archives,
+    .view-panel-crystal-wings,
+    .view-panel-personal-realms,
+    .view-panel-shared-realms,
+    .view-panel-pack-grounds,
+    .view-panel-outer-spires {
+      display: none;
+    }
+    .shell:not([data-view="home"]) .view-panel-home { display: none; }
+    .shell[data-view="forges"] .view-panel-forges,
+    .shell[data-view="videos"] .view-panel-videos,
+    .shell[data-view="creator"] .view-panel-creator,
+    .shell[data-view="chambers"] .view-panel-chambers,
+    .shell[data-view="balconies"] .view-panel-balconies,
+    .shell[data-view="codex-archives"] .view-panel-codex-archives,
+    .shell[data-view="crystal-wings"] .view-panel-crystal-wings,
+    .shell[data-view="personal-realms"] .view-panel-personal-realms,
+    .shell[data-view="shared-realms"] .view-panel-shared-realms,
+    .shell[data-view="pack-grounds"] .view-panel-pack-grounds,
+    .shell[data-view="outer-spires"] .view-panel-outer-spires {
+      display: block;
+    }
 
-    .shell[data-view="forges"] .view-panel-home,
-    .shell[data-view="forges"] .view-panel-videos,
-    .shell[data-view="forges"] .view-panel-creator,
-    .shell[data-view="forges"] .view-panel-player { display: none; }
+    .zone-panel .panel-hero { margin-bottom: 1rem; }
+    .zone-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: 0.25rem 0 1.5rem;
+    }
 
-    .shell[data-view="videos"] .view-panel-home,
-    .shell[data-view="videos"] .view-panel-forges,
-    .shell[data-view="videos"] .view-panel-creator,
-    .shell[data-view="videos"] .view-panel-player { display: none; }
-
-    .shell[data-view="creator"] .view-panel-home,
-    .shell[data-view="creator"] .view-panel-forges,
-    .shell[data-view="creator"] .view-panel-videos,
-    .shell[data-view="creator"] .view-panel-player { display: none; }
-
-    .shell[data-view="player"] .view-panel-home,
-    .shell[data-view="player"] .view-panel-forges,
-    .shell[data-view="player"] .view-panel-videos,
-    .shell[data-view="player"] .view-panel-creator { display: none; }
+    .chamber-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .chamber-card {
+      padding: 1.15rem 1.1rem;
+      border-radius: 16px;
+      border: 1px solid rgba(46, 230, 255, 0.14);
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 0%, rgba(46, 230, 255, 0.1), transparent 55%),
+        rgba(8, 14, 28, 0.85);
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+      cursor: pointer;
+    }
+    .chamber-card:hover {
+      border-color: rgba(46, 230, 255, 0.35);
+      box-shadow: 0 0 28px rgba(46, 230, 255, 0.12);
+      transform: translateY(-2px);
+    }
+    .chamber-card h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+      color: var(--text);
+    }
+    .chamber-card p {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+      margin-bottom: 0.65rem;
+    }
+    .chamber-card .tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cyan-soft);
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.22);
+      background: rgba(46, 230, 255, 0.08);
+    }
+    .chamber-card .tag.gold {
+      color: var(--gold-soft);
+      border-color: rgba(232, 197, 106, 0.3);
+      background: rgba(232, 197, 106, 0.08);
+    }
 
     /* Profile pages */
     .profile-card {
@@ -1769,7 +1831,7 @@
       font-size: 0.72rem;
       opacity: 0.9;
     }
-    .like-btn {
+    .howl-btn {
       display: inline-flex;
       align-items: center;
       gap: 0.28rem;
@@ -1777,31 +1839,31 @@
       font-weight: 700;
       padding: 0.22rem 0.5rem;
       border-radius: 999px;
-      border: 1px solid rgba(255, 120, 160, 0.28);
-      background: rgba(40, 12, 24, 0.45);
-      color: #f0a8c0;
+      border: 1px solid rgba(126, 240, 255, 0.28);
+      background: rgba(8, 28, 48, 0.55);
+      color: var(--cyan-soft);
       cursor: pointer;
       transition: all 0.15s;
       font-family: inherit;
       line-height: 1;
     }
-    .like-btn:hover {
-      border-color: rgba(255, 140, 180, 0.55);
-      background: rgba(80, 20, 40, 0.55);
-      color: #ffd0e0;
-      box-shadow: 0 0 14px rgba(255, 100, 140, 0.2);
-    }
-    .like-btn.is-liked {
-      border-color: rgba(255, 100, 150, 0.65);
-      background: linear-gradient(135deg, rgba(255, 80, 130, 0.35), rgba(232, 197, 106, 0.12));
+    .howl-btn:hover {
+      border-color: rgba(46, 230, 255, 0.55);
+      background: rgba(20, 50, 80, 0.65);
       color: #fff;
-      box-shadow: 0 0 16px rgba(255, 90, 140, 0.28);
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.25);
     }
-    .like-btn .heart {
+    .howl-btn.is-howled {
+      border-color: rgba(232, 197, 106, 0.55);
+      background: linear-gradient(135deg, rgba(46, 230, 255, 0.28), rgba(232, 197, 106, 0.18));
+      color: #fff;
+      box-shadow: 0 0 16px rgba(46, 230, 255, 0.28);
+    }
+    .howl-btn .howl-ico {
       font-size: 0.78rem;
       line-height: 1;
     }
-    .echo-meta .like-btn {
+    .echo-meta .howl-btn {
       padding: 0.15rem 0.4rem;
       font-size: 0.64rem;
     }
@@ -1986,7 +2048,7 @@
       }
     }
 
-    /* ── Bolt Story video / cinematic reel player ── */
+    /* ── Bolt Echo video / cinematic player ── */
     .story-player {
       position: relative;
       width: 100%;
@@ -2967,17 +3029,37 @@
           <span class="nav-ico" aria-hidden="true">⚒</span>
           <span>Creator Forges</span>
         </button>
-        <button type="button" class="side-nav-item" data-nav="videos" id="navVideos">
-          <span class="nav-ico" aria-hidden="true">▶</span>
-          <span>Videos</span>
-        </button>
-        <button type="button" class="side-nav-item" data-nav="creator" id="navCreator">
-          <span class="nav-ico" aria-hidden="true">✦</span>
-          <span>Creator Profile</span>
-        </button>
-        <button type="button" class="side-nav-item" data-nav="player" id="navPlayer">
+        <button type="button" class="side-nav-item" data-nav="chambers" id="navChambers">
           <span class="nav-ico" aria-hidden="true">◎</span>
-          <span>Player Profile</span>
+          <span>Resonance Chambers</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="balconies" id="navBalconies">
+          <span class="nav-ico" aria-hidden="true">☾</span>
+          <span>Howling Balconies</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="codex-archives" id="navCodexArchives">
+          <span class="nav-ico" aria-hidden="true">📜</span>
+          <span>Codex Archives</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="crystal-wings" id="navCrystalWings">
+          <span class="nav-ico" aria-hidden="true">✧</span>
+          <span>Crystal Wings</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="personal-realms" id="navPersonalRealms">
+          <span class="nav-ico" aria-hidden="true">◇</span>
+          <span>Personal Realms</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="shared-realms" id="navSharedRealms">
+          <span class="nav-ico" aria-hidden="true">◈</span>
+          <span>Shared Realms</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="pack-grounds" id="navPackGrounds">
+          <span class="nav-ico" aria-hidden="true">⛰</span>
+          <span>Pack Grounds</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="outer-spires" id="navOuterSpires">
+          <span class="nav-ico" aria-hidden="true">▲</span>
+          <span>Outer Spires &amp; Future Zones</span>
         </button>
       </nav>
       <div class="side-nav-foot">
@@ -3067,7 +3149,7 @@
           <button type="button" class="chip" data-type="ar-portal">AR Portal</button>
           <button type="button" class="chip" data-type="sprint-path">Sprint Path</button>
           <button type="button" class="chip" data-type="resonance-event">Resonance Event</button>
-          <button type="button" class="chip" data-type="bolt-story">Bolt Story</button>
+          <button type="button" class="chip" data-type="bolt-story">Echoes</button>
           <button type="button" class="chip" data-type="remix">Remix</button>
         </div>
         <div class="feed-meta">
@@ -3116,30 +3198,30 @@
     <!-- Videos -->
     <div class="view-panel-videos" id="videosView">
       <div class="panel-hero">
-        <h2>Citadel <span>Videos</span></h2>
+        <h2>Citadel <span>Echoes</span></h2>
         <p>
-          Bolt Story reels from the Pack — howls, seeds, and gates. Tap Play on any card in the Hall feed, or open a reel here.
+          Bolt Echoes from the Pack — howls, seeds, and gates. Tap Play on any card in the Hall feed, or open an echo here.
         </p>
       </div>
       <div class="panel-grid">
         <article class="panel-card" style="cursor:pointer" data-play-story="vid-1">
           <h3>Howl at the Star Core</h3>
           <p>The Pack’s first howl reaches the Core. Lightning answers.</p>
-          <span class="tag gold">Bolt Story</span>
+          <span class="tag gold">Echo</span>
         </article>
         <article class="panel-card" style="cursor:pointer" data-play-story="vid-2">
           <h3>The Cub and the Seed</h3>
           <p>A silent cub finds the glowing seed under ice.</p>
-          <span class="tag">Bolt Story</span>
+          <span class="tag">Echo</span>
         </article>
         <article class="panel-card" style="cursor:pointer" data-play-story="vid-3">
           <h3>Gate of Howls Opens</h3>
           <p>Cyan runes crack the Publishing Gate at dusk.</p>
-          <span class="tag">Bolt Story</span>
+          <span class="tag">Echo</span>
         </article>
         <article class="panel-card" style="cursor:pointer" id="videosShowFeed">
-          <h3>All reels in Hall</h3>
-          <p>Filter Explore to Bolt Story and browse every story card.</p>
+          <h3>All Echoes in Hall</h3>
+          <p>Filter Explore to Echoes and browse every story card.</p>
           <span class="tag gold">Open feed</span>
         </article>
       </div>
@@ -3160,7 +3242,7 @@
         <div class="profile-body">
           <div class="profile-stats" id="creatorStats">
             <div class="profile-stat"><b id="cStatCreations">0</b><span>Creations</span></div>
-            <div class="profile-stat"><b id="cStatLikes">0</b><span>Likes earned</span></div>
+            <div class="profile-stat"><b id="cStatLikes">0</b><span>Howls earned</span></div>
             <div class="profile-stat"><b id="cStatViews">0</b><span>Views</span></div>
             <div class="profile-stat"><b id="cStatRes">0</b><span>Avg resonance</span></div>
           </div>
@@ -3192,50 +3274,271 @@
       </div>
     </div>
 
-    <!-- Player Profile -->
-    <div class="view-panel-player" id="playerProfileView">
-      <div class="profile-card">
-        <div class="profile-head">
-          <div class="profile-avatar" aria-hidden="true">
-            <img src="assets/play-wolf.jpg" alt="" width="72" height="72" id="playerAvatarImg" />
-          </div>
-          <div>
-            <h2>Player <span>Profile</span></h2>
-            <p class="profile-role">Run quests, watch reels, feed the Star Core</p>
-          </div>
-        </div>
-        <div class="profile-body">
-          <div class="profile-stats" id="playerStats">
-            <div class="profile-stat"><b id="pStatLikes">0</b><span>Likes given</span></div>
-            <div class="profile-stat"><b id="pStatViews">0</b><span>Views this tab</span></div>
-            <div class="profile-stat"><b id="pStatHowls">0</b><span>Howl energy</span></div>
-            <div class="profile-stat"><b id="pStatRank">Pup</b><span>Pack rank</span></div>
-          </div>
-          <form class="profile-form" id="playerProfileForm">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="pName">Display name</label>
-                <input id="pName" name="name" maxlength="40" placeholder="Pack Runner" />
-              </div>
-              <div class="form-group">
-                <label for="pHandle">Handle</label>
-                <input id="pHandle" name="handle" maxlength="32" placeholder="@player" />
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="pFavorite">Favorite play</label>
-              <input id="pFavorite" name="favorite" maxlength="60" placeholder="Lightning Dash · Bolt Stories" />
-            </div>
-            <div class="form-group">
-              <label for="pBio">Bio</label>
-              <textarea id="pBio" name="bio" maxlength="400" placeholder="How do you run with the Pack?"></textarea>
-            </div>
-            <div class="profile-actions">
-              <button type="submit" class="btn btn-primary">Save player profile</button>
-              <button type="button" class="btn btn-ghost" id="playerGoHall">Back to Hall</button>
-            </div>
-          </form>
-        </div>
+    <!-- Resonance Chambers -->
+    <div class="view-panel-chambers" id="chambersView">
+      <div class="panel-hero">
+        <h2>Resonance <span>Chambers</span></h2>
+        <p>
+          Quiet rooms under the Citadel where the Pack listens for echoes — howls, orbs, and unfinished fire.
+          Enter a chamber to tune yourself to the Star Core.
+        </p>
+      </div>
+      <div class="chamber-grid" id="chamberGrid">
+        <article class="chamber-card" data-chamber="howl">
+          <h3>Howl Chamber</h3>
+          <p>Align your voice with the Pack. Each howl thickens the Core’s pulse.</p>
+          <span class="tag gold">Resonance</span>
+        </article>
+        <article class="chamber-card" data-chamber="orb">
+          <h3>Orb Chamber</h3>
+          <p>Practice storm focus — collect imagined orbs before they dissolve into fog.</p>
+          <span class="tag">Focus</span>
+        </article>
+        <article class="chamber-card" data-chamber="story">
+          <h3>Echo Chamber</h3>
+          <p>Watch Bolt Echoes and let the lore settle into your bones.</p>
+          <span class="tag">Echo</span>
+        </article>
+        <article class="chamber-card" data-chamber="gate">
+          <h3>Gate Chamber</h3>
+          <p>Stand before the Publishing Gate. Feel unfinished work ask to be born.</p>
+          <span class="tag gold">Gate</span>
+        </article>
+        <article class="chamber-card" data-chamber="silence">
+          <h3>Silence Chamber</h3>
+          <p>Rest. The Pack does not only run — it also waits under crystal ice.</p>
+          <span class="tag">Rest</span>
+        </article>
+        <article class="chamber-card" data-chamber="core">
+          <h3>Core Chamber</h3>
+          <p>Closest room to the Star Core. High resonance. Soft gold and cyan light.</p>
+          <span class="tag gold">Star Core</span>
+        </article>
+      </div>
+      <div class="zone-actions">
+        <button type="button" class="btn btn-primary" id="chambersGoStories">Open Echoes</button>
+        <button type="button" class="btn btn-ghost" id="chambersGoHall">Back to Hall</button>
+      </div>
+    </div>
+
+    <!-- Howling Balconies -->
+    <div class="view-panel-balconies zone-panel" id="balconiesView">
+      <div class="panel-hero">
+        <h2>Howling <span>Balconies</span></h2>
+        <p>
+          High ledges of the Citadel where the Pack gathers to howl under the cyan moon.
+          Watch vigils, moon-rises, and balcony echoes from the hall.
+        </p>
+      </div>
+      <div class="chamber-grid">
+        <article class="chamber-card" data-zone-action="play" data-play-id="vid-5">
+          <h3>Moonwatch Citadel</h3>
+          <p>A lone wolf keeps vigil on the balcony under a glowing cyan moon.</p>
+          <span class="tag gold">Echo</span>
+        </article>
+        <article class="chamber-card" data-zone-action="play" data-play-id="vid-1">
+          <h3>Howl at the Star Core</h3>
+          <p>The Pack’s howl reaches the Core from the high stones.</p>
+          <span class="tag">Echo</span>
+        </article>
+        <article class="chamber-card" data-zone-action="filter" data-filter-type="resonance-event">
+          <h3>Pulse Gatherings</h3>
+          <p>Resonance events that start with a balcony call.</p>
+          <span class="tag">Resonance</span>
+        </article>
+      </div>
+      <div class="zone-actions">
+        <button type="button" class="btn btn-ghost" data-go-hall>Back to Hall</button>
+      </div>
+    </div>
+
+    <!-- Codex Archives -->
+    <div class="view-panel-codex-archives zone-panel" id="codexArchivesView">
+      <div class="panel-hero">
+        <h2>Codex <span>Archives</span></h2>
+        <p>
+          Living books of starlight — laws, memories, and constellations written for the Pack.
+          Enter the stacks and open a codex spark.
+        </p>
+      </div>
+      <div class="chamber-grid">
+        <article class="chamber-card" data-zone-action="play" data-play-id="vid-7">
+          <h3>Constellation Table</h3>
+          <p>A star-map table where a wolf spirit rises from the constellations.</p>
+          <span class="tag gold">Echo</span>
+        </article>
+        <article class="chamber-card" data-zone-action="filter" data-filter-type="codex">
+          <h3>All Codex Entries</h3>
+          <p>Browse every codex card in the Hall feed.</p>
+          <span class="tag">Codex</span>
+        </article>
+        <article class="chamber-card" data-zone-action="open" data-open-id="seed-5">
+          <h3>Six Laws of a Living Universe</h3>
+          <p>Wrapper · Shared Heart · Living Citadel · and more.</p>
+          <span class="tag gold">Semi-Canon</span>
+        </article>
+      </div>
+      <div class="zone-actions">
+        <button type="button" class="btn btn-ghost" data-go-hall>Back to Hall</button>
+      </div>
+    </div>
+
+    <!-- Crystal Wings -->
+    <div class="view-panel-crystal-wings zone-panel" id="crystalWingsView">
+      <div class="panel-hero">
+        <h2>Crystal <span>Wings</span></h2>
+        <p>
+          Flight halls of ice and bolt — crystal challenges, ladders, and wing-borne sprints.
+          Climb, leap, and catch the shards.
+        </p>
+      </div>
+      <div class="chamber-grid">
+        <article class="chamber-card" data-zone-action="filter" data-filter-type="crystal-challenge">
+          <h3>Crystal Challenges</h3>
+          <p>Insight crystals and higher rungs of the nebula ladder.</p>
+          <span class="tag">Crystal</span>
+        </article>
+        <article class="chamber-card" data-zone-action="play" data-play-id="vid-6">
+          <h3>Crystal Howl Canyon</h3>
+          <p>Ice-and-lightning wolves through a frozen canyon.</p>
+          <span class="tag gold">Echo</span>
+        </article>
+        <article class="chamber-card" data-zone-action="filter" data-filter-type="sprint-path">
+          <h3>Wing Circuits</h3>
+          <p>Sprint paths that skim crystal air and gold lightning.</p>
+          <span class="tag">Sprint</span>
+        </article>
+      </div>
+      <div class="zone-actions">
+        <button type="button" class="btn btn-ghost" data-go-hall>Back to Hall</button>
+      </div>
+    </div>
+
+    <!-- Personal Realms -->
+    <div class="view-panel-personal-realms zone-panel" id="personalRealmsView">
+      <div class="panel-hero">
+        <h2>Personal <span>Realms</span></h2>
+        <p>
+          Your private den in the Citadel — spaces you shape alone before you invite the Pack.
+          Coming soon: claim a realm and hang your own covers.
+        </p>
+      </div>
+      <div class="chamber-grid">
+        <article class="chamber-card" data-zone-action="nav" data-nav-to="creator">
+          <h3>Creator Den</h3>
+          <p>Edit your creator profile and see what you’ve forged.</p>
+          <span class="tag gold">Profile</span>
+        </article>
+        <article class="chamber-card" data-zone-action="toast" data-toast="Personal realm claiming opens soon ⚡">
+          <h3>Claim a Realm</h3>
+          <p>Stake a quiet chamber of your own under the stone.</p>
+          <span class="tag">Soon</span>
+        </article>
+        <article class="chamber-card" data-zone-action="toast" data-toast="Realm skins & seals coming soon ⚡">
+          <h3>Realm Skins</h3>
+          <p>Dress your den with bolt seals and hall floors.</p>
+          <span class="tag">Soon</span>
+        </article>
+      </div>
+      <div class="zone-actions">
+        <button type="button" class="btn btn-ghost" data-go-hall>Back to Hall</button>
+      </div>
+    </div>
+
+    <!-- Shared Realms -->
+    <div class="view-panel-shared-realms zone-panel" id="sharedRealmsView">
+      <div class="panel-hero">
+        <h2>Shared <span>Realms</span></h2>
+        <p>
+          Rooms the Pack holds together — remix dens, co-op corridors, and linked AR portals.
+          One place, many paws.
+        </p>
+      </div>
+      <div class="chamber-grid">
+        <article class="chamber-card" data-zone-action="filter" data-filter-type="remix">
+          <h3>Remix Dens</h3>
+          <p>Take a seed from another creator and reforge it with your howl.</p>
+          <span class="tag">Remix</span>
+        </article>
+        <article class="chamber-card" data-zone-action="filter" data-filter-type="ar-portal">
+          <h3>Linked Portals</h3>
+          <p>AR rifts that open on any flat surface near you.</p>
+          <span class="tag">AR</span>
+        </article>
+        <article class="chamber-card" data-zone-action="play" data-play-id="vid-8">
+          <h3>Twin Gate Rift</h3>
+          <p>Cyan and gold portals open as one — neither path alone.</p>
+          <span class="tag gold">Echo</span>
+        </article>
+      </div>
+      <div class="zone-actions">
+        <button type="button" class="btn btn-ghost" data-go-hall>Back to Hall</button>
+      </div>
+    </div>
+
+    <!-- Pack Grounds -->
+    <div class="view-panel-pack-grounds zone-panel" id="packGroundsView">
+      <div class="panel-hero">
+        <h2>Pack <span>Grounds</span></h2>
+        <p>
+          Open earth under the Citadel — gathering fields, howl circles, and the first memory of togetherness.
+        </p>
+      </div>
+      <div class="chamber-grid">
+        <article class="chamber-card" data-zone-action="open" data-open-id="seed-10">
+          <h3>First Gathering Memory</h3>
+          <p>How the Pack learned that one place beats a thousand scattered sparks.</p>
+          <span class="tag gold">Codex</span>
+        </article>
+        <article class="chamber-card" data-zone-action="open" data-open-id="seed-3">
+          <h3>Pack Howl: Core Charge</h3>
+          <p>Synchronized howl — every voice feeds the Star Core.</p>
+          <span class="tag">Resonance</span>
+        </article>
+        <article class="chamber-card" data-zone-action="filter" data-filter-type="resonance-event">
+          <h3>All Gatherings</h3>
+          <p>Resonance events and pack pulses in the Hall.</p>
+          <span class="tag">Pulse</span>
+        </article>
+      </div>
+      <div class="zone-actions">
+        <button type="button" class="btn btn-ghost" data-go-hall>Back to Hall</button>
+      </div>
+    </div>
+
+    <!-- Outer Spires & Future Zones -->
+    <div class="view-panel-outer-spires zone-panel" id="outerSpiresView">
+      <div class="panel-hero">
+        <h2>Outer Spires <span>&amp; Future Zones</span></h2>
+        <p>
+          Far towers still under construction — blueprints of realms not yet open to the Pack.
+          Watch this wing for new floors of the Citadel.
+        </p>
+      </div>
+      <div class="chamber-grid">
+        <article class="chamber-card" data-zone-action="toast" data-toast="Thunderbridge zone locked · soon ⚡">
+          <h3>Thunderbridge</h3>
+          <p>A span of light between outer spires — not yet walkable.</p>
+          <span class="tag">Soon</span>
+        </article>
+        <article class="chamber-card" data-zone-action="toast" data-toast="Nebula Docks sealed · soon ⚡">
+          <h3>Nebula Docks</h3>
+          <p>Where star-ships of lore may one day berth.</p>
+          <span class="tag">Soon</span>
+        </article>
+        <article class="chamber-card" data-zone-action="toast" data-toast="Silent Vaults sealed · soon ⚡">
+          <h3>Silent Vaults</h3>
+          <p>Deep storage for unfinished fire and sleeping seeds.</p>
+          <span class="tag">Soon</span>
+        </article>
+        <article class="chamber-card" data-zone-action="toast" data-toast="Future zones unlock with Pack growth ⚡">
+          <h3>Future Zones</h3>
+          <p>More floors will open as the Pack grows and the Core charges.</p>
+          <span class="tag gold">Roadmap</span>
+        </article>
+      </div>
+      <div class="zone-actions">
+        <button type="button" class="btn btn-ghost" data-go-hall>Back to Hall</button>
       </div>
     </div>
 
@@ -3353,7 +3656,7 @@
               <option value="ar-portal">AR Portal</option>
               <option value="sprint-path">Sprint Path</option>
               <option value="resonance-event">Resonance Event</option>
-              <option value="bolt-story">Bolt Story (video / reel)</option>
+              <option value="bolt-story">Echo (Bolt video)</option>
               <option value="remix">Remix</option>
             </select>
           </div>
@@ -3454,7 +3757,7 @@
       "ar-portal":         { label: "AR Portal",         emoji: "🌀", short: "AR" },
       "sprint-path":       { label: "Sprint Path",       emoji: "🏃", short: "SPRINT" },
       "resonance-event":   { label: "Resonance Event",   emoji: "🌊", short: "PULSE" },
-      "bolt-story":        { label: "Bolt Story",        emoji: "▶", short: "REEL" },
+      "bolt-story":        { label: "Echo",              emoji: "▶", short: "ECHO" },
       "remix":             { label: "Remix",             emoji: "🔁", short: "REMIX" },
     };
 
@@ -3481,6 +3784,15 @@
       storyHowl: "covers/story-core-howl.jpg",
       storyCub: "covers/story-silent-cub.jpg",
       storyGate: "covers/story-gate-open.jpg",
+      storyRain: "covers/story-rain-bolts.jpg",
+      storyMoon: "covers/story-moonwatch.jpg",
+      storyCanyon: "covers/story-crystal-canyon.jpg",
+      storyTable: "covers/story-star-table.jpg",
+      storyTwin: "covers/story-twin-gates.jpg",
+      storyBearer: "covers/story-bolt-bearer.jpg",
+      storyShatter: "covers/story-core-shatter.jpg",
+      storyDeep: "covers/story-deep-current.jpg",
+      storyDawn: "covers/story-dawn-battlements.jpg",
     };
 
     const SEED = [
@@ -3740,8 +4052,8 @@
         id: "vid-1",
         title: "Howl at the Star Core",
         type: "bolt-story",
-        description: "Bolt Story trailer: the Pack’s first howl reaches the Core. Lightning answers. Watch the sky open.",
-        creator: "StarBoltSprint · Reel",
+        description: "Bolt Echo: the Pack’s first howl reaches the Core. Lightning answers. Watch the sky open.",
+        creator: "StarBoltSprint · Echo",
         link: "",
         image: COVER.storyHowl,
         video: "videos/story-core-howl.mp4",
@@ -3756,7 +4068,7 @@
         id: "vid-2",
         title: "The Cub and the Seed",
         type: "bolt-story",
-        description: "Bolt Story trailer: a silent cub finds the glowing seed under ice. Will it wake — or wait?",
+        description: "Bolt Echo: a silent cub finds the glowing seed under ice. Will it wake — or wait?",
         creator: "Lore Weaver · Ara",
         link: "",
         image: COVER.storyCub,
@@ -3772,7 +4084,7 @@
         id: "vid-3",
         title: "Gate of Howls Opens",
         type: "bolt-story",
-        description: "Bolt Story trailer: the Publishing Gate cracks with cyan runes. Step through — unfinished fire is welcome.",
+        description: "Bolt Echo: the Publishing Gate cracks with cyan runes. Step through — unfinished fire is welcome.",
         creator: "Citadel Official",
         link: "",
         image: COVER.storyGate,
@@ -3783,6 +4095,150 @@
         featured: true,
         canon: "official",
         createdAt: Date.now() - 1000 * 60 * 60 * 1,
+      },
+      {
+        id: "vid-4",
+        title: "Rain of Bolts",
+        type: "bolt-story",
+        description: "Bolt Echo: the Pack runs under a sky that rains cyan lightning. Every step answers the storm.",
+        creator: "Storm Choir",
+        link: "",
+        image: COVER.storyRain,
+        video: "",
+        storyLine: "When bolts fall like rain, the Pack does not hide — it runs with the storm.",
+        resonance: 88,
+        howls: 44,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 35,
+      },
+      {
+        id: "vid-5",
+        title: "Moonwatch Citadel",
+        type: "bolt-story",
+        description: "Bolt Echo: a lone wolf keeps vigil under a glowing cyan moon on the citadel balcony.",
+        creator: "Night Wardens",
+        link: "",
+        image: COVER.storyMoon,
+        video: "",
+        storyLine: "One watcher. One moon. The Core still listens.",
+        resonance: 90,
+        howls: 57,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 55,
+      },
+      {
+        id: "vid-6",
+        title: "Crystal Howl Canyon",
+        type: "bolt-story",
+        description: "Bolt Echo: ice-and-lightning wolves howl through a frozen canyon of living crystal.",
+        creator: "Crystal Choir",
+        link: "",
+        image: COVER.storyCanyon,
+        video: "",
+        storyLine: "Ice remembers every howl. Lightning teaches it to move.",
+        resonance: 87,
+        howls: 39,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 70,
+      },
+      {
+        id: "vid-7",
+        title: "Constellation Table",
+        type: "bolt-story",
+        description: "Bolt Echo: a star-map table in the deep hall — a wolf spirit rises from the constellations.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: COVER.storyTable,
+        video: "",
+        storyLine: "Maps are not lines. They are living wolves of light.",
+        resonance: 91,
+        howls: 66,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 85,
+      },
+      {
+        id: "vid-8",
+        title: "Twin Gate Rift",
+        type: "bolt-story",
+        description: "Bolt Echo: cyan and gold portals open as one. A white wolf chooses neither — and both.",
+        creator: "Portal Pack",
+        link: "",
+        image: COVER.storyTwin,
+        video: "",
+        storyLine: "Two paths. One Pack. The Gate does not divide — it doubles.",
+        resonance: 89,
+        howls: 48,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 100,
+      },
+      {
+        id: "vid-9",
+        title: "The Bolt Bearer",
+        type: "bolt-story",
+        description: "Bolt Echo: a hooded pup of the Pack holds a floating bolt orb, wolf companion at their side.",
+        creator: "Pack Pup · Riven",
+        link: "",
+        image: COVER.storyBearer,
+        video: "videos/story-bolt-bearer.mp4",
+        storyLine: "The smallest hands can carry the loudest spark.",
+        resonance: 93,
+        howls: 72,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 25,
+      },
+      {
+        id: "vid-10",
+        title: "When the Core Shatters",
+        type: "bolt-story",
+        description: "Bolt Echo: the Star Core breaks into seven shards — the Pack catches the light before it fades.",
+        creator: "Citadel Official",
+        link: "",
+        image: COVER.storyShatter,
+        video: "",
+        storyLine: "Even broken light wants a home. The Pack is that home.",
+        resonance: 96,
+        howls: 118,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 15,
+      },
+      {
+        id: "vid-11",
+        title: "Deep Current Wolves",
+        type: "bolt-story",
+        description: "Bolt Echo: bioluminescent wolf spirits swim a cosmic trench of cyan current and gold bubbles.",
+        creator: "Echo Forge",
+        link: "",
+        image: COVER.storyDeep,
+        video: "videos/story-deep-current.mp4",
+        storyLine: "Not all storms are sky. Some howl under the surface of the dark.",
+        resonance: 86,
+        howls: 41,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 120,
+      },
+      {
+        id: "vid-12",
+        title: "Dawn on the Battlements",
+        type: "bolt-story",
+        description: "Bolt Echo: first gold sunray meets cyan lightning as white wolves stand the citadel walls.",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: COVER.storyDawn,
+        video: "",
+        storyLine: "Morning is not quiet here. It is a promise with teeth of light.",
+        resonance: 92,
+        howls: 83,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 45,
       },
     ];
 
@@ -4067,8 +4523,8 @@
               <span class="right">
                 <span>${relativeTime(item.createdAt)}</span>
                 <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)}</span>
-                <button type="button" class="like-btn ${state.howled.has(item.id) ? "is-liked" : ""}" data-like="${item.id}" title="Like" aria-label="Like">
-                  <span class="heart" aria-hidden="true">${state.howled.has(item.id) ? "♥" : "♡"}</span>
+                <button type="button" class="howl-btn ${state.howled.has(item.id) ? "is-howled" : ""}" data-howl="${item.id}" title="Howl" aria-label="Howl">
+                  <span class="howl-ico" aria-hidden="true">🐺</span>
                   <span>${formatCount(item.howls)}</span>
                 </button>
               </span>
@@ -4078,14 +4534,14 @@
       }).join("");
       scroll.querySelectorAll(".echo-card").forEach((el) => {
         el.addEventListener("click", (e) => {
-          if (e.target.closest("[data-like]")) return;
+          if (e.target.closest("[data-howl]")) return;
           openDetail(el.dataset.id);
         });
       });
-      scroll.querySelectorAll("[data-like]").forEach((btn) => {
+      scroll.querySelectorAll("[data-howl]").forEach((btn) => {
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
-          toggleHowl(btn.dataset.like);
+          toggleHowl(btn.dataset.howl);
         });
       });
       requestAnimationFrame(updateEchoNav);
@@ -4142,8 +4598,8 @@
               </div>
               <div class="tile-stats">
                 <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)}</span>
-                <button type="button" class="like-btn ${state.howled.has(item.id) ? "is-liked" : ""}" data-like="${item.id}" title="Like" aria-label="Like">
-                  <span class="heart" aria-hidden="true">${state.howled.has(item.id) ? "♥" : "♡"}</span>
+                <button type="button" class="howl-btn ${state.howled.has(item.id) ? "is-howled" : ""}" data-howl="${item.id}" title="Howl" aria-label="Howl">
+                  <span class="howl-ico" aria-hidden="true">🐺</span>
                   <span>${formatCount(item.howls)}</span>
                 </button>
               </div>
@@ -4153,7 +4609,7 @@
 
       feed.querySelectorAll(".tile").forEach((el) => {
         el.addEventListener("click", (e) => {
-          if (e.target.closest("[data-play]") || e.target.closest("[data-like]")) return;
+          if (e.target.closest("[data-play]") || e.target.closest("[data-howl]")) return;
           openDetail(el.dataset.id);
         });
       });
@@ -4163,10 +4619,10 @@
           launchPlay(btn.dataset.play);
         });
       });
-      feed.querySelectorAll("[data-like]").forEach((btn) => {
+      feed.querySelectorAll("[data-howl]").forEach((btn) => {
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
-          toggleHowl(btn.dataset.like);
+          toggleHowl(btn.dataset.howl);
         });
       });
     }
@@ -4226,21 +4682,21 @@
         <div class="detail-meta-grid">
           <div><b>Creator</b>${escapeHtml(item.creator)}</div>
           <div><b>Resonance</b>${item.resonance}</div>
-          <div><b>Likes</b>${formatCount(item.howls)}</div>
+          <div><b>Howls</b>${formatCount(item.howls)}</div>
           <div><b>Views</b>${formatCount(item.views)}</div>
           <div><b>Entered</b>${relativeTime(item.createdAt)} ago</div>
         </div>
         <div class="tile-stats" style="margin:0.75rem 0 0.25rem">
-          <button type="button" class="like-btn ${liked ? "is-liked" : ""}" id="detailLike" title="Like">
-            <span class="heart" aria-hidden="true">${liked ? "♥" : "♡"}</span>
-            <span>${formatCount(item.howls)} likes</span>
+          <button type="button" class="howl-btn ${liked ? "is-howled" : ""}" id="detailHowl" title="Howl">
+            <span class="howl-ico" aria-hidden="true">🐺</span>
+            <span>${formatCount(item.howls)} howls</span>
           </button>
           <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)} views</span>
         </div>
         ${item.link ? `<p><a href="${escapeAttr(item.link)}" target="_blank" rel="noopener" style="color:var(--cyan-soft)">Open link →</a></p>` : ""}
         <p style="font-size:0.78rem;color:var(--text-dim)">Bound to the Official Wrapper · play feeds the Star Core.</p>
       `;
-      document.getElementById("detailLike")?.addEventListener("click", () => toggleHowl(id));
+      document.getElementById("detailHowl")?.addEventListener("click", () => toggleHowl(id));
       document.getElementById("detailPlay").onclick = () => launchPlay(id);
       document.getElementById("detailModal").classList.add("open");
     }
@@ -4259,6 +4715,7 @@
     /** Full Three.js games (self-contained HTML) */
     const FULL_GAMES = {
       "seed-1": "games/storm-corridor-sprint.html",
+      "seed-11": "games/rune-ring-leap.html",
       "mini-quest": "games/storm-corridor-sprint.html",
       "sprint": "games/storm-corridor-sprint.html",
       "sprint-path": "games/storm-corridor-sprint.html",
@@ -4266,11 +4723,14 @@
 
     function resolveGameUrl(item) {
       if (FULL_GAMES[item.id]) return FULL_GAMES[item.id];
-      if (FULL_GAMES[item.type]) return FULL_GAMES[item.type];
-      // title match for Lightning Dash
+      // title-specific games before generic type fallback
+      if (/storm\s*ring\s*leap|rune\s*ring\s*leap/i.test(item.title || "")) {
+        return "games/rune-ring-leap.html";
+      }
       if (/lightning\s*dash|storm\s*orb/i.test(item.title || "")) {
         return "games/storm-corridor-sprint.html";
       }
+      if (FULL_GAMES[item.type]) return FULL_GAMES[item.type];
       return null;
     }
 
@@ -4280,14 +4740,14 @@
 
     function renderBoltStoryPlayer(item) {
       const poster = escapeAttr(item.image || "");
-      const title = escapeHtml(item.title || "Bolt Story");
+      const title = escapeHtml(item.title || "Bolt Echo");
       const line = escapeHtml(item.storyLine || item.description || "");
       let videoSrc = item.video || "";
       try {
         if (videoSrc) videoSrc = new URL(videoSrc, location.href).href;
       } catch (_) { /* keep relative */ }
       videoSrc = escapeAttr(videoSrc);
-      // Prefer real mp4 when present; Ken Burns reel as fallback while loading / if missing
+      // Prefer real mp4 when present; cinematic cover echo as fallback
       return `
         <div class="story-player" id="storyPlayer">
           ${videoSrc ? `
@@ -4307,7 +4767,7 @@
             <div class="story-reel__art" style="background-image:url('${poster}')"></div>
             <div class="story-reel__veil"></div>
             <div class="story-reel__caption">
-              <div class="story-reel__kicker">Bolt Story · Reel</div>
+              <div class="story-reel__kicker">Bolt Echo</div>
               <div class="story-reel__title">${title}</div>
               <div class="story-reel__body">${line}</div>
             </div>
@@ -4347,7 +4807,7 @@
       recordView(id);
       closeDetail();
 
-      // Bolt Story reels — play video or cinematic cover reel
+      // Bolt Echoes — play video or cinematic cover echo
       if (isBoltStory(item) && !resolveGameUrl(item)) {
         stopPlayTimers();
         playState = { id: item.id, item, fullGame: false, story: true };
@@ -5026,9 +5486,25 @@
     });
 
     // ── Left nav (pump.fun-style): Home · Creator Forges · Videos ──
-    const NAV_VIEWS = new Set(["home", "forges", "videos", "creator", "player"]);
+    const NAV_VIEWS = new Set([
+      "home", "forges", "videos", "creator", "chambers",
+      "balconies", "codex-archives", "crystal-wings",
+      "personal-realms", "shared-realms", "pack-grounds", "outer-spires",
+    ]);
+    const NAV_VIEW_IDS = {
+      forges: "forgesView",
+      videos: "videosView",
+      creator: "creatorProfileView",
+      chambers: "chambersView",
+      balconies: "balconiesView",
+      "codex-archives": "codexArchivesView",
+      "crystal-wings": "crystalWingsView",
+      "personal-realms": "personalRealmsView",
+      "shared-realms": "sharedRealmsView",
+      "pack-grounds": "packGroundsView",
+      "outer-spires": "outerSpiresView",
+    };
     const PROFILE_CREATOR_KEY = "citadel-creator-profile-v1";
-    const PROFILE_PLAYER_KEY = "citadel-player-profile-v1";
 
     function loadProfile(key, defaults) {
       try {
@@ -5041,19 +5517,11 @@
       localStorage.setItem(key, JSON.stringify(data));
     }
 
-    function playerRank(likesGiven) {
-      if (likesGiven >= 40) return "Alpha";
-      if (likesGiven >= 20) return "Hunter";
-      if (likesGiven >= 8) return "Scout";
-      if (likesGiven >= 3) return "Paw";
-      return "Pup";
-    }
-
     function fillCreatorProfile() {
       const d = loadProfile(PROFILE_CREATOR_KEY, {
         name: "Forge Hero",
         handle: "@creator",
-        specialty: "Mini-Quests · Bolt Stories",
+        specialty: "Mini-Quests · Echoes",
         bio: "",
       });
       const nameEl = document.getElementById("cName");
@@ -5065,7 +5533,6 @@
       if (specEl) specEl.value = d.specialty || "";
       if (bioEl) bioEl.value = d.bio || "";
 
-      // Stats from user-submitted creations + seed items matching handle/name loosely
       const mine = loadUserItems();
       const creations = mine.length;
       const likes = mine.reduce((s, i) => s + (i.howls || 0), 0);
@@ -5083,34 +5550,14 @@
       set("cStatRes", avgRes);
     }
 
-    function fillPlayerProfile() {
-      const d = loadProfile(PROFILE_PLAYER_KEY, {
-        name: "Pack Runner",
-        handle: "@player",
-        favorite: "Lightning Dash",
-        bio: "",
+    function filterHallTo(type) {
+      setNavView("home");
+      state.type = type || "all";
+      document.querySelectorAll("#typeFilters .chip").forEach((c) => {
+        c.classList.toggle("active", c.dataset.type === state.type);
       });
-      const nameEl = document.getElementById("pName");
-      const handleEl = document.getElementById("pHandle");
-      const favEl = document.getElementById("pFavorite");
-      const bioEl = document.getElementById("pBio");
-      if (nameEl) nameEl.value = d.name || "";
-      if (handleEl) handleEl.value = d.handle || "";
-      if (favEl) favEl.value = d.favorite || "";
-      if (bioEl) bioEl.value = d.bio || "";
-
-      const likesGiven = state.howled?.size || 0;
-      const viewsTab = state.viewedSession?.size || 0;
-      // total howls across pack as “energy felt”
-      const energy = allItems().reduce((s, i) => s + (i.howls || 0), 0);
-      const set = (id, v) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = typeof v === "number" ? formatCount(v) : v;
-      };
-      set("pStatLikes", likesGiven);
-      set("pStatViews", viewsTab);
-      set("pStatHowls", energy);
-      set("pStatRank", playerRank(likesGiven));
+      render();
+      document.getElementById("exploreToolbar")?.scrollIntoView({ behavior: "smooth" });
     }
 
     function setNavView(view) {
@@ -5122,28 +5569,51 @@
         btn.classList.toggle("active", btn.dataset.nav === v);
       });
       if (v === "creator") fillCreatorProfile();
-      if (v === "player") fillPlayerProfile();
 
       if (v === "home") {
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
-        const map = {
-          forges: "forgesView",
-          videos: "videosView",
-          creator: "creatorProfileView",
-          player: "playerProfileView",
-        };
-        const target = document.getElementById(map[v]);
+        const target = document.getElementById(NAV_VIEW_IDS[v]);
         if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
     document.getElementById("navHome")?.addEventListener("click", () => setNavView("home"));
     document.getElementById("navHall")?.addEventListener("click", () => setNavView("home"));
     document.getElementById("navForges")?.addEventListener("click", () => setNavView("forges"));
-    document.getElementById("navVideos")?.addEventListener("click", () => setNavView("videos"));
-    document.getElementById("navCreator")?.addEventListener("click", () => setNavView("creator"));
-    document.getElementById("navPlayer")?.addEventListener("click", () => setNavView("player"));
+    document.getElementById("navChambers")?.addEventListener("click", () => setNavView("chambers"));
+    document.getElementById("navBalconies")?.addEventListener("click", () => setNavView("balconies"));
+    document.getElementById("navCodexArchives")?.addEventListener("click", () => setNavView("codex-archives"));
+    document.getElementById("navCrystalWings")?.addEventListener("click", () => setNavView("crystal-wings"));
+    document.getElementById("navPersonalRealms")?.addEventListener("click", () => setNavView("personal-realms"));
+    document.getElementById("navSharedRealms")?.addEventListener("click", () => setNavView("shared-realms"));
+    document.getElementById("navPackGrounds")?.addEventListener("click", () => setNavView("pack-grounds"));
+    document.getElementById("navOuterSpires")?.addEventListener("click", () => setNavView("outer-spires"));
     document.getElementById("navSubmit")?.addEventListener("click", openSubmit);
+
+    // Zone cards (balconies, archives, wings, realms, grounds, spires)
+    document.querySelectorAll(".zone-panel").forEach((panel) => {
+      panel.addEventListener("click", (e) => {
+        if (e.target.closest("[data-go-hall]")) {
+          setNavView("home");
+          return;
+        }
+        const card = e.target.closest("[data-zone-action]");
+        if (!card) return;
+        const action = card.dataset.zoneAction;
+        if (action === "play" && card.dataset.playId) {
+          launchPlay(card.dataset.playId);
+        } else if (action === "open" && card.dataset.openId) {
+          setNavView("home");
+          openDetail(card.dataset.openId);
+        } else if (action === "filter" && card.dataset.filterType) {
+          filterHallTo(card.dataset.filterType);
+        } else if (action === "nav" && card.dataset.navTo) {
+          setNavView(card.dataset.navTo);
+        } else if (action === "toast") {
+          toast(card.dataset.toast || "Coming soon ⚡");
+        }
+      });
+    });
 
     document.getElementById("creatorProfileForm")?.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -5156,21 +5626,39 @@
       toast("Creator profile saved ⚡");
       fillCreatorProfile();
     });
-    document.getElementById("playerProfileForm")?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      saveProfile(PROFILE_PLAYER_KEY, {
-        name: document.getElementById("pName")?.value?.trim() || "Pack Runner",
-        handle: document.getElementById("pHandle")?.value?.trim() || "@player",
-        favorite: document.getElementById("pFavorite")?.value?.trim() || "",
-        bio: document.getElementById("pBio")?.value?.trim() || "",
-      });
-      toast("Player profile saved ⚡");
-      fillPlayerProfile();
-    });
     document.getElementById("creatorGoSubmit")?.addEventListener("click", openSubmit);
-    document.getElementById("playerGoHall")?.addEventListener("click", () => setNavView("home"));
+    document.getElementById("chambersGoHall")?.addEventListener("click", () => setNavView("home"));
+    document.getElementById("chambersGoStories")?.addEventListener("click", () => {
+      setNavView("home");
+      state.type = "bolt-story";
+      document.querySelectorAll("#typeFilters .chip").forEach((c) => {
+        c.classList.toggle("active", c.dataset.type === "bolt-story");
+      });
+      render();
+      document.getElementById("exploreToolbar")?.scrollIntoView({ behavior: "smooth" });
+    });
+    document.getElementById("chamberGrid")?.addEventListener("click", (e) => {
+      const card = e.target.closest("[data-chamber]");
+      if (!card) return;
+      const id = card.dataset.chamber;
+      if (id === "story" || id === "gate") {
+        document.getElementById("chambersGoStories")?.click();
+        return;
+      }
+      if (id === "howl") {
+        setNavView("home");
+        const howl = allItems().find((i) => /pack howl|howl at the star/i.test(i.title));
+        if (howl) openDetail(howl.id);
+        return;
+      }
+      if (id === "orb") {
+        launchPlay("seed-1");
+        return;
+      }
+      toast("Chamber tuned · more rites coming soon ⚡");
+    });
 
-    // Videos panel → play reels / jump to feed filter
+    // Videos panel → play echoes / jump to feed filter
     document.getElementById("videosView")?.addEventListener("click", (e) => {
       const card = e.target.closest("[data-play-story]");
       if (card) {

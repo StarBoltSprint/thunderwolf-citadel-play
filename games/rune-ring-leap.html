@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Rune Ring Leap · Boltverse Mini-Quest</title>
+  <style>
+    :root {
+      --cyan: #2ee6ff;
+      --cyan-soft: #7ef0ff;
+      --gold: #e8c56a;
+      --gold-soft: #f5e0a8;
+      --bg: #010208;
+      --text: #eef3ff;
+      --muted: #8b9bb8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: var(--bg); color: var(--text);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      touch-action: none; user-select: none; -webkit-user-select: none;
+    }
+    #c { display: block; width: 100%; height: 100%; }
+    #hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+    #hud::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      background:
+        radial-gradient(ellipse 75% 70% at 50% 45%, transparent 40%, rgba(0, 4, 16, 0.55) 100%),
+        linear-gradient(180deg, rgba(8, 20, 40, 0.35) 0%, transparent 20%, transparent 75%, rgba(0, 8, 20, 0.5) 100%);
+    }
+    #hud > * { position: relative; z-index: 2; }
+    .top-bar {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(180deg, rgba(1,2,8,0.85) 0%, transparent 100%);
+    }
+    .stat {
+      min-width: 110px; padding: 0.55rem 0.95rem; border-radius: 14px;
+      border: 1px solid rgba(232, 197, 106, 0.4);
+      background: linear-gradient(145deg, rgba(18, 14, 8, 0.88), rgba(8, 10, 20, 0.8));
+      backdrop-filter: blur(14px);
+      box-shadow: 0 0 24px rgba(232, 197, 106, 0.12), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .stat label {
+      display: block; font-size: 0.6rem; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.15rem;
+    }
+    .stat strong {
+      font-size: 1.35rem; font-weight: 800; letter-spacing: 0.02em;
+      color: var(--gold-soft);
+      text-shadow: 0 0 18px rgba(232, 197, 106, 0.55);
+    }
+    .stat.cyan {
+      border-color: rgba(46, 230, 255, 0.35);
+      background: linear-gradient(145deg, rgba(8, 18, 36, 0.88), rgba(4, 10, 22, 0.8));
+    }
+    .stat.cyan strong {
+      color: var(--cyan-soft);
+      text-shadow: 0 0 18px rgba(46, 230, 255, 0.55);
+    }
+    .stat.warn strong { color: #ff6b8a; animation: pulse 0.55s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    .title-chip {
+      position: absolute; top: 1.05rem; left: 50%; transform: translateX(-50%);
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(238,243,255,0.85); padding: 0.4rem 1rem; border-radius: 999px;
+      border: 1px solid rgba(232, 197, 106, 0.35);
+      background: rgba(8, 10, 18, 0.7);
+      box-shadow: 0 0 22px rgba(232, 197, 106, 0.12);
+      white-space: nowrap;
+    }
+    .hint {
+      position: absolute; bottom: 1.2rem; left: 50%; transform: translateX(-50%);
+      font-size: 0.78rem; color: var(--muted); letter-spacing: 0.04em; text-align: center;
+      padding: 0.5rem 1rem; border-radius: 999px;
+      background: rgba(4, 10, 22, 0.55); border: 1px solid rgba(232, 197, 106, 0.2);
+    }
+    .flash {
+      position: fixed; inset: 0; z-index: 15; pointer-events: none;
+      opacity: 0; background: rgba(232, 197, 106, 0.35);
+      transition: opacity 0.25s ease;
+    }
+    .overlay {
+      position: fixed; inset: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: center;
+      background:
+        radial-gradient(ellipse 55% 45% at 50% 40%, rgba(232, 197, 106, 0.12), transparent 55%),
+        rgba(1, 2, 8, 0.88);
+      backdrop-filter: blur(14px);
+      opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+    }
+    .overlay.show { opacity: 1; pointer-events: auto; }
+    .panel {
+      width: min(420px, 92vw); padding: 1.85rem 1.5rem 1.5rem; border-radius: 20px;
+      border: 1px solid rgba(232, 197, 106, 0.35);
+      background: linear-gradient(165deg, rgba(20, 18, 12, 0.96), rgba(6, 10, 22, 0.98));
+      box-shadow: 0 28px 90px rgba(0,0,0,0.6), 0 0 50px rgba(232, 197, 106, 0.12);
+      text-align: center;
+    }
+    .panel h1 {
+      font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.45rem;
+      background: linear-gradient(90deg, var(--gold-soft), #fff, var(--cyan-soft));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .panel p { color: var(--muted); font-size: 0.92rem; line-height: 1.55; margin-bottom: 1.15rem; }
+    .panel .meta {
+      display: flex; justify-content: center; gap: 0.55rem; margin-bottom: 1.2rem; flex-wrap: wrap;
+    }
+    .panel .meta span {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.35rem 0.7rem; border-radius: 999px;
+      border: 1px solid rgba(232, 197, 106, 0.3); color: var(--gold-soft);
+      background: rgba(0,0,0,0.3);
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+      padding: 0.72rem 1.4rem; border-radius: 999px; border: none; cursor: pointer;
+      font-weight: 700; font-size: 0.96rem; font-family: inherit; color: #1a1406;
+      background: linear-gradient(135deg, #f5e0a8, #e8c56a 45%, #2ee6ff);
+      box-shadow: 0 0 32px rgba(232, 197, 106, 0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+      pointer-events: auto;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 0 48px rgba(232, 197, 106, 0.55); }
+    .btn:active { transform: scale(0.98); }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid rgba(46, 230, 255, 0.25); box-shadow: none; margin-left: 0.45rem;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(46, 230, 255, 0.45); box-shadow: none; }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div class="flash" id="flash"></div>
+
+  <div id="hud" hidden>
+    <div class="title-chip">Rune Ring Leap</div>
+    <div class="top-bar">
+      <div class="stat">
+        <label>Rings</label>
+        <strong id="ringCount">0 / 12</strong>
+      </div>
+      <div class="stat cyan" id="timerStat">
+        <label>Time</label>
+        <strong id="timer">1:00</strong>
+      </div>
+    </div>
+    <div class="hint" id="hint">Space / click / tap to leap · stay in the gold rings</div>
+  </div>
+
+  <div class="overlay show" id="startOverlay">
+    <div class="panel">
+      <h1>Rune Ring Leap</h1>
+      <p>
+        Leap through every <strong style="color:var(--gold-soft)">golden rune ring</strong> above the lightning sea.
+        Miss one — the storm swallows the path. Pure focus. Sixty seconds of courage.
+      </p>
+      <div class="meta">
+        <span>1:00 max</span>
+        <span>12 rings</span>
+        <span>Mini-Quest</span>
+      </div>
+      <button class="btn" id="btnStart" type="button">Begin Leap</button>
+      <button class="btn btn-ghost" id="btnBack" type="button">Back to Citadel</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="endOverlay">
+    <div class="panel">
+      <h1 id="endTitle">Path held</h1>
+      <p id="endMsg">Every ring answered. The storm yields.</p>
+      <div class="meta">
+        <span id="endRings">12 / 12</span>
+        <span id="endTime">—</span>
+      </div>
+      <button class="btn" id="btnRetry" type="button">Leap again</button>
+      <button class="btn btn-ghost" id="btnBack2" type="button">Back to Citadel</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+    import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+    import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+    const RING_GOAL = 12;
+    const DURATION = 60;
+    const RUN_SPEED = 28;
+    const GRAVITY = -55;
+    const JUMP_V = 18;
+    const SEA_Y = -2.2;
+    const PATH_Y = 1.2;
+
+    const canvas = document.getElementById("c");
+    const hud = document.getElementById("hud");
+    const startOverlay = document.getElementById("startOverlay");
+    const endOverlay = document.getElementById("endOverlay");
+    const ringCountEl = document.getElementById("ringCount");
+    const timerEl = document.getElementById("timer");
+    const timerStat = document.getElementById("timerStat");
+    const flashEl = document.getElementById("flash");
+    const hint = document.getElementById("hint");
+
+    let audioCtx = null;
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+    function beep(freq, dur, type = "sine", gain = 0.07) {
+      if (!audioCtx) return;
+      const t = audioCtx.currentTime;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, t);
+      o.frequency.exponentialRampToValueAtTime(Math.max(40, freq * 1.4), t + dur);
+      g.gain.setValueAtTime(gain, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t); o.stop(t + dur);
+    }
+    function sfxPass() {
+      ensureAudio();
+      beep(660, 0.08, "triangle", 0.09);
+      setTimeout(() => beep(990, 0.12, "sine", 0.06), 40);
+    }
+    function sfxJump() {
+      ensureAudio();
+      beep(220, 0.1, "square", 0.04);
+    }
+    function sfxWin() {
+      ensureAudio();
+      [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => beep(f, 0.2, "sine", 0.07), i * 80));
+    }
+    function sfxLose() {
+      ensureAudio();
+      beep(140, 0.45, "sawtooth", 0.05);
+    }
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas, antialias: true, powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.95;
+
+    const scene = new THREE.Scene();
+    const BG = new THREE.Color(0x060a14);
+    scene.background = BG.clone();
+    scene.fog = new THREE.FogExp2(0x0a1428, 0.018);
+
+    const camera = new THREE.PerspectiveCamera(68, innerWidth / innerHeight, 0.1, 400);
+    camera.position.set(0, 4.5, 8);
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.55, 0.5, 0.4);
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+
+    scene.add(new THREE.AmbientLight(0x1a2840, 0.55));
+    scene.add(new THREE.HemisphereLight(0x4a70a0, 0x080c18, 0.55));
+    const key = new THREE.DirectionalLight(0xffe6a8, 0.85);
+    key.position.set(6, 18, 4);
+    scene.add(key);
+    const stormLight = new THREE.PointLight(0x2ee6ff, 1.2, 80);
+    stormLight.position.set(0, 8, -20);
+    scene.add(stormLight);
+    const boltLight = new THREE.PointLight(0xdff6ff, 0, 100);
+    scene.add(boltLight);
+
+    const world = new THREE.Group();
+    scene.add(world);
+
+    // ── Lightning sea ──
+    const seaGeo = new THREE.PlaneGeometry(120, 200, 80, 100);
+    seaGeo.rotateX(-Math.PI / 2);
+    const seaMat = new THREE.MeshStandardMaterial({
+      color: 0x061428,
+      emissive: 0x0891b2,
+      emissiveIntensity: 0.35,
+      metalness: 0.85,
+      roughness: 0.25,
+      flatShading: true,
+    });
+    const sea = new THREE.Mesh(seaGeo, seaMat);
+    sea.position.set(0, SEA_Y, -70);
+    world.add(sea);
+    const seaBase = seaGeo.attributes.position.array.slice();
+
+    // Glow sheet under path
+    const glowSea = new THREE.Mesh(
+      new THREE.PlaneGeometry(40, 160),
+      new THREE.MeshBasicMaterial({
+        color: 0x0ea5c9,
+        transparent: true,
+        opacity: 0.08,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    glowSea.rotation.x = -Math.PI / 2;
+    glowSea.position.set(0, SEA_Y + 0.15, -60);
+    world.add(glowSea);
+
+    // Storm clouds
+    for (let i = 0; i < 18; i++) {
+      const cloud = new THREE.Mesh(
+        new THREE.SphereGeometry(4 + Math.random() * 6, 12, 10),
+        new THREE.MeshBasicMaterial({
+          color: i % 3 === 0 ? 0x1a2848 : 0x12182a,
+          transparent: true,
+          opacity: 0.18 + Math.random() * 0.12,
+          depthWrite: false,
+        })
+      );
+      cloud.position.set(
+        (Math.random() - 0.5) * 60,
+        10 + Math.random() * 12,
+        -10 - Math.random() * 140
+      );
+      cloud.scale.set(1.4 + Math.random(), 0.45, 1 + Math.random());
+      world.add(cloud);
+    }
+
+    // Path fragments (broken platforms)
+    const pathGroup = new THREE.Group();
+    world.add(pathGroup);
+    const pathMat = new THREE.MeshStandardMaterial({
+      color: 0x1a2840,
+      emissive: 0x0a2038,
+      emissiveIntensity: 0.25,
+      metalness: 0.7,
+      roughness: 0.4,
+    });
+    for (let i = 0; i < 40; i++) {
+      const slab = new THREE.Mesh(
+        new THREE.BoxGeometry(2.2 + Math.random() * 1.2, 0.22, 1.6 + Math.random()),
+        pathMat
+      );
+      slab.position.set(
+        (Math.random() - 0.5) * 1.2,
+        PATH_Y - 0.6 + Math.sin(i * 0.7) * 0.15,
+        -i * 5.5 - 2
+      );
+      slab.rotation.y = (Math.random() - 0.5) * 0.2;
+      pathGroup.add(slab);
+    }
+
+    // ── Rune rings ──
+    const rings = [];
+    const ringGroup = new THREE.Group();
+    world.add(ringGroup);
+
+    function makeRing(index) {
+      const g = new THREE.Group();
+      const radius = 1.35;
+      const torus = new THREE.Mesh(
+        new THREE.TorusGeometry(radius, 0.1, 12, 48),
+        new THREE.MeshStandardMaterial({
+          color: 0x3a2a10,
+          emissive: 0xe8c56a,
+          emissiveIntensity: 0.85,
+          metalness: 0.95,
+          roughness: 0.2,
+        })
+      );
+      g.add(torus);
+
+      // Inner energy ring
+      const inner = new THREE.Mesh(
+        new THREE.TorusGeometry(radius * 0.92, 0.035, 8, 40),
+        new THREE.MeshBasicMaterial({
+          color: 0x7ef0ff,
+          transparent: true,
+          opacity: 0.55,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      g.add(inner);
+
+      // Outer soft glow
+      const outer = new THREE.Mesh(
+        new THREE.TorusGeometry(radius * 1.08, 0.05, 8, 40),
+        new THREE.MeshBasicMaterial({
+          color: 0xe8c56a,
+          transparent: true,
+          opacity: 0.22,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      g.add(outer);
+
+      // Rune ticks around ring
+      for (let k = 0; k < 12; k++) {
+        const a = (k / 12) * Math.PI * 2;
+        const tick = new THREE.Mesh(
+          new THREE.BoxGeometry(0.08, 0.08, 0.28),
+          new THREE.MeshBasicMaterial({ color: 0xf5e0a8 })
+        );
+        tick.position.set(Math.cos(a) * radius, Math.sin(a) * radius, 0);
+        tick.lookAt(0, 0, 0);
+        g.add(tick);
+      }
+
+      // Lateral / height variation — increasing challenge
+      const t = index / (RING_GOAL - 1);
+      const x = Math.sin(index * 1.35) * (0.4 + t * 1.6);
+      const y = PATH_Y + 0.9 + Math.sin(index * 0.9) * (0.5 + t * 1.1) + t * 0.8;
+      const z = -8 - index * 9.5;
+
+      g.position.set(x, y, z);
+      g.rotation.y = Math.sin(index) * 0.15;
+      g.userData = {
+        index,
+        passed: false,
+        radius,
+        baseY: y,
+        phase: Math.random() * Math.PI * 2,
+      };
+      ringGroup.add(g);
+      rings.push(g);
+      return g;
+    }
+
+    for (let i = 0; i < RING_GOAL; i++) makeRing(i);
+
+    // ── Player (bolt core) ──
+    const player = new THREE.Group();
+    const core = new THREE.Mesh(
+      new THREE.SphereGeometry(0.38, 24, 24),
+      new THREE.MeshStandardMaterial({
+        color: 0xe8ffff,
+        emissive: 0x2ee6ff,
+        emissiveIntensity: 1.1,
+        metalness: 0.3,
+        roughness: 0.15,
+      })
+    );
+    const shell = new THREE.Mesh(
+      new THREE.SphereGeometry(0.55, 16, 16),
+      new THREE.MeshBasicMaterial({
+        color: 0x2ee6ff,
+        transparent: true,
+        opacity: 0.18,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    player.add(core, shell);
+    player.position.set(0, PATH_Y + 0.5, 2);
+    world.add(player);
+
+    const playerLight = new THREE.PointLight(0x7ef0ff, 1.2, 14);
+    player.add(playerLight);
+
+    // Trail particles
+    const trailN = 80;
+    const trailPos = new Float32Array(trailN * 3);
+    for (let i = 0; i < trailN; i++) {
+      trailPos[i * 3] = 0;
+      trailPos[i * 3 + 1] = PATH_Y;
+      trailPos[i * 3 + 2] = 2;
+    }
+    const trailGeo = new THREE.BufferGeometry();
+    trailGeo.setAttribute("position", new THREE.BufferAttribute(trailPos, 3));
+    const trail = new THREE.Points(
+      trailGeo,
+      new THREE.PointsMaterial({
+        color: 0x7ef0ff,
+        size: 0.12,
+        transparent: true,
+        opacity: 0.7,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        sizeAttenuation: true,
+      })
+    );
+    world.add(trail);
+    let trailI = 0;
+
+    // Air sparks
+    const sparkN = 200;
+    const sparkPos = new Float32Array(sparkN * 3);
+    for (let i = 0; i < sparkN; i++) {
+      sparkPos[i * 3] = (Math.random() - 0.5) * 30;
+      sparkPos[i * 3 + 1] = Math.random() * 12;
+      sparkPos[i * 3 + 2] = -Math.random() * 140;
+    }
+    const sparkGeo = new THREE.BufferGeometry();
+    sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPos, 3));
+    const sparks = new THREE.Points(
+      sparkGeo,
+      new THREE.PointsMaterial({
+        color: 0xe8c56a,
+        size: 0.08,
+        transparent: true,
+        opacity: 0.55,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    world.add(sparks);
+
+    // Lightning bolts
+    const lightningGroup = new THREE.Group();
+    world.add(lightningGroup);
+    function spawnLightning() {
+      lightningGroup.clear();
+      const pts = [];
+      let x = (Math.random() - 0.5) * 28;
+      let y = 14 + Math.random() * 4;
+      const z0 = player.position.z - 15 - Math.random() * 50;
+      for (let i = 0; i < 14; i++) {
+        pts.push(new THREE.Vector3(x, y, z0 - i * 0.9));
+        x += (Math.random() - 0.5) * 2.5;
+        y -= 0.9 + Math.random() * 0.6;
+      }
+      const geo = new THREE.BufferGeometry().setFromPoints(pts);
+      lightningGroup.add(new THREE.Line(geo, new THREE.LineBasicMaterial({
+        color: 0xe8ffff, transparent: true, opacity: 0.95,
+        blending: THREE.AdditiveBlending,
+      })));
+      lightningGroup.add(new THREE.Line(geo, new THREE.LineBasicMaterial({
+        color: 0x2ee6ff, transparent: true, opacity: 0.35,
+        blending: THREE.AdditiveBlending,
+      })));
+      boltLight.intensity = 6;
+      boltLight.position.copy(pts[3]);
+      flashEl.style.transition = "none";
+      flashEl.style.opacity = "0.18";
+      flashEl.style.background = "rgba(180, 220, 255, 0.25)";
+      requestAnimationFrame(() => {
+        flashEl.style.transition = "opacity 0.35s ease";
+        flashEl.style.opacity = "0";
+      });
+      setTimeout(() => {
+        lightningGroup.clear();
+        boltLight.intensity = 0;
+      }, 180);
+    }
+
+    // Game state
+    let running = false;
+    let ended = false;
+    let passed = 0;
+    let timeLeft = DURATION;
+    let last = performance.now();
+    let lightningTimer = 1.2;
+    let velY = 0;
+    let grounded = true;
+    let jumpQueued = false;
+    let nextCheck = 0;
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return m + ":" + String(sec).padStart(2, "0");
+    }
+    function updateHUD() {
+      ringCountEl.textContent = passed + " / " + RING_GOAL;
+      timerEl.textContent = formatTime(Math.max(0, timeLeft));
+      timerStat.classList.toggle("warn", timeLeft <= 10 && running);
+    }
+
+    function resetGame() {
+      passed = 0;
+      timeLeft = DURATION;
+      ended = false;
+      velY = 0;
+      grounded = true;
+      jumpQueued = false;
+      nextCheck = 0;
+      player.position.set(0, PATH_Y + 0.5, 2);
+      rings.forEach((r) => {
+        r.userData.passed = false;
+        r.visible = true;
+        r.scale.setScalar(1);
+        r.children[0].material.emissiveIntensity = 0.85;
+      });
+      updateHUD();
+    }
+
+    function ringFlash() {
+      flashEl.style.transition = "none";
+      flashEl.style.opacity = "0.35";
+      flashEl.style.background = "rgba(232, 197, 106, 0.4)";
+      requestAnimationFrame(() => {
+        flashEl.style.transition = "opacity 0.3s ease";
+        flashEl.style.opacity = "0";
+      });
+      bloom.strength = 0.9;
+      setTimeout(() => { bloom.strength = 0.55; }, 160);
+    }
+
+    function endGame(win) {
+      if (ended) return;
+      ended = true;
+      running = false;
+      hud.hidden = true;
+      document.getElementById("endTitle").textContent = win ? "Path held" : "Storm claims the path";
+      document.getElementById("endMsg").textContent = win
+        ? "Every rune ring answered. The lightning sea yields. Resonance flows."
+        : "A ring was missed — the storm swallowed the path. Leap again, Pack Guardian.";
+      document.getElementById("endRings").textContent = passed + " / " + RING_GOAL;
+      document.getElementById("endTime").textContent = formatTime(Math.max(0, timeLeft));
+      endOverlay.classList.add("show");
+      if (win) sfxWin(); else sfxLose();
+      try {
+        window.parent.postMessage({
+          type: "citadel-play-result",
+          game: "rune-ring-leap",
+          win,
+          rings: passed,
+          goal: RING_GOAL,
+          timeLeft,
+        }, "*");
+      } catch (_) {}
+    }
+
+    function startGame() {
+      ensureAudio();
+      resetGame();
+      startOverlay.classList.remove("show");
+      endOverlay.classList.remove("show");
+      hud.hidden = false;
+      running = true;
+      last = performance.now();
+    }
+
+    function queueJump() {
+      if (!running || ended) return;
+      jumpQueued = true;
+    }
+
+    function doJump() {
+      if (!running || ended) return;
+      if (grounded || player.position.y < PATH_Y + 2.8) {
+        // allow slight mid-air hop only if not too high — keep tight
+        if (grounded || velY < 2) {
+          velY = JUMP_V * (grounded ? 1 : 0.55);
+          grounded = false;
+          sfxJump();
+        }
+      }
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW") {
+        e.preventDefault();
+        if (running) queueJump();
+      }
+    });
+    window.addEventListener("pointerdown", (e) => {
+      if (e.target.closest("button")) return;
+      if (running) queueJump();
+    });
+
+    function checkRings() {
+      const pz = player.position.z;
+      const px = player.position.x;
+      const py = player.position.y;
+      for (let i = nextCheck; i < rings.length; i++) {
+        const r = rings[i];
+        if (r.userData.passed) continue;
+        const rz = r.position.z;
+        // approaching from behind (player z decreases as we run forward? 
+        // We run negative Z, so player.z goes down. Ring is at more negative z.
+        // When player.z becomes less than ring.z (passed through plane)...
+        if (pz > rz + 0.6) break; // still before this ring
+        if (pz <= rz + 0.55 && pz >= rz - 1.2) {
+          // near plane — check radial distance from ring center in XY
+          const dx = px - r.position.x;
+          const dy = py - r.position.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist <= r.userData.radius * 0.92) {
+            r.userData.passed = true;
+            passed += 1;
+            nextCheck = i + 1;
+            sfxPass();
+            ringFlash();
+            r.scale.setScalar(1.25);
+            r.children[0].material.emissiveIntensity = 1.4;
+            setTimeout(() => {
+              r.scale.setScalar(1);
+              r.children[0].material.emissiveIntensity = 0.35;
+            }, 200);
+            updateHUD();
+            if (passed >= RING_GOAL) endGame(true);
+          } else if (pz < rz - 0.35) {
+            // missed — past the ring without being inside
+            endGame(false);
+            return;
+          }
+        } else if (pz < rz - 1.2 && !r.userData.passed) {
+          endGame(false);
+          return;
+        }
+      }
+    }
+
+    function tick(now) {
+      requestAnimationFrame(tick);
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      const t = now * 0.001;
+
+      // Animate sea
+      const pos = sea.geometry.attributes.position.array;
+      for (let i = 0; i < pos.length; i += 3) {
+        const x = seaBase[i];
+        const z = seaBase[i + 2];
+        pos[i + 1] = seaBase[i + 1]
+          + Math.sin(x * 0.35 + t * 2.2) * 0.35
+          + Math.cos(z * 0.28 + t * 1.6) * 0.28
+          + Math.sin((x + z) * 0.2 + t * 3) * 0.15;
+      }
+      sea.geometry.attributes.position.needsUpdate = true;
+      sea.geometry.computeVertexNormals();
+
+      // Ring float / spin
+      rings.forEach((r) => {
+        if (r.userData.passed) return;
+        r.position.y = r.userData.baseY + Math.sin(t * 1.8 + r.userData.phase) * 0.18;
+        r.rotation.z = t * 0.6 + r.userData.phase;
+        r.children[1].rotation.z = -t * 0.9;
+      });
+
+      // Sparks drift
+      const sp = sparks.geometry.attributes.position.array;
+      for (let i = 0; i < sparkN; i++) {
+        sp[i * 3 + 2] += dt * 12;
+        if (sp[i * 3 + 2] > player.position.z + 10) {
+          sp[i * 3] = (Math.random() - 0.5) * 30;
+          sp[i * 3 + 1] = Math.random() * 12;
+          sp[i * 3 + 2] = player.position.z - 20 - Math.random() * 100;
+        }
+      }
+      sparks.geometry.attributes.position.needsUpdate = true;
+
+      stormLight.position.z = player.position.z - 25;
+      stormLight.intensity = 0.9 + Math.sin(t * 3) * 0.3;
+
+      if (!running) {
+        // Idle orbit
+        camera.position.x = Math.sin(t * 0.3) * 2;
+        camera.position.y = 4 + Math.sin(t * 0.4) * 0.4;
+        camera.position.z = 10 + Math.sin(t * 0.2) * 0.5;
+        camera.lookAt(0, 2.5, -12);
+        player.position.y = PATH_Y + 0.5 + Math.sin(t * 2) * 0.15;
+        composer.render();
+        return;
+      }
+
+      timeLeft -= dt;
+      if (timeLeft <= 0) {
+        timeLeft = 0;
+        updateHUD();
+        endGame(false);
+        composer.render();
+        return;
+      }
+      if (Math.floor(timeLeft) !== Math.floor(timeLeft + dt)) updateHUD();
+
+      if (jumpQueued) {
+        jumpQueued = false;
+        doJump();
+      }
+
+      // Forward run
+      player.position.z -= RUN_SPEED * dt;
+      // Slight lateral drift toward next ring for assist feel
+      const next = rings.find((r) => !r.userData.passed);
+      if (next) {
+        player.position.x = THREE.MathUtils.damp(player.position.x, next.position.x * 0.55, 2.5, dt);
+      }
+
+      // Gravity
+      velY += GRAVITY * dt;
+      player.position.y += velY * dt;
+      const floorY = PATH_Y + 0.5;
+      if (player.position.y <= floorY) {
+        player.position.y = floorY;
+        velY = 0;
+        grounded = true;
+      } else {
+        grounded = false;
+      }
+
+      // Fall into sea
+      if (player.position.y < SEA_Y + 1.2) {
+        endGame(false);
+        composer.render();
+        return;
+      }
+
+      checkRings();
+
+      // Trail
+      trailPos[trailI * 3] = player.position.x + (Math.random() - 0.5) * 0.15;
+      trailPos[trailI * 3 + 1] = player.position.y + (Math.random() - 0.5) * 0.15;
+      trailPos[trailI * 3 + 2] = player.position.z + 0.3;
+      trailI = (trailI + 1) % trailN;
+      trail.geometry.attributes.position.needsUpdate = true;
+
+      // Camera chase
+      const targetCam = new THREE.Vector3(
+        player.position.x * 0.35,
+        player.position.y + 2.8,
+        player.position.z + 7.5
+      );
+      camera.position.lerp(targetCam, 1 - Math.exp(-6 * dt));
+      camera.lookAt(player.position.x, player.position.y + 0.6, player.position.z - 8);
+
+      lightningTimer -= dt;
+      if (lightningTimer <= 0) {
+        spawnLightning();
+        lightningTimer = 1.4 + Math.random() * 2.2;
+      }
+
+      bloom.strength = THREE.MathUtils.damp(bloom.strength, 0.55, 4, dt);
+      composer.render();
+    }
+
+    function onResize() {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+      composer.setSize(innerWidth, innerHeight);
+      bloom.setSize(innerWidth, innerHeight);
+    }
+    window.addEventListener("resize", onResize);
+
+    document.getElementById("btnStart").onclick = startGame;
+    document.getElementById("btnRetry").onclick = startGame;
+    function goBack() {
+      try { window.parent.postMessage({ type: "citadel-play-close" }, "*"); } catch (_) {}
+    }
+    document.getElementById("btnBack").onclick = goBack;
+    document.getElementById("btnBack2").onclick = goBack;
+
+    if (new URLSearchParams(location.search).get("autostart") === "1") {
+      setTimeout(startGame, 280);
+    }
+
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>

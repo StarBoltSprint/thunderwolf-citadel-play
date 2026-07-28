@@ -1936,11 +1936,71 @@
       width: min(960px, 100%);
       max-height: min(96vh, 900px);
     }
+    .play-modal .modal.play-wide.play-external {
+      width: min(1100px, 100%);
+      max-height: min(96vh, 940px);
+    }
     .play-modal .modal.play-wide .play-stage {
       min-height: 0;
       border: none;
       background: transparent;
       margin-bottom: 0.5rem;
+    }
+    .play-modal .modal.play-external .play-stage {
+      min-height: min(72vh, 680px);
+      display: flex;
+      flex-direction: column;
+      background: #02040c;
+    }
+    .external-gate-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.55rem 0.75rem;
+      background: linear-gradient(180deg, rgba(12, 20, 40, 0.98), rgba(8, 14, 28, 0.95));
+      border-bottom: 1px solid rgba(46, 230, 255, 0.2);
+      z-index: 2;
+    }
+    .external-gate-bar p {
+      margin: 0;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+    .external-gate-bar kbd {
+      font-size: 0.68rem;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      border: 1px solid rgba(46, 230, 255, 0.3);
+      color: var(--cyan-soft);
+      background: rgba(0, 0, 0, 0.35);
+    }
+    .external-gate-bar .btn-gate-back {
+      flex-shrink: 0;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.35);
+      background: rgba(46, 230, 255, 0.12);
+      color: var(--cyan-soft);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .external-gate-bar .btn-gate-back:hover {
+      background: rgba(46, 230, 255, 0.22);
+      color: var(--text);
+    }
+    .external-gate-frame {
+      flex: 1;
+      width: 100%;
+      min-height: min(64vh, 620px);
+      border: 0;
+      background: #02040c;
+      display: block;
     }
     .play-stage {
       border-radius: 14px;
@@ -2341,7 +2401,7 @@
     /* ── Join The Pack (compact pump.fun-style auth) ── */
     .join-modal {
       width: min(380px, 100%);
-      max-height: min(90vh, 640px);
+      max-height: min(90vh, 480px);
       padding: 1.35rem 1.25rem 1.15rem;
       border-radius: 20px;
       border: 1px solid rgba(46, 230, 255, 0.16);
@@ -2432,119 +2492,40 @@
       font-size: 1rem;
       line-height: 1;
     }
-    .join-socials {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-    .join-social {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.72rem 0.4rem;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(0, 0, 0, 0.35);
-      color: var(--text);
-      font-size: 1.05rem;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      text-decoration: none;
-    }
-    .join-social:hover {
-      border-color: rgba(46, 230, 255, 0.3);
-      background: rgba(46, 230, 255, 0.08);
-    }
-    .join-email-row {
-      display: flex;
-      gap: 0.45rem;
-      margin-bottom: 0.95rem;
-    }
-    .join-email-row input {
-      flex: 1;
-      min-width: 0;
-      font-family: inherit;
-      font-size: 0.88rem;
-      color: var(--text);
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(46, 230, 255, 0.12);
-      border-radius: 12px;
-      padding: 0.72rem 0.85rem;
-      outline: none;
-    }
-    .join-email-row input:focus {
-      border-color: rgba(46, 230, 255, 0.4);
-      box-shadow: 0 0 0 3px rgba(46, 230, 255, 0.1);
-    }
-    .join-email-row button {
-      width: 46px;
-      flex-shrink: 0;
-      border-radius: 12px;
-      border: 1px solid rgba(46, 230, 255, 0.2);
-      background: rgba(46, 230, 255, 0.12);
-      color: var(--cyan-soft);
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .join-email-row button:hover {
-      background: rgba(46, 230, 255, 0.22);
-    }
-    .join-divider {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      margin: 0.15rem 0 0.85rem;
-      color: var(--text-dim);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-    .join-divider::before,
-    .join-divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-    .join-wallet {
+    .join-secondary {
       width: 100%;
       display: flex;
       align-items: center;
-      gap: 0.7rem;
-      padding: 0.75rem 0.9rem;
-      margin-bottom: 0.45rem;
+      justify-content: center;
+      gap: 0.55rem;
+      padding: 0.78rem 1rem;
       border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(0, 0, 0, 0.32);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.35);
       color: var(--text);
       font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.92rem;
+      font-weight: 700;
       cursor: pointer;
-      text-align: left;
-      transition: border-color 0.15s, background 0.15s;
-      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s, transform 0.12s;
+      margin-bottom: 0.35rem;
     }
-    .join-wallet:hover {
-      border-color: rgba(46, 230, 255, 0.28);
-      background: rgba(46, 230, 255, 0.07);
+    .join-secondary:hover {
+      border-color: rgba(46, 230, 255, 0.35);
+      background: rgba(46, 230, 255, 0.08);
+      transform: translateY(-1px);
     }
-    .join-wallet .w-ico {
-      width: 1.5rem;
-      height: 1.5rem;
-      border-radius: 8px;
+    .join-secondary .g-ico {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 50%;
       display: grid;
       place-items: center;
+      font-weight: 800;
       font-size: 0.85rem;
-      flex-shrink: 0;
-      background: rgba(255, 255, 255, 0.06);
-    }
-    .join-wallet .w-chev {
-      margin-left: auto;
-      color: var(--text-dim);
-      font-size: 0.95rem;
+      background: #fff;
+      color: #4285f4;
+      line-height: 1;
     }
     .join-toast {
       margin-top: 0.65rem;
@@ -3582,7 +3563,7 @@
       <h2 id="joinTitle">Welcome to the Pack</h2>
       <p class="join-sub">Sign in to join the Pack.</p>
 
-      <!-- X first (as requested) -->
+      <!-- Sign-in: X + Google only (wallets paused) -->
       <a
         class="join-primary"
         id="joinX"
@@ -3594,31 +3575,9 @@
         <span>Continue with X</span>
       </a>
 
-      <div class="join-socials">
-        <button type="button" class="join-social" id="joinGoogle" title="Continue with Google" aria-label="Continue with Google">G</button>
-        <button type="button" class="join-social" id="joinApple" title="Continue with Apple" aria-label="Continue with Apple">A</button>
-        <button type="button" class="join-social" id="joinGrok" title="Continue with Grok" aria-label="Continue with Grok">✦</button>
-      </div>
-
-      <div class="join-email-row">
-        <input type="email" id="joinEmail" placeholder="you@example.com" autocomplete="email" aria-label="Email" />
-        <button type="button" id="joinEmailGo" aria-label="Continue with email">→</button>
-      </div>
-
-      <div class="join-divider">or connect a wallet</div>
-
-      <button type="button" class="join-wallet" id="joinPhantom">
-        <span class="w-ico" aria-hidden="true">◈</span>
-        <span>Phantom</span>
-      </button>
-      <button type="button" class="join-wallet" id="joinCoinbase">
-        <span class="w-ico" aria-hidden="true">◉</span>
-        <span>Coinbase Wallet</span>
-      </button>
-      <button type="button" class="join-wallet" id="joinMoreWallets">
-        <span class="w-ico" aria-hidden="true">☰</span>
-        <span>More wallets</span>
-        <span class="w-chev" aria-hidden="true">›</span>
+      <button type="button" class="join-secondary" id="joinGoogle">
+        <span class="g-ico" aria-hidden="true">G</span>
+        <span>Continue with Google</span>
       </button>
 
       <p class="join-toast" id="joinToast" role="status"></p>
@@ -3793,6 +3752,18 @@
       storyShatter: "covers/story-core-shatter.jpg",
       storyDeep: "covers/story-deep-current.jpg",
       storyDawn: "covers/story-dawn-battlements.jpg",
+      storyAsteroid: "covers/story-asteroid-sprint.jpg",
+      storyForest: "covers/story-forest-sprint.jpg",
+      storyBlackHole: "covers/story-black-hole.jpg",
+      storyNebulaSprint: "covers/story-nebula-sprint.jpg",
+      storyTreatNebula: "covers/story-treat-nebula.jpg",
+      storyLaika: "covers/story-laika-icecream.jpg",
+      storyCitadelGate: "covers/story-citadel-gate.jpg",
+      storyEchoesFirstHowl: "covers/story-echoes-first-howl.jpg",
+      storyStarCoreSilence: "covers/story-star-core-silence.jpg",
+      storyLaikaLastTrail: "covers/story-laika-last-trail.jpg",
+      storyUnclaimedLightning: "covers/story-unclaimed-lightning.jpg",
+      storyPackAcrossVoid: "covers/story-pack-across-void.jpg",
     };
 
     const SEED = [
@@ -3834,7 +3805,7 @@
         image: COVER.howl,
         resonance: 99,
         howls: 420,
-        featured: true,
+        featured: false,
         canon: "official",
         createdAt: Date.now() - 1000 * 60 * 60 * 30,
       },
@@ -4240,6 +4211,192 @@
         canon: "semi-canon",
         createdAt: Date.now() - 1000 * 60 * 45,
       },
+      {
+        id: "vid-13",
+        title: "Asteroid Field Sprint",
+        type: "bolt-story",
+        description: "Bolt Echo: Bolt sprints full-speed through a dense asteroid field — cyan lightning carving the void, rocks spinning past, pure zero-G momentum.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: COVER.storyAsteroid,
+        video: "videos/story-asteroid-sprint.mp4",
+        storyLine: "Rocks shatter. Bolt does not. Momentum is the only map.",
+        resonance: 98,
+        howls: 61,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 12,
+      },
+      {
+        id: "vid-14",
+        title: "Luxuriant Forest Sprint",
+        type: "bolt-story",
+        description: "Bolt Echo: Bolt races a luxuriant epic forest — ancient roots, bioluminescent moss, gold light shafts, pure living speed between the trees.",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: COVER.storyForest,
+        video: "videos/story-forest-sprint.mp4",
+        storyLine: "Even roots step aside for pure Bolt momentum.",
+        resonance: 89,
+        howls: 54,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 18,
+      },
+      {
+        id: "vid-15",
+        title: "Bolt vs the Black Hole",
+        type: "bolt-story",
+        description: "Bolt Echo: Bolt faces a massive black hole — cyan-gold-violet accretion roaring around the void — and still chooses to stand (and sprint) closer.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: COVER.storyBlackHole,
+        video: "",
+        storyLine: "Gravity demands surrender. Bolt answers with a howl.",
+        resonance: 97,
+        howls: 134,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 8,
+      },
+      {
+        id: "vid-16",
+        title: "Nebula Sprint",
+        type: "bolt-story",
+        description: "Bolt Echo: Bolt sprints a beautiful nebula of pink, cyan, and gold — starlight trails like laughter through living color clouds.",
+        creator: "Storm Choir",
+        link: "",
+        image: COVER.storyNebulaSprint,
+        video: "",
+        storyLine: "Color is just light learning to run.",
+        resonance: 91,
+        howls: 70,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 22,
+      },
+      {
+        id: "vid-17",
+        title: "Floating Treat Nebula",
+        type: "bolt-story",
+        description: "Bolt Echo: Bolt hits a Floating Treat Nebula — soft pink-gold-violet cloud of Comet Crunchies, Nebula Nibbles, Asteroid Biscuits, Solar Flare Strips, Mooncheese Cubes, and golden kibble. Sugar Turbo boost mid-sprint; a rare Star Core Truffle may hide at the center.",
+        creator: "Pack Pup · Riven",
+        link: "",
+        image: COVER.storyTreatNebula,
+        video: "",
+        storyLine: "Joy from a thousand finished sprints drifts together — the universe rewards pure, playful momentum.",
+        resonance: 95,
+        howls: 188,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 5,
+      },
+      {
+        id: "vid-18",
+        title: "Laika’s Ice Cream",
+        type: "bolt-story",
+        description: "Bolt Echo: Bolt faces the Pack’s most legendary treat — a floating scoop of Laika’s Ice Cream from the Ice Cream Planet. Cold starlight vanilla, Happy Orbit bounce trails, a quiet blessing from the first space dog herself.",
+        creator: "Citadel Official",
+        link: "",
+        image: COVER.storyLaika,
+        video: "videos/story-laika-icecream.mp4",
+        storyLine: "As long as Laika’s Ice Cream exists, the bond between dogs and the stars can never be broken.",
+        resonance: 99,
+        howls: 420,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 3,
+      },
+      {
+        id: "vid-19",
+        title: "Citadel Gate",
+        type: "story-branch",
+        description: "Bolt stands before a sealed glowing crystal door inside the Thunderwolf Citadel. The Pack waits. Choose one way to pass — force, patience, or resonance.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://rose-pilot-ivory-tango.grok.me",
+        image: COVER.storyCitadelGate,
+        storyLine: "Every gate asks the same question: who are you when the door will not open?",
+        resonance: 96,
+        howls: 140,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 2,
+      },
+      {
+        id: "vid-20",
+        title: "Echoes of the First Howl",
+        type: "story-branch",
+        description: "Bolt hears an ancient Pack howl in the Citadel vaults. Spectral voices circle him in cyan-gold light. Choose who it belonged to — and whether their name should be spoken aloud.",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: COVER.storyEchoesFirstHowl,
+        storyLine: "Some howls are maps. Some are graves. All of them still answer.",
+        resonance: 94,
+        howls: 118,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 4,
+      },
+      {
+        id: "vid-21",
+        title: "Star Core Silence",
+        type: "story-branch",
+        description: "The Star Core goes quiet for one night. Only a faint pulse remains. Bolt decides how to wake it — or whether to wait until the silence finishes its work.",
+        creator: "Citadel Official",
+        link: "",
+        image: COVER.storyStarCoreSilence,
+        storyLine: "Silence is not absence. Sometimes the Core is listening harder than it shines.",
+        resonance: 97,
+        howls: 165,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 6,
+      },
+      {
+        id: "vid-22",
+        title: "Laika’s Last Trail",
+        type: "story-branch",
+        description: "A trail of ice-cream stardust scoops leads Bolt to a warm memory of Laika. Choose what to keep — the sweetness, the mission, or the quiet blessing of the first space dog.",
+        creator: "Pack Pup · Riven",
+        link: "",
+        image: COVER.storyLaikaLastTrail,
+        storyLine: "Memory is a trail. What you carry back becomes the next generation’s starlight.",
+        resonance: 98,
+        howls: 210,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 1,
+      },
+      {
+        id: "vid-23",
+        title: "The Unclaimed Lightning",
+        type: "story-branch",
+        description: "A wild bolt of free lightning — shaped like a living spirit — hunts Bolt through the crystal halls. Befriend it, cage it, or set it free. Every choice rewrites the storm.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: COVER.storyUnclaimedLightning,
+        storyLine: "Lightning that chooses you is not a weapon. It is a Pack-mate waiting for a name.",
+        resonance: 93,
+        howls: 102,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 7,
+      },
+      {
+        id: "vid-24",
+        title: "Pack Across the Void",
+        type: "story-branch",
+        description: "A lost Pack member signals from far space. Bolt stands at the cliff of the void and chooses speed, caution, or sacrifice to reach them across the dark.",
+        creator: "Storm Choir",
+        link: "",
+        image: COVER.storyPackAcrossVoid,
+        storyLine: "Distance is only real if the Pack stops answering. Bolt answers.",
+        resonance: 95,
+        howls: 154,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 8,
+      },
     ];
 
     let state = {
@@ -4367,7 +4524,10 @@
     function filtered() {
       let list = allItems();
       if (state.type !== "all") list = list.filter((i) => i.type === state.type);
-      if (state.sort === "featured") list = list.filter((i) => i.featured);
+      if (state.sort === "featured") {
+        const topIds = new Set(featuredItems().map((i) => i.id));
+        list = list.filter((i) => topIds.has(i.id));
+      }
       const q = state.query.trim().toLowerCase();
       if (q) {
         list = list.filter((i) => {
@@ -4388,8 +4548,18 @@
       return list;
     }
 
+    const MAX_FEATURED = 10;
+
+    /** Top featured creations only (Gallery of Echoes + Featured filter). Cap at MAX_FEATURED. */
     function featuredItems() {
-      return allItems().filter((i) => i.featured).sort((a, b) => b.resonance - a.resonance);
+      return allItems()
+        .filter((i) => i.featured)
+        .sort((a, b) => b.resonance - a.resonance || b.howls - a.howls || b.createdAt - a.createdAt)
+        .slice(0, MAX_FEATURED);
+    }
+
+    function isActivelyFeatured(item) {
+      return featuredItems().some((f) => f.id === item.id);
     }
 
     function mediaHtml(item) {
@@ -4416,7 +4586,7 @@
 
     function canonBadges(item) {
       let h = "";
-      if (item.featured || item.canon === "featured")
+      if (isActivelyFeatured(item))
         h += '<span class="badge badge-featured">Featured</span>';
       if (item.canon === "semi-canon")
         h += '<span class="badge badge-semi">Semi-Canon</span>';
@@ -4441,7 +4611,7 @@
       const week = Date.now() - 7 * 86400000;
       document.getElementById("statCount").textContent = all.length;
       document.getElementById("statNew").textContent = all.filter((i) => i.createdAt >= week).length;
-      document.getElementById("statFeatured").textContent = all.filter((i) => i.featured).length;
+      document.getElementById("statFeatured").textContent = featuredItems().length;
     }
 
     function updateEchoNav() {
@@ -4574,7 +4744,7 @@
 
       feed.innerHTML = list.map((item) => {
         return `
-          <article class="tile ${item.featured ? "is-featured" : ""}" data-id="${item.id}" role="listitem">
+          <article class="tile ${isActivelyFeatured(item) ? "is-featured" : ""}" data-id="${item.id}" role="listitem">
             <div class="tile-media">
               ${mediaHtml(item)}
               <div class="tile-badge-row">
@@ -4836,12 +5006,6 @@
         document.getElementById("playTitle").textContent = item.title;
         document.getElementById("playAgain").style.display = "none";
         const stage = document.getElementById("playStage");
-        const fileHint =
-          location.protocol === "file:"
-            ? `<p style="margin:0.5rem 0 0;font-size:0.72rem;color:#8b9bb8;text-align:center">
-                Opened from disk (file://). If plates look flat, run <code style="color:#7ef0ff">serve.bat</code> in the citadel folder and use http://localhost:8765
-               </p>`
-            : "";
         stage.innerHTML = `
           <iframe
             id="gameFrame"
@@ -4850,7 +5014,7 @@
             style="width:100%;height:min(72vh,640px);border:0;border-radius:14px;background:#02040c;display:block"
             allow="fullscreen; pointer-lock; gamepad"
             allowfullscreen
-          ></iframe>${fileHint}`;
+          ></iframe>`;
         document.getElementById("playModal").classList.add("open");
         // Enlarge play modal for 3D game
         document.querySelector("#playModal .modal")?.classList.add("play-wide");
@@ -4871,7 +5035,7 @@
       exitPlayFullscreen();
       const frame = document.getElementById("gameFrame");
       if (frame) frame.src = "about:blank";
-      document.querySelector("#playModal .modal")?.classList.remove("play-wide");
+      document.querySelector("#playModal .modal")?.classList.remove("play-wide", "play-external");
       document.getElementById("playModal").classList.remove("open");
       playState = null;
     }
@@ -5005,6 +5169,36 @@
     function startPlayExperience(item) {
       stopPlayTimers();
       document.getElementById("playAgain").style.display = "none";
+      // External story gate (e.g. Citadel Gate → Grok space)
+      // Stay on Citadel in an iframe so Leave / Esc return to the cards.
+      if (item.link && /^https?:\/\//i.test(item.link)) {
+        playState = { id: item.id, item, fullGame: true, external: true };
+        document.getElementById("playTitle").textContent = item.title;
+        document.getElementById("playAgain").style.display = "none";
+        const stage = document.getElementById("playStage");
+        stage.innerHTML = `
+          <div class="external-gate-bar">
+            <p><strong style="color:var(--text)">Inside the Gate</strong> · <kbd>Esc</kbd> or Back returns to your cards</p>
+            <button type="button" class="btn-gate-back" id="gateBackBtn">← Back to Citadel</button>
+          </div>
+          <iframe
+            id="gameFrame"
+            class="external-gate-frame"
+            src="${escapeAttr(item.link)}"
+            title="${escapeAttr(item.title)}"
+            allow="fullscreen; autoplay; clipboard-write"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>`;
+        document.getElementById("playModal").classList.add("open");
+        document.querySelector("#playModal .modal")?.classList.add("play-wide", "play-external");
+        document.getElementById("gateBackBtn")?.addEventListener("click", () => closePlay());
+        // After a short delay, try focus parent so Esc hits the Citadel listener
+        setTimeout(() => {
+          try { document.getElementById("gateBackBtn")?.focus(); } catch (_) {}
+        }, 400);
+        return;
+      }
       const t = item.type;
       if (t === "story-branch" || t === "codex") startStoryPlay(item);
       else if (t === "crystal-challenge") startCrystalPlay(item);
@@ -5441,49 +5635,6 @@
     document.getElementById("joinGoogle")?.addEventListener("click", () => {
       joinToast("Google sign-in coming soon — use Continue with X for now.");
     });
-    document.getElementById("joinApple")?.addEventListener("click", () => {
-      joinToast("Apple sign-in coming soon — use Continue with X for now.");
-    });
-    document.getElementById("joinGrok")?.addEventListener("click", () => {
-      window.open("https://x.com/grok", "_blank", "noopener");
-    });
-    document.getElementById("joinEmailGo")?.addEventListener("click", () => {
-      const email = document.getElementById("joinEmail")?.value?.trim();
-      if (!email || !email.includes("@")) {
-        joinToast("Enter a valid email, or Continue with X.");
-        return;
-      }
-      joinToast("Email magic link coming soon — use Continue with X for now.");
-    });
-    document.getElementById("joinEmail")?.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        document.getElementById("joinEmailGo")?.click();
-      }
-    });
-    async function tryPhantom() {
-      const provider = window.solana || window.phantom?.solana;
-      if (provider?.isPhantom) {
-        try {
-          await provider.connect();
-          joinToast("Phantom connected. Welcome to the Pack.");
-          return;
-        } catch (err) {
-          joinToast("Phantom connection cancelled.");
-          return;
-        }
-      }
-      window.open("https://phantom.app/", "_blank", "noopener");
-      joinToast("Install Phantom, then try again.");
-    }
-    document.getElementById("joinPhantom")?.addEventListener("click", tryPhantom);
-    document.getElementById("joinCoinbase")?.addEventListener("click", () => {
-      window.open("https://www.coinbase.com/wallet", "_blank", "noopener");
-      joinToast("Open Coinbase Wallet, then return to the Citadel.");
-    });
-    document.getElementById("joinMoreWallets")?.addEventListener("click", () => {
-      joinToast("More wallets soon — try Phantom or Continue with X.");
-    });
 
     // ── Left nav (pump.fun-style): Home · Creator Forges · Videos ──
     const NAV_VIEWS = new Set([
@@ -5685,12 +5836,15 @@
     });
     document.addEventListener("keydown", (e) => {
       // Escape: close modals, or clear search if focused
+      // Note: if focus is deep inside a cross-origin iframe, the browser may not
+      // deliver Esc here — use “Back to Citadel” on the gate bar in that case.
       if (e.key === "Escape") {
         const playOpen = document.getElementById("playModal").classList.contains("open");
         const joinOpen = document.getElementById("joinModal")?.classList.contains("open");
         const submitOpen = document.getElementById("submitModal").classList.contains("open");
         const detailOpen = document.getElementById("detailModal").classList.contains("open");
         if (playOpen) {
+          e.preventDefault();
           closePlay();
           return;
         }

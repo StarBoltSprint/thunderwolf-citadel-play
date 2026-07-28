@@ -153,7 +153,7 @@
       </div>
       <div class="stat cyan" id="timerStat">
         <label>Time</label>
-        <strong id="timer">1:00</strong>
+        <strong id="timer">1:30</strong>
       </div>
     </div>
     <div class="hint" id="hint">Space / click / tap to leap · stay in the gold rings</div>
@@ -164,12 +164,12 @@
       <h1>Rune Ring Leap</h1>
       <p>
         Leap through every <strong style="color:var(--gold-soft)">golden rune ring</strong> above the lightning sea.
-        Miss one — the storm swallows the path. Pure focus. Sixty seconds of courage.
+        Space / click to leap — the path pulls you toward each ring. Take your time and enjoy the storm.
       </p>
       <div class="meta">
-        <span>1:00 max</span>
+        <span>1:30 max</span>
         <span>12 rings</span>
-        <span>Mini-Quest</span>
+        <span>Easy mode</span>
       </div>
       <button class="btn" id="btnStart" type="button">Begin Leap</button>
       <button class="btn btn-ghost" id="btnBack" type="button">Back to Citadel</button>
@@ -197,12 +197,16 @@
     import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
     const RING_GOAL = 12;
-    const DURATION = 60;
-    const RUN_SPEED = 28;
-    const GRAVITY = -55;
-    const JUMP_V = 18;
+    const DURATION = 90;
+    const RUN_SPEED = 18;
+    const GRAVITY = -38;
+    const JUMP_V = 20;
     const SEA_Y = -2.2;
     const PATH_Y = 1.2;
+    // Forgiving hit window (visual ring can be smaller than pass radius)
+    const HIT_RADIUS_MUL = 1.45;
+    const RING_PASS_AHEAD = 1.1;
+    const RING_PASS_BEHIND = 1.8;
 
     const canvas = document.getElementById("c");
     const hud = document.getElementById("hud");
@@ -257,174 +261,530 @@
     renderer.setSize(innerWidth, innerHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.95;
+    renderer.toneMappingExposure = 1.0;
+    renderer.shadowMap.enabled = false;
 
     const scene = new THREE.Scene();
-    const BG = new THREE.Color(0x060a14);
-    scene.background = BG.clone();
-    scene.fog = new THREE.FogExp2(0x0a1428, 0.018);
+    scene.background = new THREE.Color(0x050b18);
+    scene.fog = new THREE.FogExp2(0x0c1a32, 0.010);
 
-    const camera = new THREE.PerspectiveCamera(68, innerWidth / innerHeight, 0.1, 400);
-    camera.position.set(0, 4.5, 8);
+    const camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.1, 450);
+    camera.position.set(0, 4.2, 8);
 
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.55, 0.5, 0.4);
+    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.38, 0.45, 0.5);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
+    const BLOOM_IDLE = 0.38;
 
-    scene.add(new THREE.AmbientLight(0x1a2840, 0.55));
-    scene.add(new THREE.HemisphereLight(0x4a70a0, 0x080c18, 0.55));
-    const key = new THREE.DirectionalLight(0xffe6a8, 0.85);
-    key.position.set(6, 18, 4);
+    // ── Lighting: brighter key so platforms/Bolt read without textures ──
+    scene.add(new THREE.AmbientLight(0x2a4060, 0.55));
+    scene.add(new THREE.HemisphereLight(0x88b0e0, 0x0a1428, 0.85));
+    const key = new THREE.DirectionalLight(0xfff0cc, 1.35);
+    key.position.set(10, 24, 8);
     scene.add(key);
-    const stormLight = new THREE.PointLight(0x2ee6ff, 1.2, 80);
-    stormLight.position.set(0, 8, -20);
+    const fill = new THREE.DirectionalLight(0x4af0ff, 0.45);
+    fill.position.set(-12, 8, -6);
+    scene.add(fill);
+    const rimLight = new THREE.DirectionalLight(0xe8c56a, 0.35);
+    rimLight.position.set(0, 4, 12);
+    scene.add(rimLight);
+    const stormLight = new THREE.PointLight(0x4af0ff, 2.0, 90, 1.6);
+    stormLight.position.set(0, 10, -20);
     scene.add(stormLight);
-    const boltLight = new THREE.PointLight(0xdff6ff, 0, 100);
+    const goldWash = new THREE.PointLight(0xe8c56a, 0.85, 70, 1.8);
+    goldWash.position.set(0, 6, -5);
+    scene.add(goldWash);
+    const boltLight = new THREE.PointLight(0xdff6ff, 0, 120);
     scene.add(boltLight);
 
     const world = new THREE.Group();
     scene.add(world);
 
+    // ── Texture plates (file:// safe, same as Storm Corridor) ──
+    function prepTex(tex, repeat = 2, isEmissive = false) {
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(repeat, repeat);
+      tex.colorSpace = isEmissive ? THREE.NoColorSpace : THREE.SRGBColorSpace;
+      tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy?.() || 4);
+      tex.needsUpdate = true;
+      return tex;
+    }
+    function loadLocalPlate(relPath, repeat, isEmissive = false) {
+      const tex = new THREE.Texture();
+      prepTex(tex, repeat, isEmissive);
+      const ph = document.createElement("canvas");
+      ph.width = ph.height = 8;
+      const ctx = ph.getContext("2d");
+      ctx.fillStyle = isEmissive ? "#041018" : "#0c2848";
+      ctx.fillRect(0, 0, 8, 8);
+      tex.image = ph;
+      tex.needsUpdate = true;
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = () => { tex.image = img; tex.needsUpdate = true; };
+      try { img.src = new URL(relPath, import.meta.url).href; }
+      catch { img.src = relPath; }
+      return tex;
+    }
+    const floorMap = loadLocalPlate("textures/floor-boltverse.jpg", 2.2);
+    const wallEmissive = loadLocalPlate("textures/emissive-energy.jpg", 1.6, true);
+
+    // Soft radial glow sprite for rings / player
+    function makeGlowTex(inner = "#fff6c8", mid = "#e8c56a", outer = "#000000") {
+      const c = document.createElement("canvas");
+      c.width = c.height = 128;
+      const g = c.getContext("2d");
+      const grd = g.createRadialGradient(64, 64, 4, 64, 64, 64);
+      grd.addColorStop(0, inner);
+      grd.addColorStop(0.35, mid);
+      grd.addColorStop(1, outer);
+      g.fillStyle = grd;
+      g.fillRect(0, 0, 128, 128);
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+    const glowGoldTex = makeGlowTex("#fff8dc", "#e8c56a", "rgba(0,0,0,0)");
+    const glowCyanTex = makeGlowTex("#e8ffff", "#2ee6ff", "rgba(0,0,0,0)");
+
+    // ── Gradient sky dome (deep night → warm storm horizon) ──
+    {
+      const skyGeo = new THREE.SphereGeometry(200, 32, 24);
+      const skyCols = new Float32Array(skyGeo.attributes.position.count * 3);
+      const pos = skyGeo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const y = pos.getY(i) / 200; // -1..1
+        const t = THREE.MathUtils.clamp((y + 0.15) / 1.1, 0, 1);
+        // horizon gold-cyan → zenith deep navy
+        const r = 0.02 + (1 - t) * 0.12 + (1 - t) * (1 - t) * 0.08;
+        const g = 0.04 + (1 - t) * 0.18;
+        const b = 0.08 + (1 - t) * 0.22 + t * 0.06;
+        skyCols[i * 3] = r;
+        skyCols[i * 3 + 1] = g;
+        skyCols[i * 3 + 2] = b + t * 0.05;
+      }
+      skyGeo.setAttribute("color", new THREE.BufferAttribute(skyCols, 3));
+      const sky = new THREE.Mesh(
+        skyGeo,
+        new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false })
+      );
+      sky.position.y = 10;
+      world.add(sky);
+    }
+
+    // Starfield
+    {
+      const n = 1100;
+      const pos = new Float32Array(n * 3);
+      const col = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) {
+        const r = 90 + Math.random() * 100;
+        const th = Math.random() * Math.PI * 2;
+        const ph = Math.acos(Math.random() * 0.88);
+        pos[i * 3] = r * Math.sin(ph) * Math.cos(th);
+        pos[i * 3 + 1] = Math.abs(r * Math.cos(ph)) + 6;
+        pos[i * 3 + 2] = r * Math.sin(ph) * Math.sin(th) - 40;
+        const warm = Math.random() > 0.72;
+        col[i * 3] = warm ? 1 : 0.75 + Math.random() * 0.25;
+        col[i * 3 + 1] = warm ? 0.92 : 0.88 + Math.random() * 0.12;
+        col[i * 3 + 2] = warm ? 0.7 : 1;
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+      geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+      world.add(new THREE.Points(geo, new THREE.PointsMaterial({
+        size: 0.4, vertexColors: true, transparent: true, opacity: 0.95,
+        blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true, fog: false,
+      })));
+    }
+
+    // Layered nebula / aurora sheets
+    const aurora = new THREE.Mesh(
+      new THREE.PlaneGeometry(200, 50),
+      new THREE.MeshBasicMaterial({
+        color: 0x2a90c8,
+        transparent: true,
+        opacity: 0.14,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        fog: false,
+      })
+    );
+    aurora.position.set(0, 16, -95);
+    aurora.rotation.x = -0.12;
+    world.add(aurora);
+    const auroraGold = aurora.clone();
+    auroraGold.material = aurora.material.clone();
+    auroraGold.material.color.set(0xc9a44a);
+    auroraGold.material.opacity = 0.09;
+    auroraGold.position.set(8, 11, -75);
+    auroraGold.rotation.z = 0.08;
+    world.add(auroraGold);
+    const auroraViolet = aurora.clone();
+    auroraViolet.material = aurora.material.clone();
+    auroraViolet.material.color.set(0x8860c8);
+    auroraViolet.material.opacity = 0.07;
+    auroraViolet.position.set(-12, 18, -110);
+    world.add(auroraViolet);
+
     // ── Lightning sea ──
-    const seaGeo = new THREE.PlaneGeometry(120, 200, 80, 100);
+    const seaGeo = new THREE.PlaneGeometry(140, 220, 96, 120);
     seaGeo.rotateX(-Math.PI / 2);
     const seaMat = new THREE.MeshStandardMaterial({
-      color: 0x061428,
-      emissive: 0x0891b2,
-      emissiveIntensity: 0.35,
-      metalness: 0.85,
-      roughness: 0.25,
-      flatShading: true,
+      color: 0x062838,
+      emissive: 0x0c7a9a,
+      emissiveMap: wallEmissive,
+      emissiveIntensity: 0.65,
+      metalness: 0.88,
+      roughness: 0.22,
+      flatShading: false,
     });
     const sea = new THREE.Mesh(seaGeo, seaMat);
     sea.position.set(0, SEA_Y, -70);
     world.add(sea);
     const seaBase = seaGeo.attributes.position.array.slice();
 
-    // Glow sheet under path
+    // Dual energy sheets — cyan + gold veins
     const glowSea = new THREE.Mesh(
-      new THREE.PlaneGeometry(40, 160),
+      new THREE.PlaneGeometry(55, 180),
       new THREE.MeshBasicMaterial({
-        color: 0x0ea5c9,
+        color: 0x2ee6ff,
         transparent: true,
-        opacity: 0.08,
+        opacity: 0.09,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       })
     );
     glowSea.rotation.x = -Math.PI / 2;
-    glowSea.position.set(0, SEA_Y + 0.15, -60);
+    glowSea.position.set(0, SEA_Y + 0.2, -60);
     world.add(glowSea);
 
-    // Storm clouds
-    for (let i = 0; i < 18; i++) {
-      const cloud = new THREE.Mesh(
-        new THREE.SphereGeometry(4 + Math.random() * 6, 12, 10),
-        new THREE.MeshBasicMaterial({
-          color: i % 3 === 0 ? 0x1a2848 : 0x12182a,
-          transparent: true,
-          opacity: 0.18 + Math.random() * 0.12,
-          depthWrite: false,
-        })
-      );
+    // Gold path reflection strip under rings
+    const pathGlow = new THREE.Mesh(
+      new THREE.PlaneGeometry(7, 150),
+      new THREE.MeshBasicMaterial({
+        color: 0xe8c56a,
+        transparent: true,
+        opacity: 0.14,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    pathGlow.rotation.x = -Math.PI / 2;
+    pathGlow.position.set(0, SEA_Y + 0.28, -55);
+    world.add(pathGlow);
+
+    // Soft storm clouds (layered puffs)
+    const cloudMatA = new THREE.MeshBasicMaterial({
+      color: 0x1a2848, transparent: true, opacity: 0.22, depthWrite: false,
+    });
+    const cloudMatB = new THREE.MeshBasicMaterial({
+      color: 0x0e1830, transparent: true, opacity: 0.16, depthWrite: false,
+    });
+    for (let i = 0; i < 22; i++) {
+      const cloud = new THREE.Group();
+      const nPuffs = 3 + (i % 3);
+      for (let p = 0; p < nPuffs; p++) {
+        const puff = new THREE.Mesh(
+          new THREE.SphereGeometry(2.2 + Math.random() * 3.5, 10, 8),
+          i % 2 ? cloudMatA : cloudMatB
+        );
+        puff.position.set((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 1.2, (Math.random() - 0.5) * 3);
+        puff.scale.set(1.2 + Math.random(), 0.35 + Math.random() * 0.25, 1 + Math.random());
+        cloud.add(puff);
+      }
       cloud.position.set(
-        (Math.random() - 0.5) * 60,
-        10 + Math.random() * 12,
-        -10 - Math.random() * 140
+        (Math.random() - 0.5) * 70,
+        11 + Math.random() * 14,
+        -8 - Math.random() * 150
       );
-      cloud.scale.set(1.4 + Math.random(), 0.45, 1 + Math.random());
+      cloud.userData.drift = 0.4 + Math.random() * 0.6;
+      cloud.userData.phase = Math.random() * Math.PI * 2;
       world.add(cloud);
     }
 
-    // Path fragments (broken platforms)
-    const pathGroup = new THREE.Group();
-    world.add(pathGroup);
-    const pathMat = new THREE.MeshStandardMaterial({
-      color: 0x1a2840,
-      emissive: 0x0a2038,
-      emissiveIntensity: 0.25,
-      metalness: 0.7,
-      roughness: 0.4,
-    });
-    for (let i = 0; i < 40; i++) {
-      const slab = new THREE.Mesh(
-        new THREE.BoxGeometry(2.2 + Math.random() * 1.2, 0.22, 1.6 + Math.random()),
-        pathMat
+    // Distant island silhouettes for depth
+    for (let i = 0; i < 8; i++) {
+      const isle = new THREE.Mesh(
+        new THREE.ConeGeometry(3 + Math.random() * 4, 2 + Math.random() * 3, 5),
+        new THREE.MeshStandardMaterial({
+          color: 0x060c18,
+          emissive: 0x0a2040,
+          emissiveIntensity: 0.15,
+          metalness: 0.4,
+          roughness: 0.9,
+          flatShading: true,
+        })
       );
-      slab.position.set(
-        (Math.random() - 0.5) * 1.2,
-        PATH_Y - 0.6 + Math.sin(i * 0.7) * 0.15,
-        -i * 5.5 - 2
+      isle.position.set(
+        (i % 2 ? 1 : -1) * (18 + Math.random() * 22),
+        SEA_Y + 0.5,
+        -30 - i * 16 - Math.random() * 10
       );
-      slab.rotation.y = (Math.random() - 0.5) * 0.2;
-      pathGroup.add(slab);
+      isle.rotation.y = Math.random() * Math.PI;
+      world.add(isle);
     }
 
-    // ── Rune rings ──
+    // Path fragments — textured crystal plates with edge glow
+    const pathGroup = new THREE.Group();
+    world.add(pathGroup);
+    // Bright crystal colors so path reads even if textures fail on file://
+    const pathMat = new THREE.MeshStandardMaterial({
+      color: 0x3a6a98,
+      map: floorMap,
+      emissive: 0x1a80b0,
+      emissiveMap: wallEmissive,
+      emissiveIntensity: 0.7,
+      metalness: 0.65,
+      roughness: 0.32,
+    });
+    const pathEdgeMat = new THREE.MeshBasicMaterial({
+      color: 0x2ee6ff,
+      transparent: true,
+      opacity: 0.55,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const pathGoldEdge = new THREE.MeshBasicMaterial({
+      color: 0xe8c56a,
+      transparent: true,
+      opacity: 0.5,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const pathTopMat = new THREE.MeshStandardMaterial({
+      color: 0x7eb8e8,
+      map: floorMap,
+      emissive: 0x2aa0c8,
+      emissiveMap: wallEmissive,
+      emissiveIntensity: 0.75,
+      metalness: 0.7,
+      roughness: 0.25,
+    });
+    for (let i = 0; i < 42; i++) {
+      const w = 2.5 + Math.random() * 1.3;
+      const d = 1.6 + Math.random() * 1.0;
+      const slabG = new THREE.Group();
+      // Crystal base
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(w, 0.2, d), pathMat);
+      slabG.add(slab);
+      // Raised top plate (reads as crystal, not flat box)
+      const top = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, 0.06, d * 0.88), pathTopMat);
+      top.position.y = 0.12;
+      slabG.add(top);
+      // Cyan rim
+      const rim = new THREE.Mesh(
+        new THREE.BoxGeometry(w + 0.1, 0.035, d + 0.1),
+        pathEdgeMat
+      );
+      rim.position.y = -0.06;
+      slabG.add(rim);
+      // Gold accent corners
+      for (const sx of [-1, 1]) {
+        for (const sz of [-1, 1]) {
+          const corner = new THREE.Mesh(
+            new THREE.BoxGeometry(0.12, 0.05, 0.12),
+            pathGoldEdge
+          );
+          corner.position.set(sx * w * 0.42, 0.14, sz * d * 0.42);
+          slabG.add(corner);
+        }
+      }
+      // Soft under-glow
+      const under = new THREE.Mesh(
+        new THREE.PlaneGeometry(w * 1.2, d * 1.2),
+        new THREE.MeshBasicMaterial({
+          map: glowCyanTex,
+          transparent: true,
+          opacity: 0.4,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      under.rotation.x = -Math.PI / 2;
+      under.position.y = -0.14;
+      slabG.add(under);
+      slabG.position.set(
+        (Math.random() - 0.5) * 1.0,
+        PATH_Y - 0.52 + Math.sin(i * 0.7) * 0.1,
+        -i * 5.4 - 2
+      );
+      slabG.rotation.y = (Math.random() - 0.5) * 0.14;
+      pathGroup.add(slabG);
+    }
+
+    // Floating crystal spires along the path (depth + Boltverse vibe)
+    const crystalMat = new THREE.MeshStandardMaterial({
+      color: 0x4a90b8,
+      emissive: 0x2ee6ff,
+      emissiveIntensity: 0.45,
+      metalness: 0.7,
+      roughness: 0.25,
+      transparent: true,
+      opacity: 0.85,
+    });
+    const crystalGoldMat = new THREE.MeshStandardMaterial({
+      color: 0xc9a44a,
+      emissive: 0xe8c56a,
+      emissiveIntensity: 0.4,
+      metalness: 0.85,
+      roughness: 0.2,
+      transparent: true,
+      opacity: 0.8,
+    });
+    for (let i = 0; i < 16; i++) {
+      const side = i % 2 ? 1 : -1;
+      const h = 1.8 + Math.random() * 3.5;
+      const crystal = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.35 + Math.random() * 0.35, 0),
+        i % 3 === 0 ? crystalGoldMat : crystalMat
+      );
+      crystal.scale.set(0.6, h * 0.55, 0.6);
+      crystal.position.set(
+        side * (5.5 + Math.random() * 4),
+        SEA_Y + h * 0.35,
+        -8 - i * 9 - Math.random() * 4
+      );
+      crystal.rotation.y = Math.random() * Math.PI;
+      crystal.rotation.z = side * 0.15;
+      world.add(crystal);
+      // Soft glow under crystal
+      const cGlow = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.4, 1.4),
+        new THREE.MeshBasicMaterial({
+          map: i % 3 === 0 ? glowGoldTex : glowCyanTex,
+          transparent: true,
+          opacity: 0.3,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      cGlow.rotation.x = -Math.PI / 2;
+      cGlow.position.copy(crystal.position);
+      cGlow.position.y = SEA_Y + 0.25;
+      world.add(cGlow);
+    }
+
+    // ── Rune rings (gold metal + cyan energy + soft billboard glow) ──
     const rings = [];
     const ringGroup = new THREE.Group();
     world.add(ringGroup);
 
     function makeRing(index) {
       const g = new THREE.Group();
-      const radius = 1.35;
+      const radius = 1.55;
+
+      // Softer gold — outline readable without white-out
+      const mainMat = new THREE.MeshStandardMaterial({
+        color: 0x3a2e14,
+        emissive: 0xc9a44a,
+        emissiveMap: wallEmissive,
+        emissiveIntensity: 0.45,
+        metalness: 0.9,
+        roughness: 0.28,
+      });
       const torus = new THREE.Mesh(
-        new THREE.TorusGeometry(radius, 0.1, 12, 48),
+        new THREE.TorusGeometry(radius, 0.11, 14, 56),
+        mainMat
+      );
+      g.add(torus);
+
+      // Secondary gold rail (subtle)
+      const rail = new THREE.Mesh(
+        new THREE.TorusGeometry(radius, 0.035, 8, 48),
         new THREE.MeshStandardMaterial({
-          color: 0x3a2a10,
-          emissive: 0xe8c56a,
-          emissiveIntensity: 0.85,
+          color: 0xe8c56a,
+          emissive: 0xa88840,
+          emissiveIntensity: 0.35,
           metalness: 0.95,
           roughness: 0.2,
         })
       );
-      g.add(torus);
+      rail.scale.set(1.05, 1.05, 1.05);
+      g.add(rail);
 
-      // Inner energy ring
+      // Inner cyan energy ring (thin, less bloom fuel)
       const inner = new THREE.Mesh(
-        new THREE.TorusGeometry(radius * 0.92, 0.035, 8, 40),
+        new THREE.TorusGeometry(radius * 0.9, 0.028, 8, 40),
         new THREE.MeshBasicMaterial({
-          color: 0x7ef0ff,
+          color: 0x5ad4e8,
           transparent: true,
-          opacity: 0.55,
+          opacity: 0.4,
           blending: THREE.AdditiveBlending,
           depthWrite: false,
         })
       );
       g.add(inner);
 
-      // Outer soft glow
-      const outer = new THREE.Mesh(
-        new THREE.TorusGeometry(radius * 1.08, 0.05, 8, 40),
+      // Small soft glow only (was radius*3.2 @ 0.55 — too hot)
+      const glow = new THREE.Mesh(
+        new THREE.PlaneGeometry(radius * 2.1, radius * 2.1),
+        new THREE.MeshBasicMaterial({
+          map: glowGoldTex,
+          transparent: true,
+          opacity: 0.18,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        })
+      );
+      g.add(glow);
+
+      // Portal energy disc — very light
+      const disc = new THREE.Mesh(
+        new THREE.CircleGeometry(radius * 0.78, 36),
         new THREE.MeshBasicMaterial({
           color: 0xe8c56a,
           transparent: true,
-          opacity: 0.22,
+          opacity: 0.03,
           blending: THREE.AdditiveBlending,
           depthWrite: false,
+          side: THREE.DoubleSide,
         })
       );
-      g.add(outer);
+      g.add(disc);
 
-      // Rune ticks around ring
-      for (let k = 0; k < 12; k++) {
-        const a = (k / 12) * Math.PI * 2;
-        const tick = new THREE.Mesh(
-          new THREE.BoxGeometry(0.08, 0.08, 0.28),
-          new THREE.MeshBasicMaterial({ color: 0xf5e0a8 })
+      // Soft light shaft through ring (cinematic depth)
+      const shaft = new THREE.Mesh(
+        new THREE.CylinderGeometry(radius * 0.55, radius * 0.9, 2.8, 20, 1, true),
+        new THREE.MeshBasicMaterial({
+          color: 0xe8c56a,
+          transparent: true,
+          opacity: 0.06,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        })
+      );
+      shaft.rotation.x = Math.PI / 2;
+      shaft.position.z = -0.4;
+      g.add(shaft);
+
+      // Rune gems around ring
+      for (let k = 0; k < 8; k++) {
+        const a = (k / 8) * Math.PI * 2;
+        const gem = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.07, 0),
+          new THREE.MeshStandardMaterial({
+            color: 0xe8d090,
+            emissive: k % 2 ? 0x1a8090 : 0xa88840,
+            emissiveIntensity: 0.55,
+            metalness: 0.5,
+            roughness: 0.35,
+          })
         );
-        tick.position.set(Math.cos(a) * radius, Math.sin(a) * radius, 0);
-        tick.lookAt(0, 0, 0);
-        g.add(tick);
+        gem.position.set(Math.cos(a) * radius, Math.sin(a) * radius, 0);
+        g.add(gem);
       }
 
-      // Lateral / height variation — increasing challenge
+      // Easier path: gentle side sway, low height variance, more space between rings
       const t = index / (RING_GOAL - 1);
-      const x = Math.sin(index * 1.35) * (0.4 + t * 1.6);
-      const y = PATH_Y + 0.9 + Math.sin(index * 0.9) * (0.5 + t * 1.1) + t * 0.8;
-      const z = -8 - index * 9.5;
+      const x = Math.sin(index * 0.9) * (0.25 + t * 0.7);
+      const y = PATH_Y + 0.85 + Math.sin(index * 0.55) * 0.35 + t * 0.25;
+      const z = -8 - index * 11;
 
       g.position.set(x, y, z);
       g.rotation.y = Math.sin(index) * 0.15;
@@ -434,6 +794,11 @@
         radius,
         baseY: y,
         phase: Math.random() * Math.PI * 2,
+        mainMat,
+        glowMat: glow.material,
+        discMat: disc.material,
+        inner,
+        glow,
       };
       ringGroup.add(g);
       rings.push(g);
@@ -442,37 +807,237 @@
 
     for (let i = 0; i < RING_GOAL; i++) makeRing(i);
 
-    // ── Player (bolt core) ──
+    // ── Player: Bolt — white storm-wolf with cyan constellation energy ──
+    // Local model faces +Z; group rotates so he runs toward -Z.
     const player = new THREE.Group();
-    const core = new THREE.Mesh(
-      new THREE.SphereGeometry(0.38, 24, 24),
-      new THREE.MeshStandardMaterial({
-        color: 0xe8ffff,
-        emissive: 0x2ee6ff,
-        emissiveIntensity: 1.1,
-        metalness: 0.3,
-        roughness: 0.15,
-      })
+    const furMat = new THREE.MeshStandardMaterial({
+      color: 0xf2f7ff,
+      emissive: 0x1a4058,
+      emissiveIntensity: 0.28,
+      metalness: 0.12,
+      roughness: 0.48,
+    });
+    const energyMat = new THREE.MeshStandardMaterial({
+      color: 0xa8f0ff,
+      emissive: 0x2ee6ff,
+      emissiveIntensity: 0.9,
+      metalness: 0.35,
+      roughness: 0.2,
+    });
+    const eyeMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      emissive: 0x7ef0ff,
+      emissiveIntensity: 1.5,
+      metalness: 0.1,
+      roughness: 0.12,
+    });
+    const goldMat = new THREE.MeshStandardMaterial({
+      color: 0xe8c56a,
+      emissive: 0xc9a44a,
+      emissiveIntensity: 0.5,
+      metalness: 0.9,
+      roughness: 0.25,
+    });
+
+    const body = new THREE.Mesh(new THREE.SphereGeometry(0.38, 28, 22), furMat);
+    body.scale.set(0.95, 0.78, 1.55);
+    body.position.set(0, 0.08, 0);
+
+    const coreGlow = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 14), energyMat);
+    coreGlow.position.set(0, 0.12, 0.28);
+
+    const neck = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 14), furMat);
+    neck.scale.set(0.9, 0.85, 1.1);
+    neck.position.set(0, 0.22, 0.42);
+
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 24, 20), furMat);
+    head.scale.set(0.95, 0.9, 1.05);
+    head.position.set(0, 0.38, 0.62);
+
+    const snout = new THREE.Mesh(new THREE.SphereGeometry(0.13, 14, 12), furMat);
+    snout.scale.set(0.85, 0.7, 1.35);
+    snout.position.set(0, 0.3, 0.88);
+
+    const nose = new THREE.Mesh(
+      new THREE.SphereGeometry(0.05, 10, 8),
+      new THREE.MeshStandardMaterial({ color: 0x1a2030, roughness: 0.4, metalness: 0.2 })
     );
-    const shell = new THREE.Mesh(
-      new THREE.SphereGeometry(0.55, 16, 16),
+    nose.position.set(0, 0.3, 1.02);
+
+    function makeEar(side) {
+      const ear = new THREE.Group();
+      const outer = new THREE.Mesh(new THREE.ConeGeometry(0.11, 0.32, 7), furMat);
+      outer.position.y = 0.12;
+      const inner = new THREE.Mesh(
+        new THREE.ConeGeometry(0.06, 0.2, 6),
+        new THREE.MeshStandardMaterial({
+          color: 0x7ef0ff,
+          emissive: 0x2ee6ff,
+          emissiveIntensity: 0.65,
+          metalness: 0.2,
+          roughness: 0.4,
+        })
+      );
+      inner.position.set(0, 0.1, 0.02);
+      ear.add(outer, inner);
+      ear.position.set(side * 0.18, 0.58, 0.55);
+      ear.rotation.z = side * 0.28;
+      ear.rotation.x = -0.35;
+      return ear;
+    }
+    const earL = makeEar(-1);
+    const earR = makeEar(1);
+
+    const eyeGeo = new THREE.SphereGeometry(0.055, 12, 10);
+    const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+    eyeL.position.set(-0.11, 0.42, 0.82);
+    const eyeR = eyeL.clone();
+    eyeR.position.x = 0.11;
+
+    const markMat = new THREE.MeshBasicMaterial({
+      color: 0x2ee6ff,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const marks = new THREE.Group();
+    [
+      [0.32, 0.15, 0.1, 0.32],
+      [0.3, 0.05, -0.15, 0.26],
+      [-0.32, 0.15, 0.1, 0.32],
+      [-0.3, 0.05, -0.15, 0.26],
+    ].forEach(([x, y, z, len]) => {
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, len, 6), markMat);
+      m.position.set(x, y, z);
+      m.rotation.z = Math.PI / 2;
+      m.rotation.y = x > 0 ? 0.3 : -0.3;
+      marks.add(m);
+    });
+    const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.07, 0), energyMat);
+    star.position.set(0.22, 0.28, 0.2);
+    marks.add(star);
+
+    const legGeo = new THREE.CylinderGeometry(0.055, 0.075, 0.36, 8);
+    const pawGeo = new THREE.SphereGeometry(0.08, 10, 8);
+    const legs = [];
+    [
+      [-0.2, -0.22, 0.28],
+      [0.2, -0.22, 0.28],
+      [-0.18, -0.22, -0.32],
+      [0.18, -0.22, -0.32],
+    ].forEach((p) => {
+      const legG = new THREE.Group();
+      const leg = new THREE.Mesh(legGeo, furMat);
+      leg.position.y = -0.18;
+      const paw = new THREE.Mesh(pawGeo, energyMat);
+      paw.scale.set(1.1, 0.55, 1.2);
+      paw.position.y = -0.38;
+      legG.add(leg, paw);
+      legG.position.set(p[0], p[1], p[2]);
+      legs.push(legG);
+    });
+
+    const tail = new THREE.Group();
+    for (let i = 0; i < 5; i++) {
+      const seg = new THREE.Mesh(
+        new THREE.SphereGeometry(0.1 - i * 0.012, 10, 8),
+        i < 2 ? furMat : energyMat
+      );
+      seg.position.set(0, 0.05 + i * 0.04, -0.55 - i * 0.14);
+      seg.scale.set(1, 0.85, 1.1);
+      tail.add(seg);
+    }
+    const tailTip = new THREE.Mesh(
+      new THREE.SphereGeometry(0.1, 12, 10),
       new THREE.MeshBasicMaterial({
-        color: 0x2ee6ff,
+        color: 0x7ef0ff,
         transparent: true,
-        opacity: 0.18,
+        opacity: 0.55,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       })
     );
-    player.add(core, shell);
-    player.position.set(0, PATH_Y + 0.5, 2);
+    tailTip.position.set(0, 0.22, -1.2);
+    tail.add(tailTip);
+
+    const shell = new THREE.Mesh(
+      new THREE.SphereGeometry(0.85, 20, 16),
+      new THREE.MeshBasicMaterial({
+        color: 0x2ee6ff,
+        transparent: true,
+        opacity: 0.05,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    shell.scale.set(1.1, 0.9, 1.4);
+
+    const playerGlow = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.4, 1.1),
+      new THREE.MeshBasicMaterial({
+        map: glowCyanTex,
+        transparent: true,
+        opacity: 0.16,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      })
+    );
+    playerGlow.position.y = -0.15;
+
+    const playerRing = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.03, 8, 28), goldMat);
+    playerRing.position.set(0, 0.22, 0.4);
+    playerRing.rotation.x = Math.PI / 2.6;
+
+    // Lightning rune on back
+    const runeG = new THREE.Group();
+    const runeMat = new THREE.MeshBasicMaterial({
+      color: 0x7ef0ff,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    [
+      [0, 0.12, 0.14, 0.04],
+      [0.04, 0.02, 0.12, 0.04],
+      [-0.02, -0.1, 0.1, 0.04],
+    ].forEach(([x, y, w, h]) => {
+      const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.02), runeMat);
+      b.position.set(x, y, -0.15);
+      runeG.add(b);
+    });
+    runeG.position.set(0, 0.22, 0);
+    runeG.rotation.x = -0.5;
+
+    player.add(
+      body, coreGlow, neck, head, snout, nose,
+      earL, earR, eyeL, eyeR, marks, tail,
+      ...legs, shell, playerGlow, playerRing, runeG
+    );
+    player.rotation.y = Math.PI;
+    player.position.set(0, PATH_Y + 0.75, 2);
+    player.scale.setScalar(1.3);
     world.add(player);
 
-    const playerLight = new THREE.PointLight(0x7ef0ff, 1.2, 14);
+    const playerLight = new THREE.PointLight(0x7ef0ff, 1.2, 12);
+    playerLight.position.set(0, 0.3, 0.2);
     player.add(playerLight);
+    const playerGoldLight = new THREE.PointLight(0xe8c56a, 0.4, 8);
+    playerGoldLight.position.set(0, 0.4, 0.5);
+    player.add(playerGoldLight);
 
-    // Trail particles
-    const trailN = 80;
+    const corona = shell;
+    const core = coreGlow;
+    const boltFace = playerGlow;
+    // Dedicated mats so pulse doesn't tint every energy mesh
+    coreGlow.material = energyMat.clone();
+    star.material = energyMat.clone();
+    eyeR.material = eyeMat; // shared with eyeL — intentional
+
+    // Dual trail — cyan energy + soft gold sparkles
+    const trailN = 140;
     const trailPos = new Float32Array(trailN * 3);
     for (let i = 0; i < trailN; i++) {
       trailPos[i * 3] = 0;
@@ -485,7 +1050,25 @@
       trailGeo,
       new THREE.PointsMaterial({
         color: 0x7ef0ff,
+        size: 0.22,
+        map: glowCyanTex,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        sizeAttenuation: true,
+      })
+    );
+    world.add(trail);
+    const trailGoldPos = new Float32Array(60 * 3);
+    const trailGoldGeo = new THREE.BufferGeometry();
+    trailGoldGeo.setAttribute("position", new THREE.BufferAttribute(trailGoldPos, 3));
+    const trailGold = new THREE.Points(
+      trailGoldGeo,
+      new THREE.PointsMaterial({
+        color: 0xe8c56a,
         size: 0.12,
+        map: glowGoldTex,
         transparent: true,
         opacity: 0.7,
         blending: THREE.AdditiveBlending,
@@ -493,68 +1076,80 @@
         sizeAttenuation: true,
       })
     );
-    world.add(trail);
+    world.add(trailGold);
     let trailI = 0;
+    let trailGoldI = 0;
 
-    // Air sparks
-    const sparkN = 200;
+    // Air sparks (gold + cyan mixed via two systems would be heavy — warm gold)
+    const sparkN = 280;
     const sparkPos = new Float32Array(sparkN * 3);
     for (let i = 0; i < sparkN; i++) {
-      sparkPos[i * 3] = (Math.random() - 0.5) * 30;
-      sparkPos[i * 3 + 1] = Math.random() * 12;
-      sparkPos[i * 3 + 2] = -Math.random() * 140;
+      sparkPos[i * 3] = (Math.random() - 0.5) * 36;
+      sparkPos[i * 3 + 1] = Math.random() * 14;
+      sparkPos[i * 3 + 2] = -Math.random() * 150;
     }
     const sparkGeo = new THREE.BufferGeometry();
     sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPos, 3));
     const sparks = new THREE.Points(
       sparkGeo,
       new THREE.PointsMaterial({
-        color: 0xe8c56a,
-        size: 0.08,
+        color: 0xf5e0a8,
+        size: 0.12,
+        map: glowGoldTex,
         transparent: true,
-        opacity: 0.55,
+        opacity: 0.7,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       })
     );
     world.add(sparks);
 
-    // Lightning bolts
+    // Lightning bolts — multi-branch + bloom-friendly core
     const lightningGroup = new THREE.Group();
     world.add(lightningGroup);
     function spawnLightning() {
       lightningGroup.clear();
-      const pts = [];
-      let x = (Math.random() - 0.5) * 28;
-      let y = 14 + Math.random() * 4;
-      const z0 = player.position.z - 15 - Math.random() * 50;
-      for (let i = 0; i < 14; i++) {
-        pts.push(new THREE.Vector3(x, y, z0 - i * 0.9));
-        x += (Math.random() - 0.5) * 2.5;
-        y -= 0.9 + Math.random() * 0.6;
+      const z0 = player.position.z - 12 - Math.random() * 55;
+      const rootX = (Math.random() - 0.5) * 30;
+      function branch(sx, sy, sz, segs, spread) {
+        const pts = [];
+        let x = sx, y = sy, z = sz;
+        for (let i = 0; i < segs; i++) {
+          pts.push(new THREE.Vector3(x, y, z));
+          x += (Math.random() - 0.5) * spread;
+          y -= 0.85 + Math.random() * 0.7;
+          z += (Math.random() - 0.5) * 0.8;
+        }
+        const geo = new THREE.BufferGeometry().setFromPoints(pts);
+        lightningGroup.add(new THREE.Line(geo, new THREE.LineBasicMaterial({
+          color: 0xffffff, transparent: true, opacity: 0.95,
+          blending: THREE.AdditiveBlending, depthWrite: false,
+        })));
+        lightningGroup.add(new THREE.Line(geo, new THREE.LineBasicMaterial({
+          color: 0x2ee6ff, transparent: true, opacity: 0.4,
+          blending: THREE.AdditiveBlending, depthWrite: false,
+        })));
+        return pts;
       }
-      const geo = new THREE.BufferGeometry().setFromPoints(pts);
-      lightningGroup.add(new THREE.Line(geo, new THREE.LineBasicMaterial({
-        color: 0xe8ffff, transparent: true, opacity: 0.95,
-        blending: THREE.AdditiveBlending,
-      })));
-      lightningGroup.add(new THREE.Line(geo, new THREE.LineBasicMaterial({
-        color: 0x2ee6ff, transparent: true, opacity: 0.35,
-        blending: THREE.AdditiveBlending,
-      })));
-      boltLight.intensity = 6;
-      boltLight.position.copy(pts[3]);
+      const main = branch(rootX, 16 + Math.random() * 4, z0, 16, 2.8);
+      if (main[5]) {
+        branch(main[5].x, main[5].y, main[5].z, 7, 2.2);
+        branch(main[8]?.x ?? main[5].x, main[8]?.y ?? main[5].y, main[8]?.z ?? main[5].z, 5, 1.8);
+      }
+      boltLight.intensity = 4.5;
+      boltLight.position.copy(main[4] || main[0]);
+      bloom.strength = 0.55;
       flashEl.style.transition = "none";
-      flashEl.style.opacity = "0.18";
-      flashEl.style.background = "rgba(180, 220, 255, 0.25)";
+      flashEl.style.opacity = "0.12";
+      flashEl.style.background = "rgba(180, 220, 255, 0.18)";
       requestAnimationFrame(() => {
-        flashEl.style.transition = "opacity 0.35s ease";
+        flashEl.style.transition = "opacity 0.4s ease";
         flashEl.style.opacity = "0";
       });
       setTimeout(() => {
         lightningGroup.clear();
         boltLight.intensity = 0;
-      }, 180);
+      }, 200);
     }
 
     // Game state
@@ -588,26 +1183,28 @@
       grounded = true;
       jumpQueued = false;
       nextCheck = 0;
-      player.position.set(0, PATH_Y + 0.5, 2);
+      player.position.set(0, PATH_Y + 0.75, 2);
       rings.forEach((r) => {
         r.userData.passed = false;
         r.visible = true;
         r.scale.setScalar(1);
-        r.children[0].material.emissiveIntensity = 0.85;
+        if (r.userData.mainMat) r.userData.mainMat.emissiveIntensity = 0.45;
+        if (r.userData.glowMat) r.userData.glowMat.opacity = 0.18;
+        if (r.userData.discMat) r.userData.discMat.opacity = 0.03;
       });
       updateHUD();
     }
 
     function ringFlash() {
       flashEl.style.transition = "none";
-      flashEl.style.opacity = "0.35";
-      flashEl.style.background = "rgba(232, 197, 106, 0.4)";
+      flashEl.style.opacity = "0.4";
+      flashEl.style.background = "rgba(232, 197, 106, 0.45)";
       requestAnimationFrame(() => {
         flashEl.style.transition = "opacity 0.3s ease";
         flashEl.style.opacity = "0";
       });
-      bloom.strength = 0.9;
-      setTimeout(() => { bloom.strength = 0.55; }, 160);
+      bloom.strength = 0.7;
+      setTimeout(() => { bloom.strength = BLOOM_IDLE; }, 160);
     }
 
     function endGame(win) {
@@ -652,10 +1249,10 @@
 
     function doJump() {
       if (!running || ended) return;
-      if (grounded || player.position.y < PATH_Y + 2.8) {
-        // allow slight mid-air hop only if not too high — keep tight
-        if (grounded || velY < 2) {
-          velY = JUMP_V * (grounded ? 1 : 0.55);
+      // Generous air jumps — mid-air hop still strong
+      if (grounded || player.position.y < PATH_Y + 4.5) {
+        if (grounded || velY < 8) {
+          velY = JUMP_V * (grounded ? 1 : 0.72);
           grounded = false;
           sfxJump();
         }
@@ -681,35 +1278,36 @@
         const r = rings[i];
         if (r.userData.passed) continue;
         const rz = r.position.z;
-        // approaching from behind (player z decreases as we run forward? 
-        // We run negative Z, so player.z goes down. Ring is at more negative z.
-        // When player.z becomes less than ring.z (passed through plane)...
-        if (pz > rz + 0.6) break; // still before this ring
-        if (pz <= rz + 0.55 && pz >= rz - 1.2) {
-          // near plane — check radial distance from ring center in XY
+        // Still well before this ring
+        if (pz > rz + RING_PASS_AHEAD + 0.4) break;
+        if (pz <= rz + RING_PASS_AHEAD && pz >= rz - RING_PASS_BEHIND) {
           const dx = px - r.position.x;
           const dy = py - r.position.y;
           const dist = Math.hypot(dx, dy);
-          if (dist <= r.userData.radius * 0.92) {
+          // Large forgiving pass radius (easier than the visual ring looks)
+          if (dist <= r.userData.radius * HIT_RADIUS_MUL) {
             r.userData.passed = true;
             passed += 1;
             nextCheck = i + 1;
             sfxPass();
             ringFlash();
-            r.scale.setScalar(1.25);
-            r.children[0].material.emissiveIntensity = 1.4;
+            r.scale.setScalar(1.2);
+            if (r.userData.mainMat) r.userData.mainMat.emissiveIntensity = 0.85;
+            if (r.userData.glowMat) r.userData.glowMat.opacity = 0.4;
+            if (r.userData.discMat) r.userData.discMat.opacity = 0.1;
             setTimeout(() => {
               r.scale.setScalar(1);
-              r.children[0].material.emissiveIntensity = 0.35;
-            }, 200);
+              if (r.userData.mainMat) r.userData.mainMat.emissiveIntensity = 0.35;
+              if (r.userData.glowMat) r.userData.glowMat.opacity = 0.14;
+              if (r.userData.discMat) r.userData.discMat.opacity = 0.02;
+            }, 220);
             updateHUD();
             if (passed >= RING_GOAL) endGame(true);
-          } else if (pz < rz - 0.35) {
-            // missed — past the ring without being inside
+          } else if (pz < rz - RING_PASS_BEHIND * 0.85) {
             endGame(false);
             return;
           }
-        } else if (pz < rz - 1.2 && !r.userData.passed) {
+        } else if (pz < rz - RING_PASS_BEHIND && !r.userData.passed) {
           endGame(false);
           return;
         }
@@ -722,25 +1320,59 @@
       last = now;
       const t = now * 0.001;
 
-      // Animate sea
+      // Animate sea — deeper rolling storm swells
       const pos = sea.geometry.attributes.position.array;
       for (let i = 0; i < pos.length; i += 3) {
         const x = seaBase[i];
         const z = seaBase[i + 2];
         pos[i + 1] = seaBase[i + 1]
-          + Math.sin(x * 0.35 + t * 2.2) * 0.35
-          + Math.cos(z * 0.28 + t * 1.6) * 0.28
-          + Math.sin((x + z) * 0.2 + t * 3) * 0.15;
+          + Math.sin(x * 0.28 + t * 1.8) * 0.42
+          + Math.cos(z * 0.22 + t * 1.4) * 0.34
+          + Math.sin((x + z) * 0.18 + t * 2.6) * 0.18
+          + Math.sin(x * 0.9 + z * 0.5 + t * 4) * 0.06;
       }
       sea.geometry.attributes.position.needsUpdate = true;
       sea.geometry.computeVertexNormals();
+      seaMat.emissiveIntensity = 0.45 + Math.sin(t * 1.5) * 0.12;
+      glowSea.material.opacity = 0.055 + Math.sin(t * 2) * 0.02;
+      pathGlow.material.opacity = 0.08 + Math.sin(t * 1.2) * 0.03;
+      aurora.material.opacity = 0.1 + Math.sin(t * 0.4) * 0.04;
+      aurora.position.x = Math.sin(t * 0.12) * 8;
 
-      // Ring float / spin
+      // Ring float / spin + pulse
       rings.forEach((r) => {
         if (r.userData.passed) return;
         r.position.y = r.userData.baseY + Math.sin(t * 1.8 + r.userData.phase) * 0.18;
-        r.rotation.z = t * 0.6 + r.userData.phase;
-        r.children[1].rotation.z = -t * 0.9;
+        r.rotation.z = t * 0.55 + r.userData.phase;
+        if (r.userData.inner) r.userData.inner.rotation.z = -t * 1.1;
+        if (r.userData.glow) {
+          r.userData.glow.lookAt(camera.position);
+          r.userData.glowMat.opacity = 0.14 + Math.sin(t * 2.5 + r.userData.phase) * 0.05;
+        }
+        if (r.userData.discMat) {
+          r.userData.discMat.opacity = 0.02 + Math.sin(t * 2 + r.userData.phase) * 0.01;
+        }
+        if (r.userData.mainMat) {
+          r.userData.mainMat.emissiveIntensity = 0.4 + Math.sin(t * 2 + r.userData.phase) * 0.08;
+        }
+      });
+
+      // Bolt: energy pulse, tail sway, run-cycle legs
+      playerRing.rotation.z = t * 1.6;
+      playerGlow.lookAt(camera.position);
+      shell.scale.set(1.1 + Math.sin(t * 3) * 0.03, 0.9, 1.4 + Math.sin(t * 3) * 0.04);
+      coreGlow.scale.setScalar(1 + Math.sin(t * 5) * 0.12);
+      eyeMat.emissiveIntensity = 1.35 + Math.sin(t * 4) * 0.3;
+      coreGlow.material.emissiveIntensity = 0.85 + Math.sin(t * 5) * 0.2;
+      star.material.emissiveIntensity = 0.9 + Math.sin(t * 3.5) * 0.25;
+      // Tail swish
+      tail.rotation.y = Math.sin(t * 5) * 0.25;
+      tail.rotation.x = Math.sin(t * 3.5) * 0.08;
+      // Run cycle
+      legs.forEach((leg, i) => {
+        const phase = t * 11 + i * 1.6;
+        leg.position.y = -0.22 + Math.sin(phase) * 0.06;
+        leg.rotation.x = Math.sin(phase) * 0.35;
       });
 
       // Sparks drift
@@ -756,15 +1388,18 @@
       sparks.geometry.attributes.position.needsUpdate = true;
 
       stormLight.position.z = player.position.z - 25;
-      stormLight.intensity = 0.9 + Math.sin(t * 3) * 0.3;
+      stormLight.intensity = 1.8 + Math.sin(t * 3) * 0.5;
+      goldWash.position.z = player.position.z - 8;
+      goldWash.intensity = 0.7 + Math.sin(t * 1.7) * 0.25;
 
       if (!running) {
-        // Idle orbit
-        camera.position.x = Math.sin(t * 0.3) * 2;
-        camera.position.y = 4 + Math.sin(t * 0.4) * 0.4;
-        camera.position.z = 10 + Math.sin(t * 0.2) * 0.5;
-        camera.lookAt(0, 2.5, -12);
-        player.position.y = PATH_Y + 0.5 + Math.sin(t * 2) * 0.15;
+        // Idle: slight bob, camera behind Bolt looking down the path
+        camera.position.x = Math.sin(t * 0.2) * 0.35;
+        camera.position.y = 3.8 + Math.sin(t * 0.35) * 0.2;
+        camera.position.z = 7.2;
+        camera.lookAt(0, 1.6, -10);
+        player.position.y = PATH_Y + 0.75 + Math.sin(t * 2) * 0.1;
+        player.rotation.y = Math.PI;
         composer.render();
         return;
       }
@@ -786,16 +1421,28 @@
 
       // Forward run
       player.position.z -= RUN_SPEED * dt;
-      // Slight lateral drift toward next ring for assist feel
+      // Strong assist: pull toward next ring so casual leaps still clear
       const next = rings.find((r) => !r.userData.passed);
       if (next) {
-        player.position.x = THREE.MathUtils.damp(player.position.x, next.position.x * 0.55, 2.5, dt);
+        const distZ = Math.abs(player.position.z - next.position.z);
+        const pull = distZ < 14 ? 1 : 0.65;
+        player.position.x = THREE.MathUtils.damp(
+          player.position.x,
+          next.position.x * pull,
+          5.5,
+          dt
+        );
+        // Soft height assist when close to a ring
+        if (distZ < 10) {
+          const targetY = next.position.y;
+          player.position.y = THREE.MathUtils.damp(player.position.y, targetY, 2.2, dt);
+        }
       }
 
       // Gravity
       velY += GRAVITY * dt;
       player.position.y += velY * dt;
-      const floorY = PATH_Y + 0.5;
+      const floorY = PATH_Y + 0.75;
       if (player.position.y <= floorY) {
         player.position.y = floorY;
         velY = 0;
@@ -804,8 +1451,8 @@
         grounded = false;
       }
 
-      // Fall into sea
-      if (player.position.y < SEA_Y + 1.2) {
+      // Fall into sea (more room before death)
+      if (player.position.y < SEA_Y + 0.4) {
         endGame(false);
         composer.render();
         return;
@@ -813,21 +1460,35 @@
 
       checkRings();
 
-      // Trail
-      trailPos[trailI * 3] = player.position.x + (Math.random() - 0.5) * 0.15;
-      trailPos[trailI * 3 + 1] = player.position.y + (Math.random() - 0.5) * 0.15;
-      trailPos[trailI * 3 + 2] = player.position.z + 0.3;
+      // Trail — energy stream behind Bolt
+      trailPos[trailI * 3] = player.position.x + (Math.random() - 0.5) * 0.25;
+      trailPos[trailI * 3 + 1] = player.position.y + 0.15 + (Math.random() - 0.5) * 0.2;
+      trailPos[trailI * 3 + 2] = player.position.z + 0.5 + Math.random() * 0.3;
       trailI = (trailI + 1) % trailN;
       trail.geometry.attributes.position.needsUpdate = true;
+      if (Math.random() > 0.45) {
+        trailGoldPos[trailGoldI * 3] = player.position.x + (Math.random() - 0.5) * 0.4;
+        trailGoldPos[trailGoldI * 3 + 1] = player.position.y + 0.2;
+        trailGoldPos[trailGoldI * 3 + 2] = player.position.z + 0.4;
+        trailGoldI = (trailGoldI + 1) % 60;
+        trailGold.geometry.attributes.position.needsUpdate = true;
+      }
+      // Keep facing run direction (slight lean into leaps)
+      player.rotation.y = Math.PI;
+      player.rotation.x = THREE.MathUtils.damp(player.rotation.x, grounded ? 0 : -0.12, 6, dt);
 
-      // Camera chase
+      // Chase cam from behind Bolt (he runs toward -Z)
       const targetCam = new THREE.Vector3(
-        player.position.x * 0.35,
-        player.position.y + 2.8,
-        player.position.z + 7.5
+        player.position.x * 0.15,
+        player.position.y + 2.3,
+        player.position.z + 6.2
       );
       camera.position.lerp(targetCam, 1 - Math.exp(-6 * dt));
-      camera.lookAt(player.position.x, player.position.y + 0.6, player.position.z - 8);
+      camera.lookAt(
+        player.position.x,
+        player.position.y + 0.55,
+        player.position.z - 8
+      );
 
       lightningTimer -= dt;
       if (lightningTimer <= 0) {
@@ -835,7 +1496,7 @@
         lightningTimer = 1.4 + Math.random() * 2.2;
       }
 
-      bloom.strength = THREE.MathUtils.damp(bloom.strength, 0.55, 4, dt);
+      bloom.strength = THREE.MathUtils.damp(bloom.strength, BLOOM_IDLE, 4, dt);
       composer.render();
     }
 

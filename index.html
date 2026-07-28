@@ -1,0 +1,2970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Thunderwolf Citadel Gate — the Pack's living hall. Creations enter, gather, and feed the Star Core." />
+  <title>Thunderwolf Citadel · The Gate</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/jpeg" href="assets/citadel-mark.jpg" />
+  <style>
+    :root {
+      --bg-deep: #02040c;
+      --bg-mid: #060b18;
+      --bg-card: #0b1224;
+      --bg-card-hover: #101a32;
+      --cyan: #2ee6ff;
+      --cyan-soft: #7ef0ff;
+      --cyan-dim: #0e7490;
+      --cyan-glow: rgba(46, 230, 255, 0.35);
+      --gold: #e8c56a;
+      --gold-soft: #f5e0a8;
+      --gold-glow: rgba(232, 197, 106, 0.28);
+      --mint: #34d399;
+      --text: #eef3ff;
+      --text-muted: #8b9bb8;
+      --text-dim: #5a6a86;
+      --border: rgba(46, 230, 255, 0.12);
+      --border-strong: rgba(46, 230, 255, 0.28);
+      --border-gold: rgba(232, 197, 106, 0.4);
+      /* Unified card radius — Featured + Explore */
+      --radius: 16px;
+      --radius-sm: 10px;
+      --font: "Outfit", system-ui, sans-serif;
+      --font-display: "Syne", "Outfit", system-ui, sans-serif;
+      --header-h: 64px;
+      --tile-media: 1 / 1;
+      /* Type scale: H1 brand · H2 section · card title · meta */
+      --fs-brand: 1.08rem;
+      --fs-h2: 1.18rem;
+      --fs-card: 0.92rem;
+      --fs-meta: 0.68rem;
+      --ls-brand: -0.02em;
+      --ls-h2: 0.02em;
+      --ls-meta: 0.02em;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    /* ── Subtle cyan/gold scrollbar (citadel chrome) ── */
+    html {
+      scrollbar-width: thin; /* Firefox */
+      scrollbar-color: rgba(46, 230, 255, 0.45) rgba(4, 10, 22, 0.85);
+    }
+    /* Chrome, Edge, Safari */
+    *::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    *::-webkit-scrollbar-track {
+      background: linear-gradient(180deg, rgba(4, 10, 22, 0.95), rgba(6, 12, 28, 0.9));
+      border-left: 1px solid rgba(46, 230, 255, 0.06);
+    }
+    *::-webkit-scrollbar-thumb {
+      background: linear-gradient(
+        180deg,
+        rgba(126, 240, 255, 0.55) 0%,
+        rgba(46, 230, 255, 0.4) 45%,
+        rgba(232, 197, 106, 0.45) 100%
+      );
+      border-radius: 999px;
+      border: 2px solid rgba(4, 10, 22, 0.85);
+      box-shadow: 0 0 10px rgba(46, 230, 255, 0.15);
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(
+        180deg,
+        rgba(126, 240, 255, 0.75) 0%,
+        rgba(46, 230, 255, 0.55) 45%,
+        rgba(245, 224, 168, 0.6) 100%
+      );
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.28);
+    }
+    *::-webkit-scrollbar-corner {
+      background: rgba(4, 10, 22, 0.95);
+    }
+
+    body {
+      font-family: var(--font);
+      background: #040814;
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.4;
+      overflow-x: hidden;
+    }
+
+    /* ── Citadel-in-space atmosphere (not pure black void) ── */
+    .cosmos {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background:
+        /* aurora / hall ceiling light */
+        radial-gradient(ellipse 90% 45% at 50% -5%, rgba(46, 230, 255, 0.16), transparent 58%),
+        /* violet nebula — right */
+        radial-gradient(ellipse 55% 50% at 92% 18%, rgba(120, 90, 220, 0.14), transparent 55%),
+        /* gold bolt warmth — left */
+        radial-gradient(ellipse 50% 45% at 6% 35%, rgba(232, 197, 106, 0.09), transparent 52%),
+        /* distant star core */
+        radial-gradient(circle at 50% 42%, rgba(46, 230, 255, 0.07), transparent 22%),
+        radial-gradient(circle at 50% 42%, rgba(232, 197, 106, 0.05), transparent 12%),
+        /* deep space hall (navy → indigo, not pure black) */
+        linear-gradient(180deg,
+          #07122a 0%,
+          #0a1530 28%,
+          #08102a 55%,
+          #060d1c 78%,
+          #040a16 100%);
+    }
+
+    /* Star field */
+    .cosmos::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 8% 12%, rgba(255,255,255,0.55), transparent),
+        radial-gradient(1.5px 1.5px at 18% 28%, rgba(126,240,255,0.5), transparent),
+        radial-gradient(1px 1px at 32% 8%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 48% 16%, rgba(126,240,255,0.45), transparent),
+        radial-gradient(1.5px 1.5px at 62% 10%, rgba(245,224,168,0.45), transparent),
+        radial-gradient(1px 1px at 74% 24%, rgba(255,255,255,0.35), transparent),
+        radial-gradient(1px 1px at 88% 14%, rgba(126,240,255,0.4), transparent),
+        radial-gradient(1px 1px at 94% 38%, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1.5px 1.5px at 12% 52%, rgba(126,240,255,0.35), transparent),
+        radial-gradient(1px 1px at 42% 48%, rgba(255,255,255,0.28), transparent),
+        radial-gradient(1px 1px at 68% 55%, rgba(245,224,168,0.35), transparent),
+        radial-gradient(1px 1px at 82% 62%, rgba(126,240,255,0.3), transparent),
+        radial-gradient(1px 1px at 22% 72%, rgba(255,255,255,0.25), transparent),
+        radial-gradient(1.5px 1.5px at 55% 78%, rgba(46,230,255,0.3), transparent),
+        radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.22), transparent);
+      opacity: 0.85;
+    }
+
+    /* Soft nebula clouds + constellation lines */
+    .cosmos::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 40% 28% at 30% 25%, rgba(46, 230, 255, 0.08), transparent 70%),
+        radial-gradient(ellipse 35% 30% at 75% 40%, rgba(140, 100, 255, 0.07), transparent 70%),
+        radial-gradient(ellipse 50% 25% at 50% 70%, rgba(232, 197, 106, 0.04), transparent 70%),
+        linear-gradient(118deg, transparent 48%, rgba(46,230,255,0.07) 49.5%, rgba(46,230,255,0.07) 50.5%, transparent 52%),
+        linear-gradient(72deg, transparent 42%, rgba(126,240,255,0.05) 49%, transparent 56%),
+        linear-gradient(200deg, transparent 55%, rgba(232,197,106,0.04) 50%, transparent 52%);
+      opacity: 1;
+    }
+
+    .lightning-vein {
+      position: absolute;
+      top: 4%;
+      right: 12%;
+      width: 2px;
+      height: 38%;
+      background: linear-gradient(180deg, transparent, rgba(46,230,255,0.45), rgba(126,240,255,0.2), transparent);
+      transform: translate3d(0, var(--py-vein), 0) rotate(17deg);
+      opacity: 0.6;
+      filter: blur(0.4px);
+      pointer-events: none;
+      will-change: transform;
+    }
+    .lightning-vein.alt {
+      top: 18%;
+      left: 8%;
+      right: auto;
+      height: 28%;
+      transform: translate3d(0, var(--py-vein), 0) rotate(-22deg);
+      opacity: 0.35;
+      background: linear-gradient(180deg, transparent, rgba(232,197,106,0.3), transparent);
+    }
+
+    /* Soft parallax offsets (updated on scroll) */
+    :root {
+      --py-sky: 0px;
+      --py-core: 0px;
+      --py-floor: 0px;
+      --py-vein: 0px;
+    }
+
+    /* Faint Bolt constellation silhouette in the sky (Imagine) */
+    .bolt-sky {
+      position: absolute;
+      left: 50%;
+      top: 2%;
+      transform: translate3d(-50%, var(--py-sky), 0);
+      width: min(92vw, 980px);
+      height: min(48vh, 420px);
+      background: url("assets/bolt-sky.jpg") center 30% / cover no-repeat;
+      opacity: 0.22;
+      mix-blend-mode: screen;
+      filter: saturate(0.9) brightness(1.05);
+      mask-image: radial-gradient(ellipse 70% 75% at 50% 45%, #000 20%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 70% 75% at 50% 45%, #000 20%, transparent 75%);
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    /* Dedicated Star Core — Imagine art (not a plain CSS ball) */
+    .star-core {
+      position: absolute;
+      left: 50%;
+      top: 34%;
+      transform: translate3d(-50%, calc(-50% + var(--py-core)), 0);
+      width: min(52vw, 360px);
+      height: min(52vw, 360px);
+      pointer-events: none;
+      z-index: 1;
+      will-change: transform;
+    }
+    .star-core__bloom {
+      position: absolute;
+      inset: -12%;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%,
+          rgba(255, 255, 255, 0.2) 0%,
+          rgba(126, 240, 255, 0.28) 18%,
+          rgba(46, 230, 255, 0.12) 40%,
+          rgba(232, 197, 106, 0.08) 55%,
+          transparent 72%);
+      filter: blur(6px);
+      animation: corePulse 6s ease-in-out infinite;
+    }
+    .star-core__art {
+      position: absolute;
+      inset: 0;
+      background: url("assets/star-core.jpg") center / contain no-repeat;
+      mix-blend-mode: screen;
+      opacity: 0.92;
+      filter: saturate(1.15) brightness(1.08) contrast(1.05);
+      mask-image: radial-gradient(circle at 50% 50%, #000 32%, rgba(0,0,0,0.85) 52%, transparent 72%);
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 32%, rgba(0,0,0,0.85) 52%, transparent 72%);
+      animation: corePulse 6s ease-in-out infinite;
+    }
+    .star-core__spark {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 18%;
+      height: 18%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(126,240,255,0.4) 40%, transparent 70%);
+      box-shadow: 0 0 30px rgba(126, 240, 255, 0.7), 0 0 60px rgba(46, 230, 255, 0.35);
+      animation: corePulse 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes corePulse {
+      0%, 100% { opacity: 0.82; filter: brightness(1) saturate(1.1); }
+      50% { opacity: 1; filter: brightness(1.18) saturate(1.2); }
+    }
+
+    /* Citadel hall floor — stone, runes, lightning (crest is separate layer) */
+    .hall-floor {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: min(68vh, 720px);
+      transform: translate3d(0, var(--py-floor), 0);
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(4, 10, 22, 0.1) 10%, rgba(4, 10, 22, 0.2) 100%),
+        url("assets/hall-floor.jpg") center 45% / cover no-repeat;
+      opacity: 0.62;
+      mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 10%, #000 28%, #000 100%);
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 10%, #000 28%, #000 100%);
+      pointer-events: none;
+      will-change: transform;
+    }
+    .hall-floor::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 50% 35% at 50% 12%, rgba(46, 230, 255, 0.12), transparent 55%),
+        /* lighter bottom so crest zone stays readable */
+        linear-gradient(180deg, transparent 55%, rgba(4, 8, 18, 0.2) 100%);
+      pointer-events: none;
+    }
+
+    /* Distant Thunderwolf Citadel silhouette — you're *inside* the cosmos hall */
+    .citadel-skyline {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: min(42vh, 420px);
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(4, 10, 24, 0.08) 40%, rgba(4, 12, 28, 0.35) 100%),
+        radial-gradient(ellipse 80% 40% at 50% 100%, rgba(46, 230, 255, 0.06), transparent 70%),
+        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(232, 197, 106, 0.04), transparent 60%);
+    }
+    .citadel-skyline::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 8%;
+      transform: translateX(-50%);
+      width: min(92vw, 1100px);
+      height: 55%;
+      opacity: 0.18;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(20, 36, 70, 0.9) 100%),
+        radial-gradient(ellipse 8% 70% at 18% 100%, rgba(16, 28, 55, 0.95) 40%, transparent 42%),
+        radial-gradient(ellipse 10% 85% at 28% 100%, rgba(18, 32, 62, 0.9) 38%, transparent 40%),
+        radial-gradient(ellipse 14% 100% at 50% 100%, rgba(22, 38, 72, 0.95) 42%, transparent 44%),
+        radial-gradient(ellipse 10% 80% at 72% 100%, rgba(18, 32, 62, 0.9) 38%, transparent 40%),
+        radial-gradient(ellipse 8% 65% at 84% 100%, rgba(16, 28, 55, 0.95) 40%, transparent 42%);
+      filter: blur(0.5px);
+    }
+    .citadel-skyline::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 12%;
+      transform: translateX(-50%);
+      width: min(40vw, 280px);
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(46,230,255,0.3), rgba(232,197,106,0.2), rgba(46,230,255,0.3), transparent);
+      box-shadow: 0 0 40px rgba(46, 230, 255, 0.2), 0 0 80px rgba(46, 230, 255, 0.08);
+      opacity: 0.55;
+    }
+
+    /* Dedicated wolf crest — always visible at hall floor (not buried in floor fade) */
+    /* Crest lives in footer seal (not clipped at viewport bottom) */
+    @keyframes crestPulse {
+      0%, 100% { opacity: 0.88; filter: brightness(1.2) contrast(1.12) saturate(0); }
+      50% { opacity: 1; filter: brightness(1.45) contrast(1.18) saturate(0); }
+    }
+
+    /* Soft vignette — keep center open so Star Core shows; ease bottom for crest */
+    .cosmos-vignette {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 75% at 50% 38%, transparent 22%, transparent 42%, rgba(2, 6, 16, 0.32) 100%),
+        linear-gradient(180deg, transparent 70%, rgba(2, 6, 16, 0.15) 100%);
+      pointer-events: none;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.65rem 1rem 3.5rem;
+    }
+
+    /* ── Header — floating glass citadel bar ── */
+    header.gate-header {
+      position: sticky;
+      top: 0.55rem;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      min-height: var(--header-h);
+      padding: 0.65rem 1rem;
+      margin: 0 0 0.85rem;
+      border-radius: 16px;
+      isolation: isolate;
+      background:
+        linear-gradient(135deg, rgba(12, 20, 40, 0.78), rgba(6, 12, 26, 0.72)),
+        rgba(4, 8, 18, 0.55);
+      backdrop-filter: blur(20px) saturate(1.25);
+      -webkit-backdrop-filter: blur(20px) saturate(1.25);
+      border: 1px solid rgba(46, 230, 255, 0.18);
+      box-shadow:
+        0 12px 36px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 0 28px rgba(46, 230, 255, 0.06);
+    }
+    header.gate-header::after {
+      content: "";
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      bottom: -1px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(46,230,255,0.45), rgba(232,197,106,0.35), rgba(46,230,255,0.45), transparent);
+      pointer-events: none;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .brand .mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      padding: 2px;
+      overflow: hidden;
+      background: linear-gradient(145deg, rgba(46, 230, 255, 0.55), rgba(232, 197, 106, 0.45));
+      border: none;
+      box-shadow:
+        0 0 0 1px rgba(126, 240, 255, 0.35),
+        0 0 28px rgba(46, 230, 255, 0.45),
+        0 0 16px rgba(232, 197, 106, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .brand .mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 11px;
+      /* Boost perceived brightness/contrast in the UI */
+      filter: contrast(1.12) saturate(1.15) brightness(1.08);
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: var(--fs-brand);
+      letter-spacing: var(--ls-brand);
+      line-height: 1.15;
+    }
+
+    .brand-title span {
+      background: linear-gradient(90deg, var(--cyan-soft), var(--gold-soft));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .brand-sub {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.45rem;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.86rem;
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 0.5rem 1.05rem;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--border-strong);
+      background: rgba(46,230,255,0.06);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1ad4f0, #0ea5c9);
+      color: #021018;
+      box-shadow: 0 0 24px var(--cyan-glow), inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 40px rgba(46,230,255,0.55), inset 0 1px 0 rgba(255,255,255,0.3);
+      filter: brightness(1.05);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #f0d78a, #c9a44a);
+      color: #1a1406;
+      box-shadow: 0 0 22px var(--gold-glow), inset 0 1px 0 rgba(255,255,255,0.35);
+    }
+    .btn-gold:hover {
+      box-shadow:
+        0 0 40px rgba(232, 197, 106, 0.6),
+        0 0 18px rgba(46, 230, 255, 0.35),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+      filter: brightness(1.08);
+    }
+
+    /* ── Intro + stats ── */
+    .intro-strip {
+      margin-bottom: 0.35rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem 1rem;
+      padding: 0.75rem 0 0.85rem;
+    }
+
+    .intro-line {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      max-width: 34rem;
+    }
+    .intro-line strong { color: var(--text); font-weight: 600; }
+
+    .stats { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .stat-pill {
+      display: flex;
+      align-items: baseline;
+      gap: 0.3rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(46,230,255,0.06);
+      border: 1px solid var(--border);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+    .stat-pill b {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      color: var(--cyan-soft);
+      font-weight: 700;
+    }
+    .stat-pill.gold b { color: var(--gold); }
+
+    /* ── Trending vs Explore (pump.fun order) ── */
+    .trending-block {
+      margin-top: 0.55rem;
+      margin-bottom: 0.75rem;
+      padding: 1rem 1rem 1.15rem;
+      border-radius: 18px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 55% 70% at 20% 30%, rgba(232, 197, 106, 0.14), transparent 58%),
+        radial-gradient(ellipse 50% 65% at 85% 20%, rgba(46, 230, 255, 0.12), transparent 55%),
+        radial-gradient(ellipse 40% 50% at 60% 90%, rgba(155, 140, 255, 0.07), transparent 50%),
+        linear-gradient(165deg, rgba(28, 24, 14, 0.6), rgba(8, 12, 24, 0.4));
+      border: 1px solid rgba(232, 197, 106, 0.28);
+      box-shadow:
+        0 0 0 1px rgba(232, 197, 106, 0.06) inset,
+        0 12px 40px rgba(0, 0, 0, 0.35),
+        0 0 48px rgba(232, 197, 106, 0.06);
+    }
+
+    .trending-block::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(232, 197, 106, 0.55), transparent);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Soft Gallery-only nebula + constellation (no busy noise) */
+    .gallery-nebula {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.9;
+      background:
+        radial-gradient(ellipse 45% 55% at 25% 40%, rgba(232, 197, 106, 0.1), transparent 70%),
+        radial-gradient(ellipse 40% 50% at 78% 55%, rgba(46, 230, 255, 0.09), transparent 68%);
+    }
+    .gallery-constellation {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+      background-image:
+        radial-gradient(1.5px 1.5px at 12% 28%, rgba(245, 224, 168, 0.7), transparent),
+        radial-gradient(1.5px 1.5px at 28% 18%, rgba(126, 240, 255, 0.65), transparent),
+        radial-gradient(1px 1px at 42% 35%, rgba(255,255,255,0.45), transparent),
+        radial-gradient(1.5px 1.5px at 70% 22%, rgba(126, 240, 255, 0.55), transparent),
+        radial-gradient(1px 1px at 88% 40%, rgba(245, 224, 168, 0.5), transparent),
+        linear-gradient(105deg, transparent 20%, rgba(46,230,255,0.08) 21%, transparent 22%),
+        linear-gradient(155deg, transparent 35%, rgba(232,197,106,0.07) 36%, transparent 37%);
+    }
+    .trending-block > .trending-head,
+    .trending-block > .echoes-stage {
+      position: relative;
+      z-index: 1;
+    }
+
+    .trending-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.9rem;
+      flex-wrap: wrap;
+    }
+
+    .trending-title {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-family: var(--font-display);
+      font-size: var(--fs-h2);
+      font-weight: 800;
+      letter-spacing: var(--ls-h2);
+      color: var(--text);
+      margin: 0;
+    }
+
+    .trending-title .bolt {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      padding: 2px;
+      background: linear-gradient(145deg, rgba(46, 230, 255, 0.45), rgba(232, 197, 106, 0.4));
+      border: none;
+      box-shadow: 0 0 16px rgba(46, 230, 255, 0.3), 0 0 12px var(--gold-glow);
+    }
+    .trending-title .bolt img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 8px;
+      filter: contrast(1.1) saturate(1.12) brightness(1.06);
+    }
+
+    .trending-badge {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      color: #1a1406;
+      background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+      box-shadow: 0 0 18px var(--gold-glow);
+      animation: badgePulse 3.2s ease-in-out infinite;
+    }
+    @keyframes badgePulse {
+      0%, 100% { box-shadow: 0 0 14px var(--gold-glow); }
+      50% { box-shadow: 0 0 26px rgba(232, 197, 106, 0.55); }
+    }
+
+    .trending-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .explore-block {
+      margin-top: 1.35rem;
+      padding-top: 0.5rem;
+      padding-top: 0.35rem;
+      border-top: 1px solid rgba(46, 230, 255, 0.08);
+    }
+
+    /* ── Toolbar — solid sticky under header ── */
+    .toolbar {
+      position: sticky;
+      top: var(--header-h);
+      z-index: 40;
+      padding: 0.55rem 0.85rem 0.7rem;
+      margin: 0 -0.35rem 0.55rem;
+      border-radius: 14px;
+      background: rgba(4, 8, 18, 0.94);
+      backdrop-filter: blur(16px) saturate(1.15);
+      -webkit-backdrop-filter: blur(16px) saturate(1.15);
+      border: 1px solid rgba(46, 230, 255, 0.12);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 1px;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+
+    .chip {
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.1);
+      background: rgba(8, 14, 28, 0.9);
+      color: var(--text-dim);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .chip:hover {
+      color: var(--text);
+      border-color: var(--border-strong);
+      background: rgba(16, 28, 48, 0.95);
+    }
+    .chip.active {
+      color: #021018;
+      background: linear-gradient(135deg, var(--cyan-soft), var(--cyan));
+      border-color: transparent;
+      box-shadow: 0 0 18px var(--cyan-glow);
+      font-weight: 700;
+    }
+
+    .feed-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      flex-wrap: wrap;
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: min(100%, 220px);
+      max-width: 320px;
+      position: relative;
+    }
+    .search-wrap input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.82rem;
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(46, 230, 255, 0.14);
+      border-radius: 999px;
+      padding: 0.42rem 2rem 0.42rem 2rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-wrap input.has-value {
+      padding-right: 2.15rem;
+    }
+    .search-wrap input::placeholder { color: var(--text-dim); }
+    .search-wrap input:focus {
+      border-color: var(--border-strong);
+      box-shadow: 0 0 0 3px rgba(46, 230, 255, 0.1);
+    }
+    .search-wrap .search-icon {
+      position: absolute;
+      left: 0.7rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem;
+      opacity: 0.65;
+      pointer-events: none;
+    }
+    .search-clear {
+      position: absolute;
+      right: 0.35rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.45rem;
+      height: 1.45rem;
+      border-radius: 50%;
+      border: none;
+      background: rgba(46, 230, 255, 0.12);
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1;
+      cursor: pointer;
+      display: none;
+      place-items: center;
+      font-family: inherit;
+      padding: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .search-clear:hover {
+      background: rgba(46, 230, 255, 0.22);
+      color: var(--cyan-soft);
+    }
+    .search-wrap.has-query .search-clear {
+      display: grid;
+    }
+
+    .live-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--cyan-soft);
+      font-weight: 600;
+    }
+    .live-dot::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+
+    /* ── Section labels ── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin: 0.85rem 0 0.7rem;
+    }
+    .section-label-plain {
+      margin: 0 0 0.75rem;
+      font-size: 1.05rem;
+    }
+    .section-label span {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .section-label:not(.section-label-plain)::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* ── Trending stage + edge fade + arrows ── */
+    .echoes-stage {
+      position: relative;
+    }
+    .echoes-stage::before,
+    .echoes-stage::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0.55rem;
+      width: 40px;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .echoes-stage::before {
+      left: 0;
+      background: linear-gradient(90deg, rgba(18, 14, 8, 0.9), transparent);
+      border-radius: 12px 0 0 12px;
+    }
+    .echoes-stage::after {
+      right: 0;
+      background: linear-gradient(270deg, rgba(18, 14, 8, 0.9), transparent);
+      border-radius: 0 12px 12px 0;
+    }
+
+    .echo-nav {
+      position: absolute;
+      top: 42%;
+      transform: translateY(-50%);
+      z-index: 5;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(232, 197, 106, 0.45);
+      background: rgba(8, 10, 18, 0.88);
+      color: var(--gold-soft);
+      font-size: 1.15rem;
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), 0 0 14px rgba(232, 197, 106, 0.12);
+      transition: background 0.15s, border-color 0.15s, transform 0.15s, opacity 0.15s;
+    }
+    .echo-nav:hover {
+      background: rgba(28, 24, 12, 0.95);
+      border-color: rgba(245, 224, 168, 0.75);
+      transform: translateY(-50%) scale(1.06);
+    }
+    .echo-nav:disabled {
+      opacity: 0.25;
+      pointer-events: none;
+    }
+    .echo-nav.prev { left: 0.35rem; }
+    .echo-nav.next { right: 0.35rem; }
+
+    @media (max-width: 520px) {
+      .echo-nav { width: 30px; height: 30px; font-size: 1rem; }
+    }
+
+    /* Skeleton loaders */
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .skel {
+      background: linear-gradient(
+        90deg,
+        rgba(16, 24, 44, 0.9) 0%,
+        rgba(36, 48, 72, 0.95) 45%,
+        rgba(16, 24, 44, 0.9) 90%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.35s ease-in-out infinite;
+      border-radius: 10px;
+    }
+    .skel-tile {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: rgba(8, 12, 24, 0.8);
+    }
+    .skel-media {
+      aspect-ratio: 1;
+      border-radius: 0;
+    }
+    .skel-lines {
+      padding: 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .skel-line { height: 10px; border-radius: 6px; }
+    .skel-line.w70 { width: 70%; }
+    .skel-line.w40 { width: 40%; }
+    .skel-echo {
+      flex: 0 0 min(280px, 78vw);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid rgba(232, 197, 106, 0.2);
+    }
+    .echo-media .tile-badge-row {
+      z-index: 2;
+    }
+    .echo-media .tile-resonance {
+      z-index: 2;
+    }
+
+    .echoes-scroll {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding: 0.2rem 0.35rem 0.65rem;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(232, 197, 106, 0.45) rgba(0, 0, 0, 0.2);
+    }
+    .echoes-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .echoes-scroll::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 999px;
+    }
+    .echoes-scroll::-webkit-scrollbar-thumb {
+      background: linear-gradient(90deg, rgba(232, 197, 106, 0.35), rgba(232, 197, 106, 0.7));
+      border-radius: 999px;
+    }
+
+    .echo-card {
+      flex: 0 0 min(280px, 78vw);
+      scroll-snap-align: start;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(20, 18, 12, 0.9), rgba(10, 14, 26, 0.95));
+      border: 1px solid rgba(232, 197, 106, 0.4);
+      cursor: pointer;
+      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+      box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.4),
+        0 0 24px rgba(232, 197, 106, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+    }
+    .echo-card:hover {
+      transform: translateY(-3px) scale(1.02);
+      border-color: rgba(245, 224, 168, 0.8);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 40px rgba(232, 197, 106, 0.2);
+    }
+
+    @media (min-width: 900px) {
+      .echo-card {
+        flex: 0 0 min(300px, 28vw);
+      }
+    }
+
+    /* 1:1 matches cover art — landscape crop was cutting height */
+    .echo-media {
+      aspect-ratio: 1 / 1;
+      position: relative;
+      overflow: hidden;
+      background: #061018;
+    }
+    .echo-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+    .echo-card:hover .echo-media img {
+      transform: scale(1.03);
+    }
+    .media-fallback {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(46,230,255,0.22), transparent 55%),
+        radial-gradient(circle at 75% 80%, rgba(232,197,106,0.14), transparent 50%),
+        linear-gradient(145deg, #0a1630, #0e0c24 55%, #081018);
+    }
+    .media-fallback span {
+      font-size: 2.75rem;
+      filter: drop-shadow(0 0 14px rgba(46, 230, 255, 0.4));
+      z-index: 1;
+    }
+    .media-fallback::after {
+      content: "CITADEL";
+      position: absolute;
+      bottom: 0.55rem;
+      font-size: 0.55rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: rgba(126, 240, 255, 0.45);
+    }
+    .echo-media .media-fallback span { font-size: 3rem; }
+
+    /* Light bottom fade only — keep art readable, don't hide half the image */
+    .echo-media::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 28%;
+      background: linear-gradient(180deg, transparent, rgba(6, 8, 16, 0.55));
+      pointer-events: none;
+      z-index: 1;
+    }
+    .echo-body {
+      padding: 0.6rem 0.7rem 0.7rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.12rem;
+      flex: 1;
+    }
+    .echo-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--fs-card);
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.2em;
+    }
+    .echo-ticker {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+    }
+    .echo-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      margin-top: 0.35rem;
+      font-size: var(--fs-meta);
+      letter-spacing: var(--ls-meta);
+      color: var(--text-dim);
+    }
+    .echo-meta .creator {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 58%;
+    }
+
+    /* ── GRID FEED (pump.fun style) ── */
+    .feed-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+      gap: 0.85rem;
+    }
+
+    @media (min-width: 640px) {
+      .feed-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .feed-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+
+    .tile {
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: linear-gradient(165deg, rgba(18, 28, 50, 0.96) 0%, rgba(10, 16, 32, 0.98) 55%, rgba(8, 12, 24, 0.99) 100%);
+      border: 1px solid rgba(46, 230, 255, 0.14);
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      display: flex;
+      flex-direction: column;
+      box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.32),
+        0 2px 6px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      position: relative;
+    }
+    .tile:hover {
+      transform: translateY(-4px) scale(1.02);
+      border-color: rgba(46, 230, 255, 0.35);
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.45),
+        0 0 28px rgba(46, 230, 255, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .tile.is-featured {
+      border-color: rgba(232, 197, 106, 0.48);
+      box-shadow:
+        0 10px 26px rgba(0, 0, 0, 0.34),
+        0 0 0 1px rgba(232, 197, 106, 0.14),
+        0 0 28px rgba(232, 197, 106, 0.14),
+        inset 0 1px 0 rgba(255, 240, 200, 0.1);
+    }
+    .tile.is-featured:hover {
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(232, 197, 106, 0.28),
+        0 0 36px rgba(232, 197, 106, 0.22),
+        inset 0 1px 0 rgba(255, 240, 200, 0.12);
+    }
+    .tile.is-featured::before {
+      content: "⚡";
+      position: absolute;
+      top: 0.4rem;
+      right: 0.45rem;
+      z-index: 3;
+      font-size: 0.72rem;
+      opacity: 0.9;
+      filter: drop-shadow(0 0 8px rgba(232, 197, 106, 0.85));
+      pointer-events: none;
+    }
+
+    /* Square media — same visual weight as pump.fun coin art */
+    .tile-media {
+      position: relative;
+      aspect-ratio: var(--tile-media);
+      width: 100%;
+      overflow: hidden;
+      background: #050a14;
+    }
+    .tile-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+    .tile:hover .tile-media img {
+      transform: scale(1.04);
+    }
+
+
+    .tile-badge-row {
+      position: absolute;
+      top: 0.4rem;
+      left: 0.4rem;
+      right: 1.4rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      z-index: 2;
+    }
+
+    .badge {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.45rem;
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
+      border: 1px solid transparent;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .badge-type {
+      background: rgba(2, 14, 28, 0.82);
+      color: var(--cyan-soft);
+      border-color: rgba(46, 230, 255, 0.4);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 0 10px rgba(46, 230, 255, 0.12);
+    }
+    .badge-featured {
+      background: linear-gradient(135deg, rgba(60, 44, 12, 0.92), rgba(40, 30, 8, 0.9));
+      color: var(--gold-soft);
+      border-color: rgba(232, 197, 106, 0.55);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 0 12px rgba(232, 197, 106, 0.22), inset 0 1px 0 rgba(255, 240, 200, 0.15);
+    }
+    .badge-semi {
+      background: rgba(28, 18, 48, 0.88);
+      color: #d4c4ff;
+      border-color: rgba(167, 139, 250, 0.45);
+    }
+    .badge-official {
+      background: linear-gradient(135deg, rgba(0, 50, 62, 0.92), rgba(0, 32, 48, 0.9));
+      color: #fff;
+      border-color: rgba(46, 230, 255, 0.55);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 0 12px rgba(46, 230, 255, 0.18);
+    }
+
+    .tile-resonance {
+      position: absolute;
+      bottom: 0.45rem;
+      right: 0.45rem;
+      z-index: 2;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 0.78rem;
+      color: var(--mint);
+      background: rgba(2, 14, 18, 0.86);
+      border: 1px solid rgba(52, 211, 153, 0.48);
+      padding: 0.22rem 0.5rem;
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
+      text-shadow: 0 0 12px rgba(52, 211, 153, 0.55);
+      box-shadow:
+        0 0 16px rgba(52, 211, 153, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .tile.is-featured .tile-resonance {
+      border-color: rgba(232, 197, 106, 0.45);
+      color: #b8f5d4;
+      box-shadow:
+        0 0 16px rgba(52, 211, 153, 0.15),
+        0 0 10px rgba(232, 197, 106, 0.12),
+        inset 0 1px 0 rgba(255, 240, 200, 0.12);
+    }
+
+    .tile-body {
+      padding: 0.6rem 0.65rem 0.7rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.12rem;
+      flex: 1;
+    }
+
+    .tile-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--fs-card);
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.2em;
+    }
+
+    .tile-ticker {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+    }
+
+    .tile-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      margin-top: 0.4rem;
+      font-size: var(--fs-meta);
+      letter-spacing: var(--ls-meta);
+      color: var(--text-dim);
+    }
+
+    .tile-meta .creator {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 58%;
+    }
+
+    .tile-meta .right {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+
+    .howl-btn {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.22rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.35);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .howl-btn:hover, .howl-btn.howled {
+      color: var(--cyan-soft);
+      border-color: var(--border-strong);
+      background: rgba(46,230,255,0.12);
+      box-shadow: 0 0 12px rgba(46, 230, 255, 0.15);
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3.25rem 1.5rem;
+      border: 1px dashed rgba(46, 230, 255, 0.22);
+      border-radius: 18px;
+      color: var(--text-muted);
+      background:
+        radial-gradient(ellipse 60% 70% at 50% 30%, rgba(46, 230, 255, 0.08), transparent 60%),
+        rgba(6, 10, 20, 0.6);
+    }
+    .empty-icon {
+      margin: 0 auto 0.85rem;
+      width: 88px;
+      height: 88px;
+      filter: drop-shadow(0 0 20px rgba(46, 230, 255, 0.35));
+    }
+    .empty-icon svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .empty-icon.emoji {
+      font-size: 2.5rem;
+      width: auto;
+      height: auto;
+    }
+    .empty strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 0.4rem;
+      font-family: var(--font-display);
+      font-size: var(--fs-h2);
+      letter-spacing: var(--ls-h2);
+      font-weight: 800;
+    }
+    .empty p { font-size: 0.88rem; max-width: 22rem; margin: 0 auto 1rem; color: var(--text-muted); }
+    .empty .btn { margin-top: 0.25rem; }
+
+    .explore-heading {
+      font-family: var(--font-display);
+      font-size: var(--fs-h2);
+      font-weight: 800;
+      letter-spacing: var(--ls-h2);
+      margin: 0 0 1rem;
+      color: var(--text);
+    }
+
+    /* ── Modals ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(2, 4, 12, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    @media (min-width: 640px) {
+      .modal-overlay { align-items: center; }
+    }
+
+    .modal {
+      width: min(520px, 100%);
+      max-height: min(92vh, 780px);
+      overflow-y: auto;
+      background:
+        radial-gradient(ellipse 80% 40% at 50% 0%, rgba(232, 197, 106, 0.08), transparent 50%),
+        linear-gradient(180deg, #0e1630 0%, #080e1c 100%);
+      border: 1px solid rgba(232, 197, 106, 0.28);
+      border-radius: 18px;
+      box-shadow:
+        0 24px 80px rgba(0,0,0,0.65),
+        0 0 50px rgba(46,230,255,0.08),
+        0 0 40px rgba(232, 197, 106, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      padding: 1.25rem 1.3rem 1.4rem;
+      transform: translateY(16px) scale(0.98);
+      transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .gate-steps {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .gate-step {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.15);
+      color: var(--text-dim);
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .gate-step.on {
+      color: #1a1406;
+      background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+      border-color: transparent;
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.3rem;
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+    .modal-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .close-btn:hover { color: var(--text); border-color: var(--border-strong); }
+
+    .form-group { margin-bottom: 0.85rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.3rem;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text);
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.75rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(46,230,255,0.12);
+    }
+    .form-group textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+    .form-group select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%238b9bb8'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.8rem center;
+      padding-right: 2rem;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+    }
+    .form-hint {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 0.3rem;
+    }
+
+    /* Image picker */
+    .image-picker {
+      border: 1px dashed rgba(232, 197, 106, 0.35);
+      border-radius: var(--radius-sm);
+      background: rgba(0,0,0,0.25);
+      padding: 0.75rem;
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 0.85rem;
+      align-items: start;
+    }
+    .image-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #061018;
+      border: 1px solid rgba(232, 197, 106, 0.4);
+      display: grid;
+      place-items: center;
+      font-size: 1.8rem;
+      flex-shrink: 0;
+      box-shadow: 0 0 22px rgba(232, 197, 106, 0.15);
+      aspect-ratio: 1;
+    }
+    .image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .image-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      min-width: 0;
+    }
+    .image-actions input[type="file"] {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      padding: 0;
+      border: none;
+      background: none;
+    }
+    .image-actions input[type="url"] {
+      font-size: 0.82rem;
+      padding: 0.45rem 0.6rem;
+    }
+    .image-clear {
+      align-self: flex-start;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: inherit;
+    }
+    .image-clear:hover { color: var(--text-muted); }
+
+    .form-actions {
+      display: flex;
+      gap: 0.55rem;
+      justify-content: flex-end;
+      margin-top: 1rem;
+    }
+
+    /* Detail */
+    .detail-hero {
+      aspect-ratio: 1;
+      max-height: 280px;
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 0.9rem;
+      background: #061018;
+      border: 1px solid var(--border);
+    }
+    .detail-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .detail-hero .fallback {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      font-size: 4rem;
+      background: linear-gradient(145deg, #0a1428, #0e0c22);
+    }
+    .detail-body { font-size: 0.9rem; color: var(--text-muted); line-height: 1.55; }
+    .detail-body p { margin-bottom: 0.75rem; }
+    .detail-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 0.7rem;
+    }
+    .detail-tags .badge {
+      font-size: 0.65rem;
+      backdrop-filter: none;
+    }
+    .detail-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      margin-bottom: 0.9rem;
+    }
+    .detail-meta-grid div {
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text);
+    }
+    .detail-meta-grid b {
+      display: block;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 0.12rem;
+      font-weight: 600;
+    }
+
+    /* ── Closing seal: Vision + crest + Powered by ── */
+    footer.about {
+      margin-top: 3.25rem;
+      margin-bottom: 2rem;
+      padding: 0;
+      border: none;
+      background: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .footer-vision {
+      width: 100%;
+      max-width: 640px;
+      padding: 1.5rem 1.4rem 1.35rem;
+      border-radius: 18px;
+      border: 1px solid rgba(46, 230, 255, 0.16);
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(46, 230, 255, 0.08), transparent 55%),
+        radial-gradient(ellipse 50% 50% at 100% 100%, rgba(232, 197, 106, 0.05), transparent 50%),
+        rgba(8, 14, 28, 0.72);
+      backdrop-filter: blur(12px);
+      box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      text-align: center;
+    }
+    .footer-vision h2 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      margin: 0 0 0.65rem;
+      background: linear-gradient(90deg, var(--cyan-soft), var(--gold-soft));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .footer-vision .vision-body {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin: 0 auto 1rem;
+      max-width: 34rem;
+    }
+    .about-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.55rem;
+    }
+    .about-links a {
+      color: var(--cyan-soft);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.18);
+      background: rgba(0, 0, 0, 0.25);
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    .about-links a:hover {
+      border-color: rgba(46, 230, 255, 0.4);
+      background: rgba(46, 230, 255, 0.08);
+      box-shadow: 0 0 16px rgba(46, 230, 255, 0.15);
+    }
+
+    .footer-seal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 2.25rem;
+      padding: 0.75rem 1rem 0.5rem;
+      position: relative;
+      gap: 0.15rem;
+    }
+    .footer-seal::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(220px, 55vw);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), rgba(232,197,106,0.45), rgba(255,255,255,0.35), transparent);
+    }
+    /* Circular seal — no black box */
+    .footer-crest {
+      width: min(210px, 52vw);
+      height: min(210px, 52vw);
+      margin: 1.35rem 0 1rem;
+      position: relative;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      overflow: visible;
+    }
+    .footer-crest__bloom {
+      position: absolute;
+      inset: -28%;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%,
+          rgba(255, 255, 255, 0.28) 0%,
+          rgba(255, 255, 255, 0.1) 32%,
+          rgba(46, 230, 255, 0.05) 48%,
+          transparent 70%);
+      filter: blur(16px);
+      animation: crestPulse 7s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .footer-crest__ring {
+      position: absolute;
+      inset: 4%;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 0 24px rgba(255, 255, 255, 0.08),
+        inset 0 0 20px rgba(255, 255, 255, 0.04);
+      pointer-events: none;
+    }
+    .footer-crest__art {
+      position: absolute;
+      inset: 8%;
+      border-radius: 50%;
+      background: url("assets/wolf-crest-exact.jpg") center / 88% no-repeat;
+      mix-blend-mode: screen;
+      filter: brightness(1.45) contrast(1.22) saturate(0);
+      animation: crestPulse 7s ease-in-out infinite;
+      /* Soft circular crop — no square frame */
+      mask-image: radial-gradient(circle at 50% 50%, #000 52%, rgba(0,0,0,0.85) 68%, transparent 78%);
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 52%, rgba(0,0,0,0.85) 68%, transparent 78%);
+    }
+    .powered {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 0;
+      text-align: center;
+    }
+    .powered-kicker {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.75);
+    }
+    .powered-line {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+    .powered-line em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--cyan-soft), #fff, var(--gold-soft));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .powered-howl {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.4rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      z-index: 200;
+      padding: 0.7rem 1.2rem;
+      border-radius: 999px;
+      background: #0c1a2e;
+      border: 1px solid var(--border-strong);
+      color: var(--cyan-soft);
+      font-weight: 600;
+      font-size: 0.86rem;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 28px var(--cyan-glow);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 640px) {
+      .brand-sub { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .image-picker { grid-template-columns: 80px 1fr; }
+      .image-preview { width: 80px; height: 80px; }
+      .btn-label-long { display: none; }
+    }
+    @media (min-width: 641px) {
+      .btn-label-short { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cosmos" aria-hidden="true">
+    <div class="bolt-sky"></div>
+    <div class="lightning-vein"></div>
+    <div class="lightning-vein alt"></div>
+    <div class="hall-floor"></div>
+    <div class="citadel-skyline"></div>
+    <div class="star-core" title="Star Core">
+      <div class="star-core__bloom"></div>
+      <div class="star-core__art" role="img" aria-label="Star Core"></div>
+      <div class="star-core__spark"></div>
+    </div>
+    <div class="cosmos-vignette"></div>
+  </div>
+
+  <div class="app">
+    <header class="gate-header">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <img src="assets/citadel-mark.jpg" alt="" width="48" height="48" />
+        </div>
+        <div>
+          <div class="brand-title">Thunderwolf <span>Citadel Gate</span></div>
+          <div class="brand-sub">Sacred workshop of the Pack · one place for every creation</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-ghost" id="btnAbout">Vision</button>
+        <button type="button" class="btn btn-primary" id="btnSubmit">
+          <span class="btn-label-short">Submit</span>
+          <span class="btn-label-long">Submit to Citadel</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="intro-strip">
+      <p class="intro-line">
+        <strong>Live Creation Feed.</strong>
+        Image-first hall — attach art, pass the Gate, feed the Star Core.
+      </p>
+      <div class="stats">
+        <div class="stat-pill"><b id="statCount">0</b> creations</div>
+        <div class="stat-pill"><b id="statNew">0</b> new</div>
+        <div class="stat-pill gold"><b id="statFeatured">0</b> featured</div>
+      </div>
+    </div>
+
+    <!-- 1) Featured / Gallery of Echoes  = pump.fun "Trending now" (hero strip) -->
+    <section id="echoesSection" class="trending-block" aria-label="Gallery of Echoes">
+      <div class="gallery-nebula" aria-hidden="true"></div>
+      <div class="gallery-constellation" aria-hidden="true"></div>
+      <div class="trending-head">
+        <h2 class="trending-title">
+          <span class="bolt" aria-hidden="true">
+            <img src="assets/citadel-mark.jpg" alt="" width="32" height="32" />
+          </span>
+          Gallery of Echoes
+        </h2>
+        <div style="display:flex;align-items:center;gap:0.65rem;flex-wrap:wrap;">
+          <span class="trending-badge">Featured</span>
+          <span class="trending-hint">Highest Resonance · Pack honors</span>
+        </div>
+      </div>
+      <div class="echoes-stage">
+        <button type="button" class="echo-nav prev" id="echoPrev" aria-label="Previous featured">‹</button>
+        <button type="button" class="echo-nav next" id="echoNext" aria-label="Next featured">›</button>
+        <div class="echoes-scroll" id="echoesScroll"></div>
+      </div>
+    </section>
+
+    <!-- 2) Explore = pump.fun "Explore coins" (filters + grid) -->
+    <section class="explore-block" aria-label="Explore creations">
+      <h2 class="explore-heading">Explore creations</h2>
+
+      <div class="toolbar" id="exploreToolbar">
+        <div class="filter-row" id="sortFilters">
+          <button type="button" class="chip active" data-sort="new">New</button>
+          <button type="button" class="chip" data-sort="rising">Rising</button>
+        </div>
+        <div class="filter-row" id="typeFilters">
+          <button type="button" class="chip active" data-type="all">All</button>
+          <button type="button" class="chip" data-type="mini-quest">Mini-Quest</button>
+          <button type="button" class="chip" data-type="story-branch">Story Branch</button>
+          <button type="button" class="chip" data-type="codex">Codex</button>
+          <button type="button" class="chip" data-type="crystal-challenge">Crystal Challenge</button>
+          <button type="button" class="chip" data-type="ar-portal">AR Portal</button>
+          <button type="button" class="chip" data-type="sprint-path">Sprint Path</button>
+          <button type="button" class="chip" data-type="resonance-event">Resonance Event</button>
+          <button type="button" class="chip" data-type="remix">Remix</button>
+        </div>
+        <div class="feed-meta">
+          <span class="live-dot">Living Index</span>
+          <div class="search-wrap" id="searchWrap">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              id="searchInput"
+              placeholder="Search creations, creators…  (/)"
+              autocomplete="off"
+              aria-label="Search creations"
+            />
+            <button type="button" class="search-clear" id="searchClear" aria-label="Clear search" title="Clear search">×</button>
+          </div>
+          <span id="showingCount">Showing 0</span>
+        </div>
+      </div>
+
+      <div class="feed-grid" id="feed" role="list"></div>
+    </section>
+
+    <footer class="about" id="about">
+      <div class="footer-vision">
+        <h2>The Thunderwolf Citadel</h2>
+        <p class="vision-body">
+          One living place where Pack creations gather. Creators shape the <em>soul</em> — story, feel, and image.
+          The Gate binds work to the Official Wrapper so Resonance and the Star Core stay shared.
+        </p>
+        <div class="about-links">
+          <a href="https://x.com/StarBoltSprint" target="_blank" rel="noopener">@StarBoltSprint</a>
+          <a href="https://x.com/SMiR123451" target="_blank" rel="noopener">@SMiR123451</a>
+          <a href="https://x.com/grok" target="_blank" rel="noopener">@grok</a>
+        </div>
+      </div>
+
+      <div class="footer-seal">
+        <div class="footer-crest" title="Thunderwolf Crest">
+          <div class="footer-crest__bloom"></div>
+          <div class="footer-crest__ring" aria-hidden="true"></div>
+          <div class="footer-crest__art" role="img" aria-label="Thunderwolf crest"></div>
+        </div>
+        <p class="powered">
+          <span class="powered-kicker">Forged in the hall</span>
+          <span class="powered-line">Powered by <em>xAI &amp; YOU</em></span>
+          <span class="powered-howl">AROO · ⚡ · Pack</span>
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Submit -->
+  <div class="modal-overlay" id="submitModal" role="dialog" aria-modal="true" aria-labelledby="submitTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 class="modal-title" id="submitTitle">Publishing Gate</h2>
+        <button type="button" class="close-btn" data-close aria-label="Close">&times;</button>
+      </div>
+      <p class="modal-sub">
+        Attach cover art (like a coin on the board), then release your creation into the living hall.
+      </p>
+      <div class="gate-steps" aria-hidden="true">
+        <span class="gate-step on">1 · Soul</span>
+        <span class="gate-step on">2 · Cover</span>
+        <span class="gate-step on">3 · Gate</span>
+      </div>
+      <form id="submitForm">
+        <div class="form-group">
+          <label for="fTitle">Title (soul)</label>
+          <input id="fTitle" name="title" required maxlength="80" placeholder="Name of your spark…" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fType">Type</label>
+            <select id="fType" name="type" required>
+              <option value="mini-quest">Mini-Quest</option>
+              <option value="story-branch">Story Branch</option>
+              <option value="codex">Codex Entry</option>
+              <option value="crystal-challenge">Crystal Challenge</option>
+              <option value="ar-portal">AR Portal</option>
+              <option value="sprint-path">Sprint Path</option>
+              <option value="resonance-event">Resonance Event</option>
+              <option value="remix">Remix</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="fCreator">Creator</label>
+            <input id="fCreator" name="creator" required maxlength="40" placeholder="@handle or name" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="fDesc">Description / soul of the work</label>
+          <textarea id="fDesc" name="description" required maxlength="600" placeholder="What does the Pack experience?"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Cover image</label>
+          <div class="image-picker">
+            <div class="image-preview" id="imagePreview" aria-hidden="true">⚡</div>
+            <div class="image-actions">
+              <input type="file" id="fImageFile" accept="image/*" />
+              <input type="url" id="fImageUrl" placeholder="…or paste image URL" />
+              <button type="button" class="image-clear" id="clearImage">Clear image</button>
+              <p class="form-hint">Square works best (1:1). Shown large on the feed like pump.fun coins.</p>
+            </div>
+          </div>
+          <input type="hidden" id="fImageData" name="image" />
+        </div>
+        <div class="form-group">
+          <label for="fLink">Link or full text (optional)</label>
+          <input id="fLink" name="link" maxlength="500" placeholder="URL or leave blank" />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+          <button type="submit" class="btn btn-gold">Pass the Gate ⚡</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detail -->
+  <div class="modal-overlay" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 class="modal-title" id="detailTitle">Creation</h2>
+        <button type="button" class="close-btn" data-close-detail aria-label="Close">&times;</button>
+      </div>
+      <div class="detail-hero" id="detailHero"></div>
+      <div id="detailContent" class="detail-body"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close-detail>Close</button>
+        <button type="button" class="btn btn-primary" id="detailHowl">Howl 🐺</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const STORAGE_KEY = "citadel-gate-v1";
+    const HOWL_KEY = "citadel-gate-howls-v1";
+    const OVERRIDE_KEY = "citadel-gate-overrides-v1";
+    const MAX_IMAGE_BYTES = 700000; // keep localStorage sane (~0.7MB)
+
+    const TYPE_META = {
+      "mini-quest":        { label: "Mini-Quest",        emoji: "⚡", short: "QUEST" },
+      "story-branch":      { label: "Story Branch",      emoji: "📖", short: "STORY" },
+      "codex":             { label: "Codex",             emoji: "📜", short: "CODEX" },
+      "crystal-challenge": { label: "Crystal Challenge", emoji: "💎", short: "CRYSTAL" },
+      "ar-portal":         { label: "AR Portal",         emoji: "🌀", short: "AR" },
+      "sprint-path":       { label: "Sprint Path",       emoji: "🏃", short: "SPRINT" },
+      "resonance-event":   { label: "Resonance Event",   emoji: "🌊", short: "PULSE" },
+      "remix":             { label: "Remix",             emoji: "🔁", short: "REMIX" },
+    };
+
+    /** Boltverse cover art (Imagine) — one image per seed creation */
+    const COVER = {
+      lightning: "covers/lightning-dash.jpg",
+      seed: "covers/silent-seed.jpg",
+      howl: "covers/pack-howl.jpg",
+      rift: "covers/crystal-rift.jpg",
+      laws: "covers/six-laws.jpg",
+      ladder: "covers/nebula-ladder.jpg",
+      wing: "covers/thunderwing.jpg",
+      quiet: "covers/storm-quiet.jpg",
+      gate: "covers/gate-howls.jpg",
+      gather: "covers/first-gathering.jpg",
+    };
+
+    const SEED = [
+      {
+        id: "seed-1",
+        title: "Lightning Dash: Storm Orbs",
+        type: "mini-quest",
+        description: "Sprint a storm corridor. Collect 12 storm orbs before the timer. Pure Bolt energy — short, loud, alive.",
+        creator: "Forge Hero · SmiR",
+        link: "",
+        image: COVER.lightning,
+        resonance: 98,
+        howls: 142,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 60 * 6,
+      },
+      {
+        id: "seed-2",
+        title: "The Silent Seed",
+        type: "story-branch",
+        description: "A dormant Guardian seed waits under crystal ice. Awaken it — or protect its silence.",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: COVER.seed,
+        resonance: 94,
+        howls: 88,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 60 * 20,
+      },
+      {
+        id: "seed-3",
+        title: "Pack Howl: Core Charge",
+        type: "resonance-event",
+        description: "Synchronized Howl with the Pack. Every voice feeds the Star Core.",
+        creator: "Citadel Official",
+        link: "",
+        image: COVER.howl,
+        resonance: 99,
+        howls: 420,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 60 * 30,
+      },
+      {
+        id: "seed-4",
+        title: "Crystal Rift Sweep",
+        type: "ar-portal",
+        description: "Close three micro-rifts on any flat surface near you.",
+        creator: "Portal Pack",
+        link: "",
+        image: COVER.rift,
+        resonance: 88,
+        howls: 61,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 60 * 8,
+      },
+      {
+        id: "seed-5",
+        title: "Six Laws of a Living Universe",
+        type: "codex",
+        description: "Wrapper · Shared Heart · Living Citadel · Two Paths · Coherence · Small Sprint.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.laws,
+        resonance: 96,
+        howls: 112,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 60 * 48,
+      },
+      {
+        id: "seed-6",
+        title: "Nebula Ladder",
+        type: "crystal-challenge",
+        description: "Five insight crystals. Each answer opens a higher rung.",
+        creator: "Crystal Choir",
+        link: "",
+        image: COVER.ladder,
+        resonance: 76,
+        howls: 34,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 60 * 12,
+      },
+      {
+        id: "seed-7",
+        title: "Thunderwing Circuit",
+        type: "sprint-path",
+        description: "New biome track: gold lightning through violet clouds.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: COVER.wing,
+        resonance: 81,
+        howls: 47,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 60 * 3,
+      },
+      {
+        id: "seed-8",
+        title: "Storm Orbs — Quiet Mode",
+        type: "remix",
+        description: "Remix of Lightning Dash: half speed, double orbs, ambient score.",
+        creator: "Echo Forge",
+        link: "",
+        image: COVER.quiet,
+        resonance: 72,
+        howls: 29,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 90,
+      },
+      {
+        id: "seed-9",
+        title: "Opening Spark: Gate of Howls",
+        type: "story-branch",
+        description: "You stand before the Publishing Gate at dusk. Publish unfinished fire — or wait one more moon?",
+        creator: "Pack Pup · Riven",
+        link: "",
+        image: COVER.gate,
+        resonance: 69,
+        howls: 22,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 40,
+      },
+      {
+        id: "seed-10",
+        title: "First Gathering Memory",
+        type: "codex",
+        description: "How the Pack learned that one place beats a thousand scattered sparks.",
+        creator: "Anchor Thread",
+        link: "",
+        image: COVER.gather,
+        resonance: 85,
+        howls: 55,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 60 * 72,
+      },
+    ];
+
+    let state = {
+      sort: "new",
+      type: "all",
+      query: "",
+      howled: loadHowled(),
+      openDetailId: null,
+      pendingImage: "",
+      booting: true,
+    };
+
+    function loadUserItems() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch { return []; }
+    }
+
+    function saveUserItems(userItems) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(userItems));
+      } catch (e) {
+        toast("Storage full — try a smaller image");
+        throw e;
+      }
+    }
+
+    function loadHowled() {
+      try {
+        return new Set(JSON.parse(localStorage.getItem(HOWL_KEY) || "[]"));
+      } catch { return new Set(); }
+    }
+
+    function saveHowled() {
+      localStorage.setItem(HOWL_KEY, JSON.stringify([...state.howled]));
+    }
+
+    function loadOverrides() {
+      try {
+        return JSON.parse(localStorage.getItem(OVERRIDE_KEY) || "{}");
+      } catch { return {}; }
+    }
+
+    function applyOverrides() {
+      const o = loadOverrides();
+      SEED.forEach((s) => {
+        if (o[s.id]) {
+          s.howls = o[s.id].howls;
+          s.resonance = o[s.id].resonance;
+        }
+      });
+    }
+
+    function allItems() {
+      const map = new Map();
+      [...SEED, ...loadUserItems()].forEach((i) => map.set(i.id, i));
+      return [...map.values()];
+    }
+
+    function typeLabel(t) { return TYPE_META[t]?.label || t; }
+    function typeEmoji(t) { return TYPE_META[t]?.emoji || "✨"; }
+    function typeShort(t) { return TYPE_META[t]?.short || t; }
+
+    function tickerFrom(item) {
+      return "$" + typeShort(item.type);
+    }
+
+    function relativeTime(ts) {
+      const s = Math.floor((Date.now() - ts) / 1000);
+      if (s < 60) return "just now";
+      if (s < 3600) return Math.floor(s / 60) + "m";
+      if (s < 86400) return Math.floor(s / 3600) + "h";
+      return Math.floor(s / 86400) + "d";
+    }
+
+    function risingScore(item) {
+      const ageH = Math.max(0.5, (Date.now() - item.createdAt) / 3600000);
+      return (item.resonance * 2 + item.howls * 3) / Math.pow(ageH, 0.6);
+    }
+
+    function filtered() {
+      let list = allItems();
+      if (state.type !== "all") list = list.filter((i) => i.type === state.type);
+      if (state.sort === "featured") list = list.filter((i) => i.featured);
+      const q = state.query.trim().toLowerCase();
+      if (q) {
+        list = list.filter((i) => {
+          const blob = [
+            i.title,
+            i.creator,
+            i.description,
+            typeLabel(i.type),
+            typeShort(i.type),
+            ...(i.tags || []),
+          ].join(" ").toLowerCase();
+          return blob.includes(q);
+        });
+      }
+      if (state.sort === "rising") list = [...list].sort((a, b) => risingScore(b) - risingScore(a));
+      else if (state.sort === "new") list = [...list].sort((a, b) => b.createdAt - a.createdAt);
+      else list = [...list].sort((a, b) => b.resonance - a.resonance);
+      return list;
+    }
+
+    function featuredItems() {
+      return allItems().filter((i) => i.featured).sort((a, b) => b.resonance - a.resonance);
+    }
+
+    function mediaHtml(item) {
+      const emoji = typeEmoji(item.type);
+      if (item.image) {
+        return `<img src="${escapeAttr(item.image)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'media-fallback\\'><span>${emoji}</span></div>'" />`;
+      }
+      return `<div class="media-fallback"><span>${emoji}</span></div>`;
+    }
+
+    const WOLF_SILHOUETTE = `
+      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="wolfGlow" x1="20" y1="20" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#7ef0ff"/>
+            <stop offset="0.55" stop-color="#2ee6ff"/>
+            <stop offset="1" stop-color="#e8c56a"/>
+          </linearGradient>
+        </defs>
+        <circle cx="60" cy="60" r="54" stroke="url(#wolfGlow)" stroke-opacity="0.35" stroke-width="1.5" fill="rgba(8,16,32,0.5)"/>
+        <path fill="url(#wolfGlow)" fill-opacity="0.92" d="M28 78c2-18 12-32 28-38 3-10 10-18 20-22 4 6 6 12 6 18 8 2 14 8 18 16 2 4 2 10 0 14-4 10-12 16-22 18l-4 12h-12l-2-10c-10-2-20-8-26-18-2-4-4-8-6-10zm22-28c-2 0-4 2-4 4s2 4 4 4 4-2 4-4-2-4-4-4zm22 2c-2 0-3 2-3 3s1 3 3 3 3-1 3-3-1-3-3-3z"/>
+        <path stroke="#7ef0ff" stroke-opacity="0.5" stroke-width="1" d="M60 18v8M18 60h8M94 60h8M40 34l5 5M80 34l-5 5"/>
+      </svg>`;
+
+    function canonBadges(item) {
+      let h = "";
+      if (item.featured || item.canon === "featured")
+        h += '<span class="badge badge-featured">Featured</span>';
+      if (item.canon === "semi-canon")
+        h += '<span class="badge badge-semi">Semi-Canon</span>';
+      if (item.canon === "official")
+        h += '<span class="badge badge-official">Official</span>';
+      return h;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+    function escapeAttr(str) {
+      return escapeHtml(str).replace(/'/g, "&#39;");
+    }
+
+    function renderStats() {
+      const all = allItems();
+      const week = Date.now() - 7 * 86400000;
+      document.getElementById("statCount").textContent = all.length;
+      document.getElementById("statNew").textContent = all.filter((i) => i.createdAt >= week).length;
+      document.getElementById("statFeatured").textContent = all.filter((i) => i.featured).length;
+    }
+
+    function updateEchoNav() {
+      const scroll = document.getElementById("echoesScroll");
+      const prev = document.getElementById("echoPrev");
+      const next = document.getElementById("echoNext");
+      if (!scroll || !prev || !next) return;
+      const max = scroll.scrollWidth - scroll.clientWidth - 4;
+      prev.disabled = scroll.scrollLeft <= 4;
+      next.disabled = scroll.scrollLeft >= max;
+    }
+
+    function scrollEchoes(dir) {
+      const scroll = document.getElementById("echoesScroll");
+      if (!scroll) return;
+      const card = scroll.querySelector(".echo-card");
+      const step = card ? card.offsetWidth + 16 : 300;
+      scroll.scrollBy({ left: dir * step, behavior: "smooth" });
+      setTimeout(updateEchoNav, 280);
+    }
+
+    function renderSkeletons() {
+      const scroll = document.getElementById("echoesScroll");
+      const feed = document.getElementById("feed");
+      document.getElementById("echoesSection").style.display = "";
+      scroll.innerHTML = Array.from({ length: 4 }, () => `
+        <div class="skel-echo" aria-hidden="true">
+          <div class="skel skel-media"></div>
+          <div class="skel-lines">
+            <div class="skel skel-line w40"></div>
+            <div class="skel skel-line w70"></div>
+          </div>
+        </div>
+      `).join("");
+      feed.innerHTML = Array.from({ length: 6 }, () => `
+        <div class="skel-tile" aria-hidden="true">
+          <div class="skel skel-media"></div>
+          <div class="skel-lines">
+            <div class="skel skel-line w70"></div>
+            <div class="skel skel-line w40"></div>
+          </div>
+        </div>
+      `).join("");
+      document.getElementById("showingCount").textContent = "Loading…";
+      document.getElementById("echoPrev").disabled = true;
+      document.getElementById("echoNext").disabled = true;
+    }
+
+    function renderEchoes() {
+      const echoes = featuredItems();
+      const section = document.getElementById("echoesSection");
+      const scroll = document.getElementById("echoesScroll");
+      // Always show Gallery of Echoes above Explore (like pump.fun Trending), independent of filters
+      if (!echoes.length) {
+        section.style.display = "none";
+        return;
+      }
+      section.style.display = "";
+      scroll.innerHTML = echoes.map((item) => {
+        let extra = "";
+        if (item.canon === "semi-canon") extra += '<span class="badge badge-semi">Semi-Canon</span>';
+        if (item.canon === "official") extra += '<span class="badge badge-official">Official</span>';
+        return `
+        <article class="echo-card" data-id="${item.id}">
+          <div class="echo-media">
+            ${mediaHtml(item)}
+            <div class="tile-badge-row">
+              <span class="badge badge-type">${typeLabel(item.type)}</span>
+              <span class="badge badge-featured">Featured</span>
+              ${extra}
+            </div>
+            <div class="tile-resonance">${item.resonance}</div>
+          </div>
+          <div class="echo-body">
+            <div class="echo-title" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</div>
+            <div class="echo-ticker">${tickerFrom(item)}</div>
+            <div class="echo-meta">
+              <span class="creator" title="${escapeAttr(item.creator)}">${escapeHtml(item.creator)}</span>
+              <span>${relativeTime(item.createdAt)} · 🐺 ${item.howls}</span>
+            </div>
+          </div>
+        </article>`;
+      }).join("");
+      scroll.querySelectorAll(".echo-card").forEach((el) => {
+        el.addEventListener("click", () => openDetail(el.dataset.id));
+      });
+      requestAnimationFrame(updateEchoNav);
+    }
+
+    function renderFeed() {
+      const list = filtered();
+      const feed = document.getElementById("feed");
+      const q = state.query.trim();
+      document.getElementById("showingCount").textContent = q
+        ? `${list.length} match${list.length === 1 ? "" : "es"}`
+        : `Showing ${list.length}`;
+
+      if (!list.length) {
+        feed.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon ${q ? "emoji" : ""}" aria-hidden="true">${q ? "⌕" : WOLF_SILHOUETTE}</div>
+            <strong>${q ? "No matches in the hall" : "Be the first spark"}</strong>
+            <p>${q
+              ? `Nothing matches “${escapeHtml(q)}”. Try another word or clear search.`
+              : "The Pack is waiting. Attach cover art, shape the soul, and pass the Publishing Gate."}</p>
+            ${q
+              ? `<button type="button" class="btn btn-ghost" id="emptyClearSearch">Clear search</button>`
+              : `<button type="button" class="btn btn-primary" id="emptySubmit">Submit to Citadel</button>`}
+          </div>`;
+        document.getElementById("emptySubmit")?.addEventListener("click", openSubmit);
+        document.getElementById("emptyClearSearch")?.addEventListener("click", clearSearch);
+        return;
+      }
+
+      feed.innerHTML = list.map((item) => {
+        const howled = state.howled.has(item.id);
+        return `
+          <article class="tile ${item.featured ? "is-featured" : ""}" data-id="${item.id}" role="listitem">
+            <div class="tile-media">
+              ${mediaHtml(item)}
+              <div class="tile-badge-row">
+                <span class="badge badge-type">${typeLabel(item.type)}</span>
+                ${canonBadges(item)}
+              </div>
+              <div class="tile-resonance">${item.resonance}</div>
+            </div>
+            <div class="tile-body">
+              <div class="tile-title" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</div>
+              <div class="tile-ticker">${tickerFrom(item)}</div>
+              <div class="tile-meta">
+                <span class="creator" title="${escapeAttr(item.creator)}">${escapeHtml(item.creator)}</span>
+                <span class="right">
+                  <span>${relativeTime(item.createdAt)}</span>
+                  <button type="button" class="howl-btn ${howled ? "howled" : ""}" data-howl="${item.id}">
+                    🐺 ${item.howls}
+                  </button>
+                </span>
+              </div>
+            </div>
+          </article>`;
+      }).join("");
+
+      feed.querySelectorAll(".tile").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          if (e.target.closest("[data-howl]")) return;
+          openDetail(el.dataset.id);
+        });
+      });
+      feed.querySelectorAll("[data-howl]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleHowl(btn.dataset.howl);
+        });
+      });
+    }
+
+    function render() {
+      renderStats();
+      renderEchoes();
+      renderFeed();
+    }
+
+    function toggleHowl(id) {
+      const item = allItems().find((i) => i.id === id);
+      if (!item) return;
+
+      if (state.howled.has(id)) {
+        state.howled.delete(id);
+        item.howls = Math.max(0, item.howls - 1);
+        item.resonance = Math.max(1, item.resonance - 1);
+      } else {
+        state.howled.add(id);
+        item.howls += 1;
+        item.resonance = Math.min(99, item.resonance + 1);
+      }
+      saveHowled();
+
+      const user = loadUserItems();
+      const ui = user.find((i) => i.id === id);
+      if (ui) {
+        ui.howls = item.howls;
+        ui.resonance = item.resonance;
+        saveUserItems(user);
+      } else {
+        const o = loadOverrides();
+        o[id] = { howls: item.howls, resonance: item.resonance };
+        localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o));
+        applyOverrides();
+      }
+      render();
+      if (state.openDetailId === id) openDetail(id);
+    }
+
+    function openDetail(id) {
+      const item = allItems().find((i) => i.id === id);
+      if (!item) return;
+      state.openDetailId = id;
+      document.getElementById("detailTitle").textContent = item.title;
+      document.getElementById("detailHero").innerHTML = mediaHtml(item);
+      const howled = state.howled.has(id);
+      document.getElementById("detailContent").innerHTML = `
+        <div class="detail-tags">
+          <span class="badge badge-type">${typeLabel(item.type)}</span>
+          ${canonBadges(item)}
+        </div>
+        <p>${escapeHtml(item.description)}</p>
+        <div class="detail-meta-grid">
+          <div><b>Creator</b>${escapeHtml(item.creator)}</div>
+          <div><b>Resonance</b>${item.resonance}</div>
+          <div><b>Howls</b>${item.howls}</div>
+          <div><b>Entered</b>${relativeTime(item.createdAt)} ago</div>
+        </div>
+        ${item.link ? `<p><a href="${escapeAttr(item.link)}" target="_blank" rel="noopener" style="color:var(--cyan-soft)">Open link →</a></p>` : ""}
+        <p style="font-size:0.78rem;color:var(--text-dim)">Bound to the Official Wrapper · feeds the Star Core.</p>
+      `;
+      const howlBtn = document.getElementById("detailHowl");
+      howlBtn.textContent = howled ? "Howled 🐺" : "Howl 🐺";
+      howlBtn.onclick = () => toggleHowl(id);
+      document.getElementById("detailModal").classList.add("open");
+    }
+
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2600);
+    }
+
+    function setPreview(src) {
+      state.pendingImage = src || "";
+      document.getElementById("fImageData").value = state.pendingImage;
+      const box = document.getElementById("imagePreview");
+      if (src) {
+        box.innerHTML = `<img src="${escapeAttr(src)}" alt="Preview" />`;
+      } else {
+        box.innerHTML = "⚡";
+      }
+    }
+
+    function compressImageFile(file) {
+      return new Promise((resolve, reject) => {
+        if (!file.type.startsWith("image/")) {
+          reject(new Error("Not an image"));
+          return;
+        }
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("Read failed"));
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = () => reject(new Error("Invalid image"));
+          img.onload = () => {
+            const max = 512;
+            let w = img.width;
+            let h = img.height;
+            if (w > max || h > max) {
+              const r = Math.min(max / w, max / h);
+              w = Math.round(w * r);
+              h = Math.round(h * r);
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            let quality = 0.82;
+            let data = canvas.toDataURL("image/jpeg", quality);
+            while (data.length > MAX_IMAGE_BYTES && quality > 0.4) {
+              quality -= 0.1;
+              data = canvas.toDataURL("image/jpeg", quality);
+            }
+            if (data.length > MAX_IMAGE_BYTES) {
+              reject(new Error("Image still too large"));
+              return;
+            }
+            resolve(data);
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById("fImageFile").addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const data = await compressImageFile(file);
+        document.getElementById("fImageUrl").value = "";
+        setPreview(data);
+        toast("Image ready for the Gate");
+      } catch {
+        toast("Could not use that image — try a smaller one");
+        e.target.value = "";
+      }
+    });
+
+    document.getElementById("fImageUrl").addEventListener("input", (e) => {
+      const url = e.target.value.trim();
+      if (!url) {
+        if (!document.getElementById("fImageFile").files?.length) setPreview("");
+        return;
+      }
+      document.getElementById("fImageFile").value = "";
+      setPreview(url);
+    });
+
+    document.getElementById("clearImage").addEventListener("click", () => {
+      document.getElementById("fImageFile").value = "";
+      document.getElementById("fImageUrl").value = "";
+      setPreview("");
+    });
+
+    function openSubmit() {
+      document.getElementById("submitModal").classList.add("open");
+      document.getElementById("fTitle").focus();
+    }
+    function closeSubmit() {
+      document.getElementById("submitModal").classList.remove("open");
+    }
+    function closeDetail() {
+      document.getElementById("detailModal").classList.remove("open");
+      state.openDetailId = null;
+    }
+
+    document.getElementById("sortFilters").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-sort]");
+      if (!btn) return;
+      state.sort = btn.dataset.sort;
+      document.querySelectorAll("#sortFilters .chip").forEach((c) => c.classList.toggle("active", c === btn));
+      render();
+    });
+
+    document.getElementById("typeFilters").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-type]");
+      if (!btn) return;
+      state.type = btn.dataset.type;
+      document.querySelectorAll("#typeFilters .chip").forEach((c) => c.classList.toggle("active", c === btn));
+      render();
+    });
+
+    function syncSearchUI() {
+      const input = document.getElementById("searchInput");
+      const wrap = document.getElementById("searchWrap");
+      if (!input || !wrap) return;
+      const has = input.value.length > 0;
+      wrap.classList.toggle("has-query", has);
+      input.classList.toggle("has-value", has);
+    }
+
+    function clearSearch() {
+      state.query = "";
+      const input = document.getElementById("searchInput");
+      if (input) {
+        input.value = "";
+        input.focus();
+      }
+      syncSearchUI();
+      renderFeed();
+      renderStats();
+    }
+
+    function isTypingTarget(el) {
+      if (!el) return false;
+      const tag = el.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+      if (el.isContentEditable) return true;
+      return false;
+    }
+
+    let searchTimer = null;
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      const value = e.target.value;
+      syncSearchUI();
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        state.query = value;
+        renderFeed();
+        renderStats();
+      }, 120);
+    });
+    document.getElementById("searchClear").addEventListener("click", clearSearch);
+
+    document.getElementById("echoPrev").addEventListener("click", () => scrollEchoes(-1));
+    document.getElementById("echoNext").addEventListener("click", () => scrollEchoes(1));
+    document.getElementById("echoesScroll").addEventListener("scroll", () => {
+      window.requestAnimationFrame(updateEchoNav);
+    }, { passive: true });
+    window.addEventListener("resize", updateEchoNav);
+
+    document.getElementById("btnSubmit").addEventListener("click", openSubmit);
+    document.getElementById("btnAbout").addEventListener("click", () => {
+      document.getElementById("about").scrollIntoView({ behavior: "smooth" });
+    });
+    document.querySelectorAll("[data-close]").forEach((el) => el.addEventListener("click", closeSubmit));
+    document.querySelectorAll("[data-close-detail]").forEach((el) => el.addEventListener("click", closeDetail));
+    document.getElementById("submitModal").addEventListener("click", (e) => {
+      if (e.target.id === "submitModal") closeSubmit();
+    });
+    document.getElementById("detailModal").addEventListener("click", (e) => {
+      if (e.target.id === "detailModal") closeDetail();
+    });
+    document.addEventListener("keydown", (e) => {
+      // Escape: close modals, or clear search if focused
+      if (e.key === "Escape") {
+        const submitOpen = document.getElementById("submitModal").classList.contains("open");
+        const detailOpen = document.getElementById("detailModal").classList.contains("open");
+        if (submitOpen || detailOpen) {
+          closeSubmit();
+          closeDetail();
+          return;
+        }
+        if (document.activeElement === document.getElementById("searchInput") && state.query) {
+          e.preventDefault();
+          clearSearch();
+        }
+        return;
+      }
+
+      // Don't steal keys while typing in forms (except / handled carefully)
+      const typing = isTypingTarget(document.activeElement);
+
+      // "/" focuses search (skip if already in an input/textarea, unless search itself)
+      if (e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const inSearch = document.activeElement === document.getElementById("searchInput");
+        if (!typing || inSearch) {
+          if (!inSearch) {
+            e.preventDefault();
+            const input = document.getElementById("searchInput");
+            input.focus();
+            input.select();
+          }
+        }
+        return;
+      }
+
+      // Arrow keys: Gallery carousel when not typing
+      if (!typing && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+        const section = document.getElementById("echoesSection");
+        if (section && section.style.display !== "none") {
+          e.preventDefault();
+          scrollEchoes(e.key === "ArrowRight" ? 1 : -1);
+        }
+      }
+    });
+
+    syncSearchUI();
+
+    document.getElementById("submitForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const image = state.pendingImage || "";
+      const item = {
+        id: "user-" + Date.now().toString(36),
+        title: form.title.value.trim(),
+        type: form.type.value,
+        description: form.description.value.trim(),
+        creator: form.creator.value.trim(),
+        link: form.link.value.trim(),
+        image,
+        resonance: 50 + Math.floor(Math.random() * 15),
+        howls: 0,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now(),
+      };
+      try {
+        const user = loadUserItems();
+        user.unshift(item);
+        saveUserItems(user);
+      } catch {
+        return;
+      }
+      form.reset();
+      setPreview("");
+      closeSubmit();
+      state.sort = "new";
+      document.querySelectorAll("#sortFilters .chip").forEach((c) =>
+        c.classList.toggle("active", c.dataset.sort === "new")
+      );
+      render();
+      toast(image ? "Passed the Gate with cover art ⚡" : "Passed the Gate ⚡");
+    });
+
+    applyOverrides();
+    renderSkeletons();
+    // Brief skeleton stage so the hall feels alive on first paint
+    setTimeout(() => {
+      state.booting = false;
+      render();
+      updateEchoNav();
+    }, 420);
+
+    /* ── Soft parallax: sky lags, core mid, floor nearer ── */
+    (function initSoftParallax() {
+      const root = document.documentElement;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+      let ticking = false;
+
+      function applyParallax() {
+        ticking = false;
+        if (reduce.matches) {
+          root.style.setProperty("--py-sky", "0px");
+          root.style.setProperty("--py-core", "0px");
+          root.style.setProperty("--py-floor", "0px");
+          root.style.setProperty("--py-vein", "0px");
+          return;
+        }
+        const y = window.scrollY || 0;
+        // Soft factors: far = smaller move
+        const sky = (y * 0.08).toFixed(1);    // far
+        const core = (y * 0.14).toFixed(1);   // mid
+        const floor = (y * -0.06).toFixed(1); // near — slight opposite for depth
+        const vein = (y * 0.1).toFixed(1);
+        root.style.setProperty("--py-sky", sky + "px");
+        root.style.setProperty("--py-core", core + "px");
+        root.style.setProperty("--py-floor", floor + "px");
+        root.style.setProperty("--py-vein", vein + "px");
+      }
+
+      function onScroll() {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(applyParallax);
+        }
+      }
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      reduce.addEventListener?.("change", applyParallax);
+      applyParallax();
+    })();
+  </script>
+</body>
+</html>

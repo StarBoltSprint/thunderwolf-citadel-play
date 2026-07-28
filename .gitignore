@@ -12,3 +12,8 @@ Desktop.ini
 # Local / temp
 *.log
 .cache/
+
+# Local backups / large duplicates
+assets/*-old.jpg
+gate of howls open.mp4
+games/textures-data.js

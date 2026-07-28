@@ -35,6 +35,7 @@
       --font: "Outfit", system-ui, sans-serif;
       --font-display: "Syne", "Outfit", system-ui, sans-serif;
       --header-h: 64px;
+      --side-w: 220px;
       --tile-media: 1 / 1;
       /* Type scale: H1 brand · H2 section · card title · meta */
       --fs-brand: 1.08rem;
@@ -111,9 +112,9 @@
         radial-gradient(ellipse 55% 50% at 92% 18%, rgba(120, 90, 220, 0.14), transparent 55%),
         /* gold bolt warmth — left */
         radial-gradient(ellipse 50% 45% at 6% 35%, rgba(232, 197, 106, 0.09), transparent 52%),
-        /* distant star core */
-        radial-gradient(circle at 50% 42%, rgba(46, 230, 255, 0.07), transparent 22%),
-        radial-gradient(circle at 50% 42%, rgba(232, 197, 106, 0.05), transparent 12%),
+        /* distant star core glow — main column axis */
+        radial-gradient(circle at calc(50% + var(--side-w) / 2) 42%, rgba(46, 230, 255, 0.07), transparent 22%),
+        radial-gradient(circle at calc(50% + var(--side-w) / 2) 42%, rgba(232, 197, 106, 0.05), transparent 12%),
         /* deep space hall (navy → indigo, not pure black) */
         linear-gradient(180deg,
           #07122a 0%,
@@ -193,10 +194,11 @@
       --py-vein: 0px;
     }
 
+    /* Main-column horizontal center (accounts for left nav) — crest + core share this axis */
     /* Faint Bolt constellation silhouette in the sky (Imagine) */
     .bolt-sky {
       position: absolute;
-      left: 50%;
+      left: calc(50% + var(--side-w) / 2);
       top: 2%;
       transform: translate3d(-50%, var(--py-sky), 0);
       width: min(92vw, 980px);
@@ -211,10 +213,10 @@
       will-change: transform;
     }
 
-    /* Dedicated Star Core — Imagine art (not a plain CSS ball) */
+    /* Dedicated Star Core — same vertical axis as footer wolf crest (main column center) */
     .star-core {
       position: absolute;
-      left: 50%;
+      left: calc(50% + var(--side-w) / 2);
       top: 34%;
       transform: translate3d(-50%, calc(-50% + var(--py-core)), 0);
       width: min(52vw, 360px);
@@ -276,7 +278,7 @@
       transform: translate3d(0, var(--py-floor), 0);
       background:
         linear-gradient(180deg, transparent 0%, rgba(4, 10, 22, 0.1) 10%, rgba(4, 10, 22, 0.2) 100%),
-        url("assets/hall-floor.jpg") center 45% / cover no-repeat;
+        url("assets/hall-floor.jpg") calc(50% + var(--side-w) / 2) 45% / cover no-repeat;
       opacity: 0.62;
       mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 10%, #000 28%, #000 100%);
       -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 10%, #000 28%, #000 100%);
@@ -288,7 +290,7 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 50% 35% at 50% 12%, rgba(46, 230, 255, 0.12), transparent 55%),
+        radial-gradient(ellipse 50% 35% at calc(50% + var(--side-w) / 2) 12%, rgba(46, 230, 255, 0.12), transparent 55%),
         /* lighter bottom so crest zone stays readable */
         linear-gradient(180deg, transparent 55%, rgba(4, 8, 18, 0.2) 100%);
       pointer-events: none;
@@ -304,13 +306,13 @@
       pointer-events: none;
       background:
         linear-gradient(180deg, transparent 0%, rgba(4, 10, 24, 0.08) 40%, rgba(4, 12, 28, 0.35) 100%),
-        radial-gradient(ellipse 80% 40% at 50% 100%, rgba(46, 230, 255, 0.06), transparent 70%),
-        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(232, 197, 106, 0.04), transparent 60%);
+        radial-gradient(ellipse 80% 40% at calc(50% + var(--side-w) / 2) 100%, rgba(46, 230, 255, 0.06), transparent 70%),
+        radial-gradient(ellipse 50% 30% at calc(50% + var(--side-w) / 2) 100%, rgba(232, 197, 106, 0.04), transparent 60%);
     }
     .citadel-skyline::before {
       content: "";
       position: absolute;
-      left: 50%;
+      left: calc(50% + var(--side-w) / 2);
       bottom: 8%;
       transform: translateX(-50%);
       width: min(92vw, 1100px);
@@ -328,7 +330,7 @@
     .citadel-skyline::after {
       content: "";
       position: absolute;
-      left: 50%;
+      left: calc(50% + var(--side-w) / 2);
       bottom: 12%;
       transform: translateX(-50%);
       width: min(40vw, 280px);
@@ -356,12 +358,425 @@
       pointer-events: none;
     }
 
+    /* ── Shell: pump.fun-style left nav + main ── */
+    .shell {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      min-height: 100vh;
+      align-items: stretch;
+    }
+
+    .side-nav {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--side-w);
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding: 1rem 0.75rem 1.1rem;
+      background:
+        linear-gradient(180deg, rgba(8, 14, 28, 0.97) 0%, rgba(4, 8, 18, 0.98) 100%);
+      border-right: 1px solid rgba(46, 230, 255, 0.1);
+      box-shadow: 8px 0 32px rgba(0, 0, 0, 0.35);
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+    .side-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.35rem 0.5rem 1rem;
+      margin-bottom: 0.35rem;
+      border-bottom: 1px solid rgba(46, 230, 255, 0.08);
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      background: none;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+      width: 100%;
+      font-family: inherit;
+      text-align: left;
+    }
+    .side-nav-brand:hover .side-nav-brand-title {
+      color: var(--cyan-soft);
+    }
+    .side-nav-brand .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: transparent;
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.4);
+    }
+    .side-nav-brand .mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 10px;
+    }
+    .side-nav-brand-title {
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      transition: color 0.15s;
+    }
+    .side-nav-brand-title span { color: var(--gold-soft); }
+    .side-nav-brand-sub {
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      margin-top: 0.1rem;
+    }
+
+    .side-nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1;
+    }
+    .side-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      width: 100%;
+      padding: 0.72rem 0.85rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    .side-nav-item:hover {
+      color: var(--text);
+      background: rgba(46, 230, 255, 0.07);
+      border-color: rgba(46, 230, 255, 0.12);
+    }
+    .side-nav-item.active {
+      color: #021018;
+      background: linear-gradient(135deg, rgba(126, 240, 255, 0.95), rgba(46, 230, 255, 0.85));
+      border-color: transparent;
+      box-shadow: 0 0 22px rgba(46, 230, 255, 0.35);
+      font-weight: 700;
+    }
+    .side-nav-item .nav-ico {
+      width: 1.35rem;
+      height: 1.35rem;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .side-nav-item.active .nav-ico { opacity: 1; }
+
+    .side-nav-foot {
+      margin-top: auto;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(46, 230, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .side-nav-cta {
+      width: 100%;
+      padding: 0.72rem 0.9rem;
+      border-radius: 12px;
+      border: none;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #021018;
+      background: linear-gradient(135deg, #1ad4f0, #0ea5c9 55%, #c9a44a);
+      box-shadow: 0 0 20px rgba(46, 230, 255, 0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .side-nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 28px rgba(46, 230, 255, 0.45);
+    }
+    .side-nav-ghost {
+      width: 100%;
+      padding: 0.55rem 0.9rem;
+      border-radius: 12px;
+      border: 1px solid rgba(46, 230, 255, 0.18);
+      background: rgba(8, 14, 28, 0.6);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .side-nav-ghost:hover {
+      color: var(--cyan-soft);
+      border-color: rgba(46, 230, 255, 0.35);
+    }
+
     .app {
       position: relative;
       z-index: 1;
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0.65rem 1rem 3.5rem;
+      flex: 1;
+      min-width: 0;
+      /* Fill space to the right of the fixed sidebar — wide column, tight gutters */
+      margin-left: var(--side-w);
+      width: calc(100% - var(--side-w));
+      max-width: none;
+      box-sizing: border-box;
+      /* Close to left nav + right edge (not a narrow centered strip) */
+      padding: 0.65rem clamp(0.85rem, 1.6vw, 1.5rem) 3.5rem;
+    }
+
+    /* View panels — hide every panel that is not the active shell view */
+    .shell[data-view="home"] .view-panel-forges,
+    .shell[data-view="home"] .view-panel-videos,
+    .shell[data-view="home"] .view-panel-creator,
+    .shell[data-view="home"] .view-panel-player { display: none; }
+
+    .shell[data-view="forges"] .view-panel-home,
+    .shell[data-view="forges"] .view-panel-videos,
+    .shell[data-view="forges"] .view-panel-creator,
+    .shell[data-view="forges"] .view-panel-player { display: none; }
+
+    .shell[data-view="videos"] .view-panel-home,
+    .shell[data-view="videos"] .view-panel-forges,
+    .shell[data-view="videos"] .view-panel-creator,
+    .shell[data-view="videos"] .view-panel-player { display: none; }
+
+    .shell[data-view="creator"] .view-panel-home,
+    .shell[data-view="creator"] .view-panel-forges,
+    .shell[data-view="creator"] .view-panel-videos,
+    .shell[data-view="creator"] .view-panel-player { display: none; }
+
+    .shell[data-view="player"] .view-panel-home,
+    .shell[data-view="player"] .view-panel-forges,
+    .shell[data-view="player"] .view-panel-videos,
+    .shell[data-view="player"] .view-panel-creator { display: none; }
+
+    /* Profile pages */
+    .profile-card {
+      margin: 0.5rem 0 1.5rem;
+      border-radius: 18px;
+      border: 1px solid rgba(46, 230, 255, 0.16);
+      background:
+        radial-gradient(ellipse 60% 50% at 0% 0%, rgba(46, 230, 255, 0.1), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 100% 100%, rgba(232, 197, 106, 0.08), transparent 50%),
+        linear-gradient(165deg, rgba(12, 22, 42, 0.95), rgba(6, 12, 26, 0.98));
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+    .profile-head {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.35rem 1.35rem 1.1rem;
+      border-bottom: 1px solid rgba(46, 230, 255, 0.1);
+    }
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 0 24px rgba(46, 230, 255, 0.35);
+      border: 1px solid rgba(46, 230, 255, 0.25);
+    }
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .profile-head h2 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.2rem;
+    }
+    .profile-head h2 span { color: var(--cyan-soft); }
+    .profile-head .profile-role {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .profile-body {
+      padding: 1.15rem 1.35rem 1.4rem;
+    }
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 0.55rem;
+      margin-bottom: 1.15rem;
+    }
+    .profile-stat {
+      padding: 0.7rem 0.75rem;
+      border-radius: 12px;
+      border: 1px solid rgba(46, 230, 255, 0.12);
+      background: rgba(0, 0, 0, 0.28);
+      text-align: center;
+    }
+    .profile-stat b {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--cyan-soft);
+      margin-bottom: 0.15rem;
+    }
+    .profile-stat span {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .profile-form .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 560px) {
+      .profile-form .form-row { grid-template-columns: 1fr; }
+      .profile-head { flex-direction: column; text-align: center; }
+    }
+    .profile-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.35rem;
+    }
+
+    .panel-hero {
+      margin: 0.5rem 0 1.25rem;
+      padding: 1.5rem 1.35rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(46, 230, 255, 0.16);
+      background:
+        radial-gradient(ellipse 70% 80% at 10% 0%, rgba(46, 230, 255, 0.12), transparent 55%),
+        radial-gradient(ellipse 50% 60% at 90% 100%, rgba(232, 197, 106, 0.08), transparent 50%),
+        linear-gradient(165deg, rgba(12, 22, 42, 0.92), rgba(6, 12, 26, 0.95));
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+    }
+    .panel-hero h2 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+    .panel-hero h2 span { color: var(--cyan-soft); }
+    .panel-hero p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+      max-width: 36rem;
+    }
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.85rem;
+    }
+    .panel-card {
+      padding: 1.1rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(46, 230, 255, 0.12);
+      background: rgba(8, 14, 28, 0.75);
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+    .panel-card:hover {
+      border-color: rgba(46, 230, 255, 0.28);
+      box-shadow: 0 0 24px rgba(46, 230, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    .panel-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: var(--text);
+    }
+    .panel-card p {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+    .panel-card .tag {
+      display: inline-block;
+      margin-top: 0.65rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cyan-soft);
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.22);
+      background: rgba(46, 230, 255, 0.08);
+    }
+    .panel-card .tag.gold {
+      color: var(--gold-soft);
+      border-color: rgba(232, 197, 106, 0.3);
+      background: rgba(232, 197, 106, 0.08);
+    }
+
+    @media (max-width: 900px) {
+      :root { --side-w: 0px; }
+      .side-nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: auto;
+        bottom: 0;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.45rem 0.55rem calc(0.45rem + env(safe-area-inset-bottom, 0px));
+        border-right: none;
+        border-top: 1px solid rgba(46, 230, 255, 0.12);
+        box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.45);
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+      .side-nav-brand,
+      .side-nav-foot { display: none; }
+      .side-nav-list {
+        flex-direction: row;
+        flex: 1;
+        gap: 0.35rem;
+        justify-content: center;
+      }
+      .side-nav-item {
+        flex: 1;
+        max-width: 180px;
+        justify-content: center;
+        padding: 0.6rem 0.5rem;
+        font-size: 0.78rem;
+        white-space: nowrap;
+      }
+      .side-nav-item .nav-ico { display: none; }
+      .app {
+        margin-left: 0;
+        width: 100%;
+        max-width: none;
+        padding: 0.65rem 1rem 5.5rem;
+      }
     }
 
     /* ── Header — floating glass citadel bar ── */
@@ -414,24 +829,21 @@
       display: grid;
       place-items: center;
       flex-shrink: 0;
-      padding: 2px;
+      padding: 0;
       overflow: hidden;
-      background: linear-gradient(145deg, rgba(46, 230, 255, 0.55), rgba(232, 197, 106, 0.45));
+      background: transparent;
       border: none;
       box-shadow:
-        0 0 0 1px rgba(126, 240, 255, 0.35),
-        0 0 28px rgba(46, 230, 255, 0.45),
-        0 0 16px rgba(232, 197, 106, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        0 0 0 1px rgba(126, 240, 255, 0.28),
+        0 0 22px rgba(46, 230, 255, 0.4),
+        0 0 12px rgba(232, 197, 106, 0.15);
     }
     .brand .mark img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
-      border-radius: 11px;
-      /* Boost perceived brightness/contrast in the UI */
-      filter: contrast(1.12) saturate(1.15) brightness(1.08);
+      border-radius: 13px;
     }
 
     .brand-title {
@@ -520,13 +932,6 @@
       gap: 0.65rem 1rem;
       padding: 0.75rem 0 0.85rem;
     }
-
-    .intro-line {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      max-width: 34rem;
-    }
-    .intro-line strong { color: var(--text); font-weight: 600; }
 
     .stats { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
@@ -641,18 +1046,17 @@
       display: grid;
       place-items: center;
       overflow: hidden;
-      padding: 2px;
-      background: linear-gradient(145deg, rgba(46, 230, 255, 0.45), rgba(232, 197, 106, 0.4));
+      padding: 0;
+      background: transparent;
       border: none;
-      box-shadow: 0 0 16px rgba(46, 230, 255, 0.3), 0 0 12px var(--gold-glow);
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.35), 0 0 10px var(--gold-glow);
     }
     .trending-title .bolt img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
-      border-radius: 8px;
-      filter: contrast(1.1) saturate(1.12) brightness(1.06);
+      border-radius: 10px;
     }
 
     .trending-badge {
@@ -684,11 +1088,10 @@
       border-top: 1px solid rgba(46, 230, 255, 0.08);
     }
 
-    /* ── Toolbar — solid sticky under header ── */
+    /* ── Toolbar — fixed in place (does not follow scroll) ── */
     .toolbar {
-      position: sticky;
-      top: var(--header-h);
-      z-index: 40;
+      position: relative;
+      z-index: 1;
       padding: 0.55rem 0.85rem 0.7rem;
       margin: 0 -0.35rem 0.55rem;
       border-radius: 14px;
@@ -749,8 +1152,8 @@
 
     .search-wrap {
       flex: 1;
-      min-width: min(100%, 220px);
-      max-width: 320px;
+      min-width: min(100%, 240px);
+      max-width: 420px;
       position: relative;
     }
     .search-wrap input {
@@ -1114,7 +1517,15 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 58%;
+      max-width: 42%;
+    }
+    .echo-meta .right {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     /* ── GRID FEED (pump.fun style) ── */
@@ -1329,26 +1740,449 @@
     .tile-meta .right {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
       flex-shrink: 0;
     }
 
-    .howl-btn {
-      font-size: 0.65rem;
-      font-weight: 600;
-      padding: 0.22rem 0.45rem;
+    .tile-stats {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      margin-top: 0.45rem;
+    }
+    .stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.28rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      padding: 0.2rem 0.45rem;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,0.35);
-      color: var(--text-muted);
+      border: 1px solid rgba(46, 230, 255, 0.12);
+      background: rgba(0, 0, 0, 0.25);
+      font-family: inherit;
+      line-height: 1;
+    }
+    .stat-chip .ico {
+      font-size: 0.72rem;
+      opacity: 0.9;
+    }
+    .like-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.28rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.22rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 120, 160, 0.28);
+      background: rgba(40, 12, 24, 0.45);
+      color: #f0a8c0;
       cursor: pointer;
       transition: all 0.15s;
+      font-family: inherit;
+      line-height: 1;
     }
-    .howl-btn:hover, .howl-btn.howled {
+    .like-btn:hover {
+      border-color: rgba(255, 140, 180, 0.55);
+      background: rgba(80, 20, 40, 0.55);
+      color: #ffd0e0;
+      box-shadow: 0 0 14px rgba(255, 100, 140, 0.2);
+    }
+    .like-btn.is-liked {
+      border-color: rgba(255, 100, 150, 0.65);
+      background: linear-gradient(135deg, rgba(255, 80, 130, 0.35), rgba(232, 197, 106, 0.12));
+      color: #fff;
+      box-shadow: 0 0 16px rgba(255, 90, 140, 0.28);
+    }
+    .like-btn .heart {
+      font-size: 0.78rem;
+      line-height: 1;
+    }
+    .echo-meta .like-btn {
+      padding: 0.15rem 0.4rem;
+      font-size: 0.64rem;
+    }
+
+    .play-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.28rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.22rem 0.5rem 0.22rem 0.28rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.35);
+      background: linear-gradient(135deg, rgba(26, 212, 240, 0.2), rgba(232, 197, 106, 0.12));
       color: var(--cyan-soft);
-      border-color: var(--border-strong);
-      background: rgba(46,230,255,0.12);
-      box-shadow: 0 0 12px rgba(46, 230, 255, 0.15);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .play-btn img {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 8px rgba(46, 230, 255, 0.35);
+    }
+    .play-btn:hover {
+      color: #fff;
+      border-color: rgba(46, 230, 255, 0.55);
+      background: linear-gradient(135deg, rgba(26, 212, 240, 0.35), rgba(232, 197, 106, 0.22));
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.25);
+    }
+
+    .btn-play {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 0.6rem 1.2rem 0.6rem 0.65rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      color: #021018;
+      background: linear-gradient(135deg, #1ad4f0 0%, #0ea5c9 50%, #c9a44a 100%);
+      box-shadow: 0 0 28px rgba(46, 230, 255, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-play img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: rgba(2, 8, 18, 0.35);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.25);
+    }
+    .btn-play:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 40px rgba(46, 230, 255, 0.55), 0 0 18px rgba(232, 197, 106, 0.3);
+    }
+    .btn-play:active { transform: scale(0.98); }
+
+    /* ── Play arena ── */
+    .play-modal .modal {
+      width: min(560px, 100%);
+      max-height: min(94vh, 820px);
+    }
+    .play-modal .modal.play-wide {
+      width: min(960px, 100%);
+      max-height: min(96vh, 900px);
+    }
+    .play-modal .modal.play-wide .play-stage {
+      min-height: 0;
+      border: none;
+      background: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .play-stage {
+      border-radius: 14px;
+      border: 1px solid rgba(46, 230, 255, 0.2);
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 30%, rgba(46, 230, 255, 0.1), transparent 60%),
+        #050b16;
+      min-height: 280px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 0.9rem;
+    }
+    .play-stage:fullscreen,
+    .play-stage:-webkit-full-screen {
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      margin: 0;
+      border-radius: 0;
+      border: none;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .play-stage:fullscreen iframe,
+    .play-stage:-webkit-full-screen iframe {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 100% !important;
+      border-radius: 0 !important;
+    }
+    /* Story / video must fill fullscreen (not stay 1:1 square with black void) */
+    .play-stage:fullscreen .story-player,
+    .play-stage:-webkit-full-screen .story-player {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: none !important;
+      max-width: none !important;
+      aspect-ratio: auto !important;
+      border-radius: 0 !important;
+    }
+    .play-stage:fullscreen .story-player video,
+    .play-stage:-webkit-full-screen .story-player video {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain; /* full frame visible; no crop */
+      background: #000;
+    }
+    .play-stage:fullscreen .story-reel,
+    .play-stage:-webkit-full-screen .story-reel {
+      inset: 0;
+    }
+    .play-stage:fullscreen .story-reel__art,
+    .play-stage:-webkit-full-screen .story-reel__art {
+      inset: 0;
+      animation: none;
+      transform: none;
+    }
+    .btn-fs {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.28);
+      background: rgba(8, 18, 36, 0.85);
+      color: var(--cyan-soft);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    .btn-fs:hover {
+      border-color: rgba(46, 230, 255, 0.5);
+      background: rgba(46, 230, 255, 0.1);
+      box-shadow: 0 0 18px rgba(46, 230, 255, 0.15);
+    }
+    .btn-fs .fs-ico {
+      font-size: 0.95rem;
+      line-height: 1;
+      opacity: 0.95;
+    }
+    .play-modal .modal-head {
+      align-items: center;
+    }
+    .play-modal .play-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+    .play-modal .play-head-actions .btn-fs {
+      padding: 0.4rem 0.65rem;
+      min-width: 36px;
+    }
+    .play-modal .play-head-actions .btn-fs .fs-label {
+      display: none;
+    }
+    @media (min-width: 520px) {
+      .play-modal .play-head-actions .btn-fs .fs-label {
+        display: inline;
+      }
+    }
+
+    /* ── Bolt Story video / cinematic reel player ── */
+    .story-player {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-height: min(72vh, 640px);
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .story-player video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #000;
+    }
+    .story-reel {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .story-reel__art {
+      position: absolute;
+      inset: -8%;
+      background-size: cover;
+      background-position: center;
+      animation: storyKen 18s ease-in-out infinite alternate;
+      filter: saturate(1.08) brightness(1.02);
+    }
+    @keyframes storyKen {
+      0% { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.14) translate(-2%, 1.5%); }
+    }
+    .story-reel__veil {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(2, 6, 16, 0.15) 0%, transparent 35%, rgba(2, 6, 16, 0.75) 100%),
+        radial-gradient(ellipse 70% 50% at 50% 20%, rgba(46, 230, 255, 0.12), transparent 60%);
+      pointer-events: none;
+    }
+    .story-reel__caption {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 1.1rem 1.15rem 1.25rem;
+      text-align: left;
+      z-index: 2;
+    }
+    .story-reel__kicker {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+      margin-bottom: 0.35rem;
+    }
+    .story-reel__title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.35rem;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.6);
+    }
+    .story-reel__body {
+      font-size: 0.86rem;
+      color: rgba(230, 240, 255, 0.88);
+      line-height: 1.45;
+      max-width: 36rem;
+    }
+    .story-reel__bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: rgba(255,255,255,0.12);
+      z-index: 3;
+    }
+    .story-reel__bar > i {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--gold));
+      animation: storyBar 18s linear infinite;
+    }
+    @keyframes storyBar {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+    .badge-video {
+      background: linear-gradient(135deg, rgba(46, 230, 255, 0.25), rgba(232, 197, 106, 0.2));
+      border-color: rgba(46, 230, 255, 0.4);
+      color: var(--cyan-soft);
+    }
+    .play-stage-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.28;
+      filter: blur(1px);
+    }
+    .play-hud {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--cyan-soft);
+      letter-spacing: 0.04em;
+    }
+    .play-area {
+      position: relative;
+      z-index: 2;
+      min-height: 220px;
+      padding: 0.5rem 0.8rem 1rem;
+    }
+    .play-start, .play-end {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      position: relative;
+      z-index: 2;
+    }
+    .play-start h3, .play-end h3 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      margin-bottom: 0.45rem;
+    }
+    .play-start p, .play-end p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      margin-bottom: 1rem;
+    }
+    .play-orb {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #7ef0ff 40%, #0ea5c9 80%);
+      box-shadow: 0 0 20px rgba(46, 230, 255, 0.7);
+      cursor: pointer;
+      border: none;
+      animation: orbPulse 1.2s ease-in-out infinite;
+    }
+    @keyframes orbPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .play-choice {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 0.4rem 0;
+      padding: 0.75rem 0.9rem;
+      border-radius: 12px;
+      border: 1px solid rgba(46, 230, 255, 0.22);
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .play-choice:hover {
+      border-color: rgba(46, 230, 255, 0.5);
+      background: rgba(46, 230, 255, 0.1);
+    }
+    .play-crystal {
+      display: inline-grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      margin: 0.35rem;
+      border-radius: 12px;
+      border: 1px solid rgba(232, 197, 106, 0.35);
+      background: linear-gradient(145deg, rgba(46,230,255,0.15), rgba(232,197,106,0.12));
+      cursor: pointer;
+      font-size: 1.4rem;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .play-crystal:hover { transform: scale(1.08); box-shadow: 0 0 16px rgba(46,230,255,0.35); }
+    .play-crystal.lit {
+      box-shadow: 0 0 22px rgba(232, 197, 106, 0.55);
+      border-color: rgba(232, 197, 106, 0.7);
+    }
+    .play-story {
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 0.85rem;
     }
 
     .empty {
@@ -1441,6 +2275,224 @@
       transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    /* ── Join The Pack (compact pump.fun-style auth) ── */
+    .join-modal {
+      width: min(380px, 100%);
+      max-height: min(90vh, 640px);
+      padding: 1.35rem 1.25rem 1.15rem;
+      border-radius: 20px;
+      border: 1px solid rgba(46, 230, 255, 0.16);
+      background: linear-gradient(180deg, #121a2e 0%, #0a101c 100%);
+      box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(46, 230, 255, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      text-align: center;
+      position: relative;
+    }
+    .join-modal .join-close {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid rgba(46, 230, 255, 0.12);
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+    }
+    .join-modal .join-close:hover {
+      color: var(--text);
+      border-color: rgba(46, 230, 255, 0.3);
+    }
+    .join-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      margin: 0.15rem auto 0.85rem;
+      overflow: hidden;
+      box-shadow: 0 0 22px rgba(46, 230, 255, 0.4);
+    }
+    .join-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .join-modal h2 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3rem;
+      color: var(--text);
+    }
+    .join-modal .join-sub {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1.15rem;
+    }
+    .join-primary {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      padding: 0.78rem 1rem;
+      border-radius: 12px;
+      border: none;
+      background: #fff;
+      color: #0a0a0a;
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s, box-shadow 0.15s;
+      margin-bottom: 0.65rem;
+      text-decoration: none;
+    }
+    .join-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(255, 255, 255, 0.12);
+    }
+    .join-primary .x-ico {
+      width: 1.15rem;
+      height: 1.15rem;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 1rem;
+      line-height: 1;
+    }
+    .join-socials {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .join-social {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.72rem 0.4rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--text);
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      text-decoration: none;
+    }
+    .join-social:hover {
+      border-color: rgba(46, 230, 255, 0.3);
+      background: rgba(46, 230, 255, 0.08);
+    }
+    .join-email-row {
+      display: flex;
+      gap: 0.45rem;
+      margin-bottom: 0.95rem;
+    }
+    .join-email-row input {
+      flex: 1;
+      min-width: 0;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(46, 230, 255, 0.12);
+      border-radius: 12px;
+      padding: 0.72rem 0.85rem;
+      outline: none;
+    }
+    .join-email-row input:focus {
+      border-color: rgba(46, 230, 255, 0.4);
+      box-shadow: 0 0 0 3px rgba(46, 230, 255, 0.1);
+    }
+    .join-email-row button {
+      width: 46px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      border: 1px solid rgba(46, 230, 255, 0.2);
+      background: rgba(46, 230, 255, 0.12);
+      color: var(--cyan-soft);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .join-email-row button:hover {
+      background: rgba(46, 230, 255, 0.22);
+    }
+    .join-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin: 0.15rem 0 0.85rem;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .join-divider::before,
+    .join-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .join-wallet {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.75rem 0.9rem;
+      margin-bottom: 0.45rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.32);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s, background 0.15s;
+      text-decoration: none;
+    }
+    .join-wallet:hover {
+      border-color: rgba(46, 230, 255, 0.28);
+      background: rgba(46, 230, 255, 0.07);
+    }
+    .join-wallet .w-ico {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .join-wallet .w-chev {
+      margin-left: auto;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+    .join-toast {
+      margin-top: 0.65rem;
+      font-size: 0.78rem;
+      color: var(--cyan-soft);
+      min-height: 1.1em;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .join-toast.show { opacity: 1; }
 
     .gate-steps {
       display: flex;
@@ -1745,36 +2797,6 @@
       box-shadow: 0 0 16px rgba(46, 230, 255, 0.15);
     }
 
-    .play-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.45rem;
-      margin-top: 1.15rem;
-      padding: 0.65rem 1.25rem;
-      border-radius: 999px;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.9rem;
-      letter-spacing: 0.02em;
-      text-decoration: none;
-      color: #021018;
-      background: linear-gradient(135deg, #1ad4f0, #0ea5c9 55%, #c9a44a);
-      box-shadow: 0 0 28px rgba(46, 230, 255, 0.35), inset 0 1px 0 rgba(255,255,255,0.3);
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .play-link:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 40px rgba(46, 230, 255, 0.5), 0 0 20px rgba(232, 197, 106, 0.25);
-    }
-    .play-link-note {
-      display: block;
-      margin-top: 0.55rem;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      letter-spacing: 0.03em;
-    }
-
     .footer-seal {
       display: flex;
       flex-direction: column;
@@ -1924,6 +2946,46 @@
     <div class="cosmos-vignette"></div>
   </div>
 
+  <div class="shell" data-view="home" id="shell">
+    <!-- Left nav — pump.fun style -->
+    <aside class="side-nav" aria-label="Citadel navigation">
+      <button type="button" class="side-nav-brand" id="navHome" title="Back to Gate feed">
+        <div class="mark" aria-hidden="true">
+          <img src="assets/citadel-mark.jpg" alt="" width="36" height="36" />
+        </div>
+        <div>
+          <div class="side-nav-brand-title">Thunderwolf <span>Gate</span></div>
+          <div class="side-nav-brand-sub">Citadel nav</div>
+        </div>
+      </button>
+      <nav class="side-nav-list">
+        <button type="button" class="side-nav-item active" data-nav="home" id="navHall">
+          <span class="nav-ico" aria-hidden="true">⌂</span>
+          <span>Hall</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="forges" id="navForges">
+          <span class="nav-ico" aria-hidden="true">⚒</span>
+          <span>Creator Forges</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="videos" id="navVideos">
+          <span class="nav-ico" aria-hidden="true">▶</span>
+          <span>Videos</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="creator" id="navCreator">
+          <span class="nav-ico" aria-hidden="true">✦</span>
+          <span>Creator Profile</span>
+        </button>
+        <button type="button" class="side-nav-item" data-nav="player" id="navPlayer">
+          <span class="nav-ico" aria-hidden="true">◎</span>
+          <span>Player Profile</span>
+        </button>
+      </nav>
+      <div class="side-nav-foot">
+        <button type="button" class="side-nav-cta" id="navSubmit">Submit</button>
+        <button type="button" class="side-nav-ghost" id="navVision">Join The Pack</button>
+      </div>
+    </aside>
+
   <div class="app">
     <header class="gate-header">
       <div class="brand">
@@ -1936,7 +2998,7 @@
         </div>
       </div>
       <div class="header-actions">
-        <button type="button" class="btn btn-ghost" id="btnAbout">Vision</button>
+        <button type="button" class="btn btn-ghost" id="btnAbout">Join The Pack</button>
         <button type="button" class="btn btn-primary" id="btnSubmit">
           <span class="btn-label-short">Submit</span>
           <span class="btn-label-long">Submit to Citadel</span>
@@ -1945,10 +3007,17 @@
     </header>
 
     <div class="intro-strip">
-      <p class="intro-line">
-        <strong>Live Creation Feed.</strong>
-        Image-first hall — attach art, pass the Gate, feed the Star Core.
-      </p>
+      <div class="search-wrap" id="searchWrap">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input
+          type="search"
+          id="searchInput"
+          placeholder="Search creations, creators…  (/)"
+          autocomplete="off"
+          aria-label="Search creations"
+        />
+        <button type="button" class="search-clear" id="searchClear" aria-label="Clear search" title="Clear search">×</button>
+      </div>
       <div class="stats">
         <div class="stat-pill"><b id="statCount">0</b> creations</div>
         <div class="stat-pill"><b id="statNew">0</b> new</div>
@@ -1956,6 +3025,7 @@
       </div>
     </div>
 
+    <div class="view-panel-home">
     <!-- 1) Featured / Gallery of Echoes  = pump.fun "Trending now" (hero strip) -->
     <section id="echoesSection" class="trending-block" aria-label="Gallery of Echoes">
       <div class="gallery-nebula" aria-hidden="true"></div>
@@ -1997,27 +3067,177 @@
           <button type="button" class="chip" data-type="ar-portal">AR Portal</button>
           <button type="button" class="chip" data-type="sprint-path">Sprint Path</button>
           <button type="button" class="chip" data-type="resonance-event">Resonance Event</button>
+          <button type="button" class="chip" data-type="bolt-story">Bolt Story</button>
           <button type="button" class="chip" data-type="remix">Remix</button>
         </div>
         <div class="feed-meta">
           <span class="live-dot">Living Index</span>
-          <div class="search-wrap" id="searchWrap">
-            <span class="search-icon" aria-hidden="true">⌕</span>
-            <input
-              type="search"
-              id="searchInput"
-              placeholder="Search creations, creators…  (/)"
-              autocomplete="off"
-              aria-label="Search creations"
-            />
-            <button type="button" class="search-clear" id="searchClear" aria-label="Clear search" title="Clear search">×</button>
-          </div>
           <span id="showingCount">Showing 0</span>
         </div>
       </div>
 
       <div class="feed-grid" id="feed" role="list"></div>
     </section>
+    </div><!-- /.view-panel-home -->
+
+    <!-- Creator Forges -->
+    <div class="view-panel-forges" id="forgesView">
+      <div class="panel-hero">
+        <h2>Creator <span>Forges</span></h2>
+        <p>
+          Workshops where Pack creators hammer story, image, and quest into form.
+          Enter a forge to craft, remix, and send work through the Gate.
+        </p>
+      </div>
+      <div class="panel-grid">
+        <article class="panel-card">
+          <h3>Story Forge</h3>
+          <p>Spin lore threads, codex entries, and living branches for the Boltverse.</p>
+          <span class="tag">Story · Codex</span>
+        </article>
+        <article class="panel-card">
+          <h3>Quest Forge</h3>
+          <p>Build Mini-Quests, Sprint Paths, and Crystal Challenges for the Pack.</p>
+          <span class="tag">Mini-Quest</span>
+        </article>
+        <article class="panel-card">
+          <h3>Image Forge</h3>
+          <p>Attach art, covers, and seals that feed the Gallery of Echoes.</p>
+          <span class="tag gold">Art · Resonance</span>
+        </article>
+        <article class="panel-card">
+          <h3>Remix Forge</h3>
+          <p>Take a seed from another creator and reforge it with your howl.</p>
+          <span class="tag">Remix</span>
+        </article>
+      </div>
+    </div>
+
+    <!-- Videos -->
+    <div class="view-panel-videos" id="videosView">
+      <div class="panel-hero">
+        <h2>Citadel <span>Videos</span></h2>
+        <p>
+          Bolt Story reels from the Pack — howls, seeds, and gates. Tap Play on any card in the Hall feed, or open a reel here.
+        </p>
+      </div>
+      <div class="panel-grid">
+        <article class="panel-card" style="cursor:pointer" data-play-story="vid-1">
+          <h3>Howl at the Star Core</h3>
+          <p>The Pack’s first howl reaches the Core. Lightning answers.</p>
+          <span class="tag gold">Bolt Story</span>
+        </article>
+        <article class="panel-card" style="cursor:pointer" data-play-story="vid-2">
+          <h3>The Cub and the Seed</h3>
+          <p>A silent cub finds the glowing seed under ice.</p>
+          <span class="tag">Bolt Story</span>
+        </article>
+        <article class="panel-card" style="cursor:pointer" data-play-story="vid-3">
+          <h3>Gate of Howls Opens</h3>
+          <p>Cyan runes crack the Publishing Gate at dusk.</p>
+          <span class="tag">Bolt Story</span>
+        </article>
+        <article class="panel-card" style="cursor:pointer" id="videosShowFeed">
+          <h3>All reels in Hall</h3>
+          <p>Filter Explore to Bolt Story and browse every story card.</p>
+          <span class="tag gold">Open feed</span>
+        </article>
+      </div>
+    </div>
+
+    <!-- Creator Profile -->
+    <div class="view-panel-creator" id="creatorProfileView">
+      <div class="profile-card">
+        <div class="profile-head">
+          <div class="profile-avatar" aria-hidden="true">
+            <img src="assets/citadel-mark.jpg" alt="" width="72" height="72" id="creatorAvatarImg" />
+          </div>
+          <div>
+            <h2>Creator <span>Profile</span></h2>
+            <p class="profile-role">Forge art, stories, and quests for the Pack</p>
+          </div>
+        </div>
+        <div class="profile-body">
+          <div class="profile-stats" id="creatorStats">
+            <div class="profile-stat"><b id="cStatCreations">0</b><span>Creations</span></div>
+            <div class="profile-stat"><b id="cStatLikes">0</b><span>Likes earned</span></div>
+            <div class="profile-stat"><b id="cStatViews">0</b><span>Views</span></div>
+            <div class="profile-stat"><b id="cStatRes">0</b><span>Avg resonance</span></div>
+          </div>
+          <form class="profile-form" id="creatorProfileForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cName">Display name</label>
+                <input id="cName" name="name" maxlength="40" placeholder="Forge Hero" />
+              </div>
+              <div class="form-group">
+                <label for="cHandle">Handle</label>
+                <input id="cHandle" name="handle" maxlength="32" placeholder="@yourpackname" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="cSpecialty">Specialty</label>
+              <input id="cSpecialty" name="specialty" maxlength="60" placeholder="Mini-Quests · Bolt Stories · Art" />
+            </div>
+            <div class="form-group">
+              <label for="cBio">Bio</label>
+              <textarea id="cBio" name="bio" maxlength="400" placeholder="What do you forge for the Citadel?"></textarea>
+            </div>
+            <div class="profile-actions">
+              <button type="submit" class="btn btn-primary">Save creator profile</button>
+              <button type="button" class="btn btn-ghost" id="creatorGoSubmit">Submit a creation</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player Profile -->
+    <div class="view-panel-player" id="playerProfileView">
+      <div class="profile-card">
+        <div class="profile-head">
+          <div class="profile-avatar" aria-hidden="true">
+            <img src="assets/play-wolf.jpg" alt="" width="72" height="72" id="playerAvatarImg" />
+          </div>
+          <div>
+            <h2>Player <span>Profile</span></h2>
+            <p class="profile-role">Run quests, watch reels, feed the Star Core</p>
+          </div>
+        </div>
+        <div class="profile-body">
+          <div class="profile-stats" id="playerStats">
+            <div class="profile-stat"><b id="pStatLikes">0</b><span>Likes given</span></div>
+            <div class="profile-stat"><b id="pStatViews">0</b><span>Views this tab</span></div>
+            <div class="profile-stat"><b id="pStatHowls">0</b><span>Howl energy</span></div>
+            <div class="profile-stat"><b id="pStatRank">Pup</b><span>Pack rank</span></div>
+          </div>
+          <form class="profile-form" id="playerProfileForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="pName">Display name</label>
+                <input id="pName" name="name" maxlength="40" placeholder="Pack Runner" />
+              </div>
+              <div class="form-group">
+                <label for="pHandle">Handle</label>
+                <input id="pHandle" name="handle" maxlength="32" placeholder="@player" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="pFavorite">Favorite play</label>
+              <input id="pFavorite" name="favorite" maxlength="60" placeholder="Lightning Dash · Bolt Stories" />
+            </div>
+            <div class="form-group">
+              <label for="pBio">Bio</label>
+              <textarea id="pBio" name="bio" maxlength="400" placeholder="How do you run with the Pack?"></textarea>
+            </div>
+            <div class="profile-actions">
+              <button type="submit" class="btn btn-primary">Save player profile</button>
+              <button type="button" class="btn btn-ghost" id="playerGoHall">Back to Hall</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
     <footer class="about" id="about">
       <div class="footer-vision">
@@ -2031,15 +3251,6 @@
           <a href="https://x.com/SMiR123451" target="_blank" rel="noopener">@SMiR123451</a>
           <a href="https://x.com/grok" target="_blank" rel="noopener">@grok</a>
         </div>
-        <a
-          class="play-link"
-          href="https://starboltsprint.github.io/thunderwolf-citadel-play/"
-          target="_blank"
-          rel="noopener"
-        >
-          ⚡ Enter the Citadel — Play
-        </a>
-        <span class="play-link-note">Live playable hall · starboltsprint.github.io/thunderwolf-citadel-play</span>
       </div>
 
       <div class="footer-seal">
@@ -2055,6 +3266,60 @@
         </p>
       </div>
     </footer>
+  </div><!-- /.app -->
+  </div><!-- /.shell -->
+
+  <!-- Join The Pack (sign-in) -->
+  <div class="modal-overlay" id="joinModal" role="dialog" aria-modal="true" aria-labelledby="joinTitle">
+    <div class="modal join-modal">
+      <button type="button" class="join-close" id="joinClose" aria-label="Close">&times;</button>
+      <div class="join-logo" aria-hidden="true">
+        <img src="assets/citadel-mark.jpg" alt="" width="52" height="52" />
+      </div>
+      <h2 id="joinTitle">Welcome to the Pack</h2>
+      <p class="join-sub">Sign in to join the Pack.</p>
+
+      <!-- X first (as requested) -->
+      <a
+        class="join-primary"
+        id="joinX"
+        href="https://x.com/StarBoltSprint"
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="x-ico" aria-hidden="true">𝕏</span>
+        <span>Continue with X</span>
+      </a>
+
+      <div class="join-socials">
+        <button type="button" class="join-social" id="joinGoogle" title="Continue with Google" aria-label="Continue with Google">G</button>
+        <button type="button" class="join-social" id="joinApple" title="Continue with Apple" aria-label="Continue with Apple">A</button>
+        <button type="button" class="join-social" id="joinGrok" title="Continue with Grok" aria-label="Continue with Grok">✦</button>
+      </div>
+
+      <div class="join-email-row">
+        <input type="email" id="joinEmail" placeholder="you@example.com" autocomplete="email" aria-label="Email" />
+        <button type="button" id="joinEmailGo" aria-label="Continue with email">→</button>
+      </div>
+
+      <div class="join-divider">or connect a wallet</div>
+
+      <button type="button" class="join-wallet" id="joinPhantom">
+        <span class="w-ico" aria-hidden="true">◈</span>
+        <span>Phantom</span>
+      </button>
+      <button type="button" class="join-wallet" id="joinCoinbase">
+        <span class="w-ico" aria-hidden="true">◉</span>
+        <span>Coinbase Wallet</span>
+      </button>
+      <button type="button" class="join-wallet" id="joinMoreWallets">
+        <span class="w-ico" aria-hidden="true">☰</span>
+        <span>More wallets</span>
+        <span class="w-chev" aria-hidden="true">›</span>
+      </button>
+
+      <p class="join-toast" id="joinToast" role="status"></p>
+    </div>
   </div>
 
   <!-- Submit -->
@@ -2088,6 +3353,7 @@
               <option value="ar-portal">AR Portal</option>
               <option value="sprint-path">Sprint Path</option>
               <option value="resonance-event">Resonance Event</option>
+              <option value="bolt-story">Bolt Story (video / reel)</option>
               <option value="remix">Remix</option>
             </select>
           </div>
@@ -2136,7 +3402,38 @@
       <div id="detailContent" class="detail-body"></div>
       <div class="form-actions">
         <button type="button" class="btn btn-ghost" data-close-detail>Close</button>
-        <button type="button" class="btn btn-primary" id="detailHowl">Howl 🐺</button>
+        <button type="button" class="btn-play" id="detailPlay">
+          <img src="assets/play-wolf.jpg" alt="" width="28" height="28" />
+          <span>Play</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Play arena -->
+  <div class="modal-overlay play-modal" id="playModal" role="dialog" aria-modal="true" aria-labelledby="playTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 class="modal-title" id="playTitle">Play</h2>
+        <div class="play-head-actions">
+          <button type="button" class="btn-fs" id="btnFullscreen" aria-label="Fullscreen" title="Fullscreen">
+            <span class="fs-ico" aria-hidden="true">⛶</span>
+            <span class="fs-label">Fullscreen</span>
+          </button>
+          <button type="button" class="close-btn" data-close-play aria-label="Close">&times;</button>
+        </div>
+      </div>
+      <div class="play-stage" id="playStage"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close-play>Leave</button>
+        <button type="button" class="btn-fs" id="btnFullscreenFooter" aria-label="Fullscreen" title="Fullscreen">
+          <span class="fs-ico" aria-hidden="true">⛶</span>
+          <span>Fullscreen</span>
+        </button>
+        <button type="button" class="btn-play" id="playAgain" style="display:none">
+          <img src="assets/play-wolf.jpg" alt="" width="28" height="28" />
+          <span>Play again</span>
+        </button>
       </div>
     </div>
   </div>
@@ -2157,6 +3454,7 @@
       "ar-portal":         { label: "AR Portal",         emoji: "🌀", short: "AR" },
       "sprint-path":       { label: "Sprint Path",       emoji: "🏃", short: "SPRINT" },
       "resonance-event":   { label: "Resonance Event",   emoji: "🌊", short: "PULSE" },
+      "bolt-story":        { label: "Bolt Story",        emoji: "▶", short: "REEL" },
       "remix":             { label: "Remix",             emoji: "🔁", short: "REMIX" },
     };
 
@@ -2172,6 +3470,17 @@
       quiet: "covers/storm-quiet.jpg",
       gate: "covers/gate-howls.jpg",
       gather: "covers/first-gathering.jpg",
+      ring: "covers/storm-ring.jpg",
+      heart: "covers/crystal-heart.jpg",
+      stair: "covers/nebula-stair.jpg",
+      hour: "covers/star-hourglass.jpg",
+      bridge: "covers/bridge-light.jpg",
+      eye: "covers/galaxy-eye.jpg",
+      canyon: "covers/lightning-canyon.jpg",
+      codex: "covers/star-codex.jpg",
+      storyHowl: "covers/story-core-howl.jpg",
+      storyCub: "covers/story-silent-cub.jpg",
+      storyGate: "covers/story-gate-open.jpg",
     };
 
     const SEED = [
@@ -2315,6 +3624,166 @@
         canon: "community",
         createdAt: Date.now() - 1000 * 60 * 60 * 72,
       },
+      {
+        id: "seed-11",
+        title: "Storm Ring Leap",
+        type: "mini-quest",
+        description: "Leap through gold rune rings above a lightning sea. Miss one and the storm swallows the path.",
+        creator: "Ring Runner · Nyx",
+        link: "",
+        image: COVER.ring,
+        resonance: 91,
+        howls: 76,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 60 * 2,
+      },
+      {
+        id: "seed-12",
+        title: "Crystal Heart Vigil",
+        type: "resonance-event",
+        description: "Hold the vigil until the citadel heart beats in time with the Pack. Every pulse feeds the Core.",
+        creator: "Heart Wardens",
+        link: "",
+        image: COVER.heart,
+        resonance: 93,
+        howls: 98,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 60 * 14,
+      },
+      {
+        id: "seed-13",
+        title: "Nebula Stair Run",
+        type: "sprint-path",
+        description: "Climb floating stairs into a violet portal. Speed and balance — the nebula does not wait.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: COVER.stair,
+        resonance: 84,
+        howls: 41,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 60 * 5,
+      },
+      {
+        id: "seed-14",
+        title: "Hourglass of Starlight",
+        type: "story-branch",
+        description: "A cub sleeps while starlight drains from a broken hourglass. Choose: wake the cub, or mend time.",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: COVER.hour,
+        resonance: 89,
+        howls: 63,
+        featured: false,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 60 * 18,
+      },
+      {
+        id: "seed-15",
+        title: "Bridge of Howls",
+        type: "story-branch",
+        description: "A bridge of light between twin towers. Cross only if your howl matches the storm moon.",
+        creator: "Pack Pup · Riven",
+        link: "",
+        image: COVER.bridge,
+        resonance: 87,
+        howls: 52,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 60 * 9,
+      },
+      {
+        id: "seed-16",
+        title: "Galaxy Eye Watch",
+        type: "crystal-challenge",
+        description: "Look into the wolf’s eye-galaxy. Answer three visions before the iris closes.",
+        creator: "Crystal Choir",
+        link: "",
+        image: COVER.eye,
+        resonance: 90,
+        howls: 71,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 60 * 4,
+      },
+      {
+        id: "seed-17",
+        title: "Lightning Canyon Dash",
+        type: "ar-portal",
+        description: "Race spectral wolves through crystal lightning pillars. Place the canyon on any floor near you.",
+        creator: "Portal Pack",
+        link: "",
+        image: COVER.canyon,
+        resonance: 86,
+        howls: 58,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 60 * 7,
+      },
+      {
+        id: "seed-18",
+        title: "Living Star Codex",
+        type: "codex",
+        description: "An open book of living starlight. The wolf constellation rises from its pages when the Pack remembers.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: COVER.codex,
+        resonance: 92,
+        howls: 80,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 60 * 11,
+      },
+      {
+        id: "vid-1",
+        title: "Howl at the Star Core",
+        type: "bolt-story",
+        description: "Bolt Story trailer: the Pack’s first howl reaches the Core. Lightning answers. Watch the sky open.",
+        creator: "StarBoltSprint · Reel",
+        link: "",
+        image: COVER.storyHowl,
+        video: "videos/story-core-howl.mp4",
+        storyLine: "The Core hears every voice. One howl becomes a constellation.",
+        resonance: 97,
+        howls: 156,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 50,
+      },
+      {
+        id: "vid-2",
+        title: "The Cub and the Seed",
+        type: "bolt-story",
+        description: "Bolt Story trailer: a silent cub finds the glowing seed under ice. Will it wake — or wait?",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: COVER.storyCub,
+        video: "videos/story-silent-cub.mp4",
+        storyLine: "Under crystal ice, a seed waits. The Pack’s future is small enough to hold.",
+        resonance: 95,
+        howls: 104,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 60 * 3,
+      },
+      {
+        id: "vid-3",
+        title: "Gate of Howls Opens",
+        type: "bolt-story",
+        description: "Bolt Story trailer: the Publishing Gate cracks with cyan runes. Step through — unfinished fire is welcome.",
+        creator: "Citadel Official",
+        link: "",
+        image: COVER.storyGate,
+        video: "videos/story-gate-open.mp4",
+        storyLine: "Dusk at the Gate. Publish the spark you have. The hall will shape the rest.",
+        resonance: 94,
+        howls: 91,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 60 * 1,
+      },
     ];
 
     let state = {
@@ -2362,16 +3831,59 @@
     function applyOverrides() {
       const o = loadOverrides();
       SEED.forEach((s) => {
+        ensureEngagement(s);
         if (o[s.id]) {
-          s.howls = o[s.id].howls;
-          s.resonance = o[s.id].resonance;
+          if (typeof o[s.id].howls === "number") s.howls = o[s.id].howls;
+          if (typeof o[s.id].resonance === "number") s.resonance = o[s.id].resonance;
+          if (typeof o[s.id].views === "number") s.views = o[s.id].views;
         }
       });
     }
 
+    /** Stable default views + ensure howls/views fields exist */
+    function ensureEngagement(item) {
+      if (!item) return item;
+      if (typeof item.howls !== "number") item.howls = 0;
+      if (typeof item.views !== "number") {
+        let h = 0;
+        const id = String(item.id || "");
+        for (let i = 0; i < id.length; i++) h = (h * 33 + id.charCodeAt(i)) | 0;
+        item.views = Math.abs(h % 900) + (item.howls || 0) * 5 + (item.resonance || 50) * 3;
+      }
+      return item;
+    }
+
+    function persistEngagement(item) {
+      if (!item) return;
+      const user = loadUserItems();
+      const ui = user.find((i) => i.id === item.id);
+      if (ui) {
+        ui.howls = item.howls;
+        ui.resonance = item.resonance;
+        ui.views = item.views;
+        saveUserItems(user);
+      } else {
+        const o = loadOverrides();
+        o[item.id] = {
+          howls: item.howls,
+          resonance: item.resonance,
+          views: item.views,
+        };
+        localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o));
+        applyOverrides();
+      }
+    }
+
+    function formatCount(n) {
+      const v = Math.max(0, Number(n) || 0);
+      if (v >= 1000000) return (v / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+      if (v >= 1000) return (v / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+      return String(v);
+    }
+
     function allItems() {
       const map = new Map();
-      [...SEED, ...loadUserItems()].forEach((i) => map.set(i.id, i));
+      [...SEED, ...loadUserItems()].forEach((i) => map.set(i.id, ensureEngagement(i)));
       return [...map.values()];
     }
 
@@ -2393,7 +3905,7 @@
 
     function risingScore(item) {
       const ageH = Math.max(0.5, (Date.now() - item.createdAt) / 3600000);
-      return (item.resonance * 2 + item.howls * 3) / Math.pow(ageH, 0.6);
+      return (item.resonance * 2 + item.howls * 3 + (item.views || 0) * 0.15) / Math.pow(ageH, 0.6);
     }
 
     function filtered() {
@@ -2552,13 +4064,29 @@
             <div class="echo-ticker">${tickerFrom(item)}</div>
             <div class="echo-meta">
               <span class="creator" title="${escapeAttr(item.creator)}">${escapeHtml(item.creator)}</span>
-              <span>${relativeTime(item.createdAt)} · 🐺 ${item.howls}</span>
+              <span class="right">
+                <span>${relativeTime(item.createdAt)}</span>
+                <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)}</span>
+                <button type="button" class="like-btn ${state.howled.has(item.id) ? "is-liked" : ""}" data-like="${item.id}" title="Like" aria-label="Like">
+                  <span class="heart" aria-hidden="true">${state.howled.has(item.id) ? "♥" : "♡"}</span>
+                  <span>${formatCount(item.howls)}</span>
+                </button>
+              </span>
             </div>
           </div>
         </article>`;
       }).join("");
       scroll.querySelectorAll(".echo-card").forEach((el) => {
-        el.addEventListener("click", () => openDetail(el.dataset.id));
+        el.addEventListener("click", (e) => {
+          if (e.target.closest("[data-like]")) return;
+          openDetail(el.dataset.id);
+        });
+      });
+      scroll.querySelectorAll("[data-like]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleHowl(btn.dataset.like);
+        });
       });
       requestAnimationFrame(updateEchoNav);
     }
@@ -2589,7 +4117,6 @@
       }
 
       feed.innerHTML = list.map((item) => {
-        const howled = state.howled.has(item.id);
         return `
           <article class="tile ${item.featured ? "is-featured" : ""}" data-id="${item.id}" role="listitem">
             <div class="tile-media">
@@ -2607,10 +4134,18 @@
                 <span class="creator" title="${escapeAttr(item.creator)}">${escapeHtml(item.creator)}</span>
                 <span class="right">
                   <span>${relativeTime(item.createdAt)}</span>
-                  <button type="button" class="howl-btn ${howled ? "howled" : ""}" data-howl="${item.id}">
-                    🐺 ${item.howls}
+                  <button type="button" class="play-btn" data-play="${item.id}" title="Play">
+                    <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
+                    Play
                   </button>
                 </span>
+              </div>
+              <div class="tile-stats">
+                <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)}</span>
+                <button type="button" class="like-btn ${state.howled.has(item.id) ? "is-liked" : ""}" data-like="${item.id}" title="Like" aria-label="Like">
+                  <span class="heart" aria-hidden="true">${state.howled.has(item.id) ? "♥" : "♡"}</span>
+                  <span>${formatCount(item.howls)}</span>
+                </button>
               </div>
             </div>
           </article>`;
@@ -2618,14 +4153,20 @@
 
       feed.querySelectorAll(".tile").forEach((el) => {
         el.addEventListener("click", (e) => {
-          if (e.target.closest("[data-howl]")) return;
+          if (e.target.closest("[data-play]") || e.target.closest("[data-like]")) return;
           openDetail(el.dataset.id);
         });
       });
-      feed.querySelectorAll("[data-howl]").forEach((btn) => {
+      feed.querySelectorAll("[data-play]").forEach((btn) => {
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
-          toggleHowl(btn.dataset.howl);
+          launchPlay(btn.dataset.play);
+        });
+      });
+      feed.querySelectorAll("[data-like]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleHowl(btn.dataset.like);
         });
       });
     }
@@ -2639,6 +4180,7 @@
     function toggleHowl(id) {
       const item = allItems().find((i) => i.id === id);
       if (!item) return;
+      ensureEngagement(item);
 
       if (state.howled.has(id)) {
         state.howled.delete(id);
@@ -2650,30 +4192,31 @@
         item.resonance = Math.min(99, item.resonance + 1);
       }
       saveHowled();
-
-      const user = loadUserItems();
-      const ui = user.find((i) => i.id === id);
-      if (ui) {
-        ui.howls = item.howls;
-        ui.resonance = item.resonance;
-        saveUserItems(user);
-      } else {
-        const o = loadOverrides();
-        o[id] = { howls: item.howls, resonance: item.resonance };
-        localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o));
-        applyOverrides();
-      }
+      persistEngagement(item);
       render();
-      if (state.openDetailId === id) openDetail(id);
+      if (state.openDetailId === id) openDetail(id, { skipView: true });
     }
 
-    function openDetail(id) {
+    function recordView(id) {
       const item = allItems().find((i) => i.id === id);
       if (!item) return;
+      ensureEngagement(item);
+      // Debounce: one view per item per session tab
+      if (!state.viewedSession) state.viewedSession = new Set();
+      if (state.viewedSession.has(id)) return;
+      state.viewedSession.add(id);
+      item.views = (item.views || 0) + 1;
+      persistEngagement(item);
+    }
+
+    function openDetail(id, opts = {}) {
+      const item = allItems().find((i) => i.id === id);
+      if (!item) return;
+      if (!opts.skipView) recordView(id);
       state.openDetailId = id;
+      const liked = state.howled.has(id);
       document.getElementById("detailTitle").textContent = item.title;
       document.getElementById("detailHero").innerHTML = mediaHtml(item);
-      const howled = state.howled.has(id);
       document.getElementById("detailContent").innerHTML = `
         <div class="detail-tags">
           <span class="badge badge-type">${typeLabel(item.type)}</span>
@@ -2683,16 +4226,553 @@
         <div class="detail-meta-grid">
           <div><b>Creator</b>${escapeHtml(item.creator)}</div>
           <div><b>Resonance</b>${item.resonance}</div>
-          <div><b>Howls</b>${item.howls}</div>
+          <div><b>Likes</b>${formatCount(item.howls)}</div>
+          <div><b>Views</b>${formatCount(item.views)}</div>
           <div><b>Entered</b>${relativeTime(item.createdAt)} ago</div>
         </div>
+        <div class="tile-stats" style="margin:0.75rem 0 0.25rem">
+          <button type="button" class="like-btn ${liked ? "is-liked" : ""}" id="detailLike" title="Like">
+            <span class="heart" aria-hidden="true">${liked ? "♥" : "♡"}</span>
+            <span>${formatCount(item.howls)} likes</span>
+          </button>
+          <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)} views</span>
+        </div>
         ${item.link ? `<p><a href="${escapeAttr(item.link)}" target="_blank" rel="noopener" style="color:var(--cyan-soft)">Open link →</a></p>` : ""}
-        <p style="font-size:0.78rem;color:var(--text-dim)">Bound to the Official Wrapper · feeds the Star Core.</p>
+        <p style="font-size:0.78rem;color:var(--text-dim)">Bound to the Official Wrapper · play feeds the Star Core.</p>
       `;
-      const howlBtn = document.getElementById("detailHowl");
-      howlBtn.textContent = howled ? "Howled 🐺" : "Howl 🐺";
-      howlBtn.onclick = () => toggleHowl(id);
+      document.getElementById("detailLike")?.addEventListener("click", () => toggleHowl(id));
+      document.getElementById("detailPlay").onclick = () => launchPlay(id);
       document.getElementById("detailModal").classList.add("open");
+    }
+
+    /* ── Playable experiences (each card is a game) ── */
+    let playTimer = null;
+    let playState = null;
+
+    function stopPlayTimers() {
+      if (playTimer) {
+        clearInterval(playTimer);
+        playTimer = null;
+      }
+    }
+
+    /** Full Three.js games (self-contained HTML) */
+    const FULL_GAMES = {
+      "seed-1": "games/storm-corridor-sprint.html",
+      "mini-quest": "games/storm-corridor-sprint.html",
+      "sprint": "games/storm-corridor-sprint.html",
+      "sprint-path": "games/storm-corridor-sprint.html",
+    };
+
+    function resolveGameUrl(item) {
+      if (FULL_GAMES[item.id]) return FULL_GAMES[item.id];
+      if (FULL_GAMES[item.type]) return FULL_GAMES[item.type];
+      // title match for Lightning Dash
+      if (/lightning\s*dash|storm\s*orb/i.test(item.title || "")) {
+        return "games/storm-corridor-sprint.html";
+      }
+      return null;
+    }
+
+    function isBoltStory(item) {
+      return item && (item.type === "bolt-story" || !!item.video);
+    }
+
+    function renderBoltStoryPlayer(item) {
+      const poster = escapeAttr(item.image || "");
+      const title = escapeHtml(item.title || "Bolt Story");
+      const line = escapeHtml(item.storyLine || item.description || "");
+      let videoSrc = item.video || "";
+      try {
+        if (videoSrc) videoSrc = new URL(videoSrc, location.href).href;
+      } catch (_) { /* keep relative */ }
+      videoSrc = escapeAttr(videoSrc);
+      // Prefer real mp4 when present; Ken Burns reel as fallback while loading / if missing
+      return `
+        <div class="story-player" id="storyPlayer">
+          ${videoSrc ? `
+            <video
+              id="storyVideo"
+              controls
+              playsinline
+              autoplay
+              muted
+              poster="${poster}"
+              preload="auto"
+              style="display:none"
+            >
+              <source src="${videoSrc}" type="video/mp4" />
+            </video>` : ""}
+          <div class="story-reel" id="storyReel">
+            <div class="story-reel__art" style="background-image:url('${poster}')"></div>
+            <div class="story-reel__veil"></div>
+            <div class="story-reel__caption">
+              <div class="story-reel__kicker">Bolt Story · Reel</div>
+              <div class="story-reel__title">${title}</div>
+              <div class="story-reel__body">${line}</div>
+            </div>
+            <div class="story-reel__bar" aria-hidden="true"><i></i></div>
+          </div>
+        </div>`;
+    }
+
+    function tryActivateStoryVideo() {
+      const video = document.getElementById("storyVideo");
+      const reel = document.getElementById("storyReel");
+      if (!video || !reel) return;
+      const showVideo = () => {
+        reel.style.display = "none";
+        video.style.display = "block";
+        video.muted = false; // user can hear after it starts; click unmute if browser blocks
+        const p = video.play();
+        if (p && typeof p.catch === "function") {
+          p.catch(() => {
+            video.muted = true;
+            video.play().catch(() => {});
+          });
+        }
+      };
+      video.addEventListener("loadeddata", showVideo, { once: true });
+      video.addEventListener("canplay", showVideo, { once: true });
+      video.addEventListener("error", () => {
+        video.style.display = "none";
+        reel.style.display = "block";
+      }, { once: true });
+      video.load();
+    }
+
+    function launchPlay(id) {
+      const item = allItems().find((i) => i.id === id);
+      if (!item) return;
+      recordView(id);
+      closeDetail();
+
+      // Bolt Story reels — play video or cinematic cover reel
+      if (isBoltStory(item) && !resolveGameUrl(item)) {
+        stopPlayTimers();
+        playState = { id: item.id, item, fullGame: false, story: true };
+        document.getElementById("playTitle").textContent = item.title;
+        document.getElementById("playAgain").style.display = "none";
+        const stage = document.getElementById("playStage");
+        stage.innerHTML = renderBoltStoryPlayer(item);
+        document.getElementById("playModal").classList.add("open");
+        document.querySelector("#playModal .modal")?.classList.add("play-wide");
+        tryActivateStoryVideo();
+        return;
+      }
+
+      const gameUrl = resolveGameUrl(item);
+      if (gameUrl) {
+        // Full 3D Mini-Quest in play modal iframe
+        // Absolute URL so textures resolve correctly under file:// and http://
+        let absGame;
+        try {
+          absGame = new URL(gameUrl, location.href).href;
+        } catch {
+          absGame = gameUrl;
+        }
+        stopPlayTimers();
+        playState = { id: item.id, item, fullGame: true };
+        document.getElementById("playTitle").textContent = item.title;
+        document.getElementById("playAgain").style.display = "none";
+        const stage = document.getElementById("playStage");
+        const fileHint =
+          location.protocol === "file:"
+            ? `<p style="margin:0.5rem 0 0;font-size:0.72rem;color:#8b9bb8;text-align:center">
+                Opened from disk (file://). If plates look flat, run <code style="color:#7ef0ff">serve.bat</code> in the citadel folder and use http://localhost:8765
+               </p>`
+            : "";
+        stage.innerHTML = `
+          <iframe
+            id="gameFrame"
+            src="${escapeAttr(absGame)}?autostart=1"
+            title="${escapeAttr(item.title)}"
+            style="width:100%;height:min(72vh,640px);border:0;border-radius:14px;background:#02040c;display:block"
+            allow="fullscreen; pointer-lock; gamepad"
+            allowfullscreen
+          ></iframe>${fileHint}`;
+        document.getElementById("playModal").classList.add("open");
+        // Enlarge play modal for 3D game
+        document.querySelector("#playModal .modal")?.classList.add("play-wide");
+        return;
+      }
+
+      stopPlayTimers();
+      playState = { id: item.id, item, score: 0, target: 8, time: 12, phase: "start" };
+      document.getElementById("playTitle").textContent = item.title;
+      document.getElementById("playAgain").style.display = "none";
+      document.querySelector("#playModal .modal")?.classList.remove("play-wide");
+      document.getElementById("playModal").classList.add("open");
+      renderPlayStart(item);
+    }
+
+    function closePlay() {
+      stopPlayTimers();
+      exitPlayFullscreen();
+      const frame = document.getElementById("gameFrame");
+      if (frame) frame.src = "about:blank";
+      document.querySelector("#playModal .modal")?.classList.remove("play-wide");
+      document.getElementById("playModal").classList.remove("open");
+      playState = null;
+    }
+
+    function isPlayFullscreen() {
+      const stage = document.getElementById("playStage");
+      const fs = document.fullscreenElement || document.webkitFullscreenElement;
+      return fs === stage;
+    }
+    function updateFullscreenButtons() {
+      const on = isPlayFullscreen();
+      const label = on ? "Exit full" : "Fullscreen";
+      const ico = on ? "⛶" : "⛶";
+      ["btnFullscreen", "btnFullscreenFooter"].forEach((id) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.setAttribute("aria-label", on ? "Exit fullscreen" : "Fullscreen");
+        btn.title = on ? "Exit fullscreen" : "Fullscreen";
+        const icoEl = btn.querySelector(".fs-ico");
+        if (icoEl) icoEl.textContent = ico;
+        const text = btn.querySelector(".fs-label") || [...btn.querySelectorAll("span")].find((s) => !s.classList.contains("fs-ico"));
+        if (text && text.classList.contains("fs-label")) text.textContent = label;
+        else if (text && id === "btnFullscreenFooter") text.textContent = label;
+      });
+    }
+    async function togglePlayFullscreen() {
+      const stage = document.getElementById("playStage");
+      if (!stage) return;
+      try {
+        if (isPlayFullscreen()) {
+          if (document.exitFullscreen) await document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } else {
+          if (stage.requestFullscreen) await stage.requestFullscreen();
+          else if (stage.webkitRequestFullscreen) stage.webkitRequestFullscreen();
+          // Stretch iframe / story video to fill the screen
+          const frame = document.getElementById("gameFrame");
+          if (frame) {
+            frame.style.width = "100%";
+            frame.style.height = "100%";
+            frame.style.minHeight = "100vh";
+          }
+          const player = document.getElementById("storyPlayer");
+          if (player) {
+            player.style.width = "100%";
+            player.style.height = "100%";
+            player.style.maxHeight = "none";
+            player.style.aspectRatio = "auto";
+          }
+          const video = document.getElementById("storyVideo");
+          if (video) {
+            video.style.width = "100%";
+            video.style.height = "100%";
+            video.style.objectFit = "contain";
+            video.style.display = "block";
+          }
+        }
+      } catch (err) {
+        console.warn("Fullscreen failed", err);
+        if (typeof toast === "function") toast("Fullscreen not available in this browser.");
+      }
+      setTimeout(updateFullscreenButtons, 50);
+    }
+    function exitPlayFullscreen() {
+      const fs = document.fullscreenElement || document.webkitFullscreenElement;
+      if (!fs) return;
+      try {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } catch (_) { /* ignore */ }
+    }
+    document.addEventListener("fullscreenchange", updateFullscreenButtons);
+    document.addEventListener("webkitfullscreenchange", updateFullscreenButtons);
+
+    window.addEventListener("message", (e) => {
+      const data = e.data;
+      if (!data || typeof data !== "object") return;
+      if (data.type === "citadel-play-close") {
+        closePlay();
+        return;
+      }
+      if (data.type === "citadel-play-result" && playState?.item) {
+        const item = playState.item;
+        if (data.win) {
+          item.howls += 1;
+          item.resonance = Math.min(99, item.resonance + 2);
+          const user = loadUserItems();
+          const ui = user.find((i) => i.id === item.id);
+          if (ui) {
+            ui.howls = item.howls;
+            ui.resonance = item.resonance;
+            saveUserItems(user);
+          } else {
+            const o = loadOverrides();
+            o[item.id] = { howls: item.howls, resonance: item.resonance };
+            localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o));
+            applyOverrides();
+          }
+          render();
+          toast("Storm Corridor cleared · Resonance +2 ⚡");
+        }
+      }
+    });
+
+    function renderPlayStart(item) {
+      const stage = document.getElementById("playStage");
+      const tips = {
+        "mini-quest": "Catch glowing storm orbs before time runs out.",
+        "sprint-path": "Sprint the corridor — snag orbs at speed.",
+        "story-branch": "Choose your path. Shape the living myth.",
+        "codex": "Unlock a truth of the Citadel.",
+        "crystal-challenge": "Light the crystals in the right order.",
+        "ar-portal": "Close the rifts as they open.",
+        "resonance-event": "Howl with the Pack — hit the pulse.",
+        "remix": "A familiar sprint, new breath.",
+      };
+      const tip = tips[item.type] || "Enter the experience. Feed the Star Core.";
+      stage.innerHTML = `
+        <div class="play-stage-bg" style="background-image:url('${escapeAttr(item.image || "")}')"></div>
+        <div class="play-start">
+          <h3>${escapeHtml(item.title)}</h3>
+          <p>${escapeHtml(tip)}</p>
+          <button type="button" class="btn-play" id="playStartBtn">
+            <img src="assets/play-wolf.jpg" alt="" width="28" height="28" />
+            <span>Begin</span>
+          </button>
+        </div>`;
+      document.getElementById("playStartBtn").onclick = () => startPlayExperience(item);
+    }
+
+    function startPlayExperience(item) {
+      stopPlayTimers();
+      document.getElementById("playAgain").style.display = "none";
+      const t = item.type;
+      if (t === "story-branch" || t === "codex") startStoryPlay(item);
+      else if (t === "crystal-challenge") startCrystalPlay(item);
+      else if (t === "resonance-event") startHowlPlay(item);
+      else startOrbPlay(item); // mini-quest, sprint, ar, remix, default
+    }
+
+    function startOrbPlay(item) {
+      playState = { ...playState, score: 0, target: 8, time: 12, mode: "orbs" };
+      const stage = document.getElementById("playStage");
+      stage.innerHTML = `
+        <div class="play-stage-bg" style="background-image:url('${escapeAttr(item.image || "")}')"></div>
+        <div class="play-hud">
+          <span>ORBS <span id="playScore">0</span>/${playState.target}</span>
+          <span>TIME <span id="playTime">${playState.time}</span>s</span>
+        </div>
+        <div class="play-area" id="playArea" style="height:230px"></div>`;
+      spawnOrb();
+      playTimer = setInterval(() => {
+        playState.time -= 1;
+        const el = document.getElementById("playTime");
+        if (el) el.textContent = playState.time;
+        if (playState.time <= 0) endPlay(playState.score >= playState.target);
+      }, 1000);
+    }
+
+    function spawnOrb() {
+      const area = document.getElementById("playArea");
+      if (!area || !playState || playState.mode !== "orbs") return;
+      area.innerHTML = "";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "play-orb";
+      btn.setAttribute("aria-label", "Catch orb");
+      const maxL = Math.max(20, area.clientWidth - 50);
+      const maxT = Math.max(20, area.clientHeight - 50);
+      btn.style.left = 10 + Math.random() * maxL + "px";
+      btn.style.top = 10 + Math.random() * maxT + "px";
+      btn.onclick = () => {
+        playState.score += 1;
+        const s = document.getElementById("playScore");
+        if (s) s.textContent = playState.score;
+        if (playState.score >= playState.target) endPlay(true);
+        else spawnOrb();
+      };
+      area.appendChild(btn);
+    }
+
+    function startStoryPlay(item) {
+      playState = { ...playState, mode: "story", step: 0 };
+      const isCodex = item.type === "codex";
+      const beats = isCodex
+        ? [
+            {
+              text: "A scroll of the Citadel unfurls. The Star Core hums.",
+              choices: [
+                { label: "Read the Law of the Wrapper", end: "win", msg: "Creations bind to one Heart. The Pack rises." },
+                { label: "Seek the Small Sprint", end: "win", msg: "No howl is too quiet. Resonance is recorded." },
+              ],
+            },
+          ]
+        : [
+            {
+              text: item.description + "\n\nThe Gate waits. What do you do?",
+              choices: [
+                { label: "Pass the Gate with unfinished fire", next: 1 },
+                { label: "Wait one more moon", next: 2 },
+              ],
+            },
+            {
+              text: "Lightning answers. The Pack howls your name into the Core.",
+              choices: [{ label: "Claim Resonance", end: "win", msg: "Your spark feeds the living Citadel." }],
+            },
+            {
+              text: "Silence. Then a seed of patience. The Core still saw you.",
+              choices: [{ label: "Hold the seed", end: "win", msg: "Even waiting is a sprint of the spirit." }],
+            },
+          ];
+      playState.beats = beats;
+      renderStoryBeat(0);
+    }
+
+    function renderStoryBeat(i) {
+      const beat = playState.beats[i];
+      const stage = document.getElementById("playStage");
+      const item = playState.item;
+      stage.innerHTML = `
+        <div class="play-stage-bg" style="background-image:url('${escapeAttr(item.image || "")}')"></div>
+        <div class="play-area">
+          <div class="play-story">${escapeHtml(beat.text).replace(/\n/g, "<br>")}</div>
+          <div id="playChoices"></div>
+        </div>`;
+      const box = document.getElementById("playChoices");
+      beat.choices.forEach((c) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "play-choice";
+        b.textContent = c.label;
+        b.onclick = () => {
+          if (c.end === "win") endPlay(true, c.msg);
+          else if (typeof c.next === "number") renderStoryBeat(c.next);
+        };
+        box.appendChild(b);
+      });
+    }
+
+    function startCrystalPlay(item) {
+      const seq = [0, 1, 2, 3].sort(() => Math.random() - 0.5).slice(0, 3);
+      playState = { ...playState, mode: "crystal", seq, input: [], showing: true };
+      const stage = document.getElementById("playStage");
+      stage.innerHTML = `
+        <div class="play-stage-bg" style="background-image:url('${escapeAttr(item.image || "")}')"></div>
+        <div class="play-hud"><span>CRYSTAL MEMORY</span><span id="playHint">Watch…</span></div>
+        <div class="play-area" style="text-align:center;padding-top:1.5rem" id="playArea"></div>`;
+      const area = document.getElementById("playArea");
+      const gems = ["💎", "🔷", "✨", "⚡"];
+      for (let i = 0; i < 4; i++) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "play-crystal";
+        b.dataset.i = String(i);
+        b.textContent = gems[i];
+        b.onclick = () => onCrystalTap(i);
+        area.appendChild(b);
+      }
+      // flash sequence
+      let step = 0;
+      const flash = () => {
+        if (step >= seq.length) {
+          playState.showing = false;
+          const h = document.getElementById("playHint");
+          if (h) h.textContent = "Your turn";
+          return;
+        }
+        const nodes = area.querySelectorAll(".play-crystal");
+        const n = nodes[seq[step]];
+        n.classList.add("lit");
+        setTimeout(() => {
+          n.classList.remove("lit");
+          step += 1;
+          setTimeout(flash, 280);
+        }, 450);
+      };
+      setTimeout(flash, 500);
+    }
+
+    function onCrystalTap(i) {
+      if (!playState || playState.mode !== "crystal" || playState.showing) return;
+      playState.input.push(i);
+      const nodes = document.querySelectorAll(".play-crystal");
+      nodes[i].classList.add("lit");
+      setTimeout(() => nodes[i].classList.remove("lit"), 200);
+      const idx = playState.input.length - 1;
+      if (playState.input[idx] !== playState.seq[idx]) {
+        endPlay(false, "The ladder dims. Try again, Guardian.");
+        return;
+      }
+      if (playState.input.length === playState.seq.length) {
+        endPlay(true, "Crystals sing. A higher rung opens.");
+      }
+    }
+
+    function startHowlPlay(item) {
+      playState = { ...playState, mode: "howl", score: 0, target: 6, time: 10 };
+      const stage = document.getElementById("playStage");
+      stage.innerHTML = `
+        <div class="play-stage-bg" style="background-image:url('${escapeAttr(item.image || "")}')"></div>
+        <div class="play-hud">
+          <span>PULSES <span id="playScore">0</span>/${playState.target}</span>
+          <span>TIME <span id="playTime">${playState.time}</span>s</span>
+        </div>
+        <div class="play-start">
+          <p>Tap with the Core pulse.</p>
+          <button type="button" class="btn-play" id="howlPulseBtn">
+            <img src="assets/play-wolf.jpg" alt="" width="28" height="28" />
+            <span>Howl</span>
+          </button>
+        </div>`;
+      document.getElementById("howlPulseBtn").onclick = () => {
+        playState.score += 1;
+        const s = document.getElementById("playScore");
+        if (s) s.textContent = playState.score;
+        if (playState.score >= playState.target) endPlay(true, "The Pack answers. The Core charges.");
+      };
+      playTimer = setInterval(() => {
+        playState.time -= 1;
+        const el = document.getElementById("playTime");
+        if (el) el.textContent = playState.time;
+        if (playState.time <= 0) endPlay(playState.score >= playState.target);
+      }, 1000);
+    }
+
+    function endPlay(win, customMsg) {
+      stopPlayTimers();
+      if (!playState) return;
+      const item = playState.item;
+      // Reward: howl + resonance bump for the creation
+      if (win) {
+        item.howls += 1;
+        item.resonance = Math.min(99, item.resonance + 1);
+        const user = loadUserItems();
+        const ui = user.find((i) => i.id === item.id);
+        if (ui) {
+          ui.howls = item.howls;
+          ui.resonance = item.resonance;
+          saveUserItems(user);
+        } else {
+          const o = loadOverrides();
+          o[item.id] = { howls: item.howls, resonance: item.resonance };
+          localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o));
+          applyOverrides();
+        }
+        render();
+      }
+      const stage = document.getElementById("playStage");
+      const msg = customMsg || (win
+        ? "Victory. Resonance flows into the Star Core."
+        : "The corridor closes. Rise and sprint again.");
+      stage.innerHTML = `
+        <div class="play-stage-bg" style="background-image:url('${escapeAttr(item.image || "")}')"></div>
+        <div class="play-end">
+          <h3>${win ? "Core charged" : "Not this moon"}</h3>
+          <p>${escapeHtml(msg)}</p>
+        </div>`;
+      const again = document.getElementById("playAgain");
+      again.style.display = "inline-flex";
+      again.onclick = () => startPlayExperience(item);
+      toast(win ? "Play complete · Resonance +1 ⚡" : "Try again, Pack Guardian");
     }
 
     function toast(msg) {
@@ -2798,6 +4878,13 @@
       state.openDetailId = null;
     }
 
+    document.querySelectorAll("[data-close-play]").forEach((el) => el.addEventListener("click", closePlay));
+    document.getElementById("btnFullscreen")?.addEventListener("click", togglePlayFullscreen);
+    document.getElementById("btnFullscreenFooter")?.addEventListener("click", togglePlayFullscreen);
+    document.getElementById("playModal").addEventListener("click", (e) => {
+      if (e.target.id === "playModal") closePlay();
+    });
+
     document.getElementById("sortFilters").addEventListener("click", (e) => {
       const btn = e.target.closest("[data-sort]");
       if (!btn) return;
@@ -2864,8 +4951,241 @@
     window.addEventListener("resize", updateEchoNav);
 
     document.getElementById("btnSubmit").addEventListener("click", openSubmit);
-    document.getElementById("btnAbout").addEventListener("click", () => {
-      document.getElementById("about").scrollIntoView({ behavior: "smooth" });
+
+    // ── Join The Pack modal ──
+    function openJoin() {
+      document.getElementById("joinModal")?.classList.add("open");
+      const toast = document.getElementById("joinToast");
+      if (toast) {
+        toast.textContent = "";
+        toast.classList.remove("show");
+      }
+    }
+    function closeJoin() {
+      document.getElementById("joinModal")?.classList.remove("open");
+    }
+    function joinToast(msg) {
+      const el = document.getElementById("joinToast");
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(joinToast._t);
+      joinToast._t = setTimeout(() => el.classList.remove("show"), 3200);
+    }
+    document.getElementById("btnAbout")?.addEventListener("click", openJoin);
+    document.getElementById("navVision")?.addEventListener("click", openJoin);
+    document.getElementById("joinClose")?.addEventListener("click", closeJoin);
+    document.getElementById("joinModal")?.addEventListener("click", (e) => {
+      if (e.target.id === "joinModal") closeJoin();
+    });
+    document.getElementById("joinGoogle")?.addEventListener("click", () => {
+      joinToast("Google sign-in coming soon — use Continue with X for now.");
+    });
+    document.getElementById("joinApple")?.addEventListener("click", () => {
+      joinToast("Apple sign-in coming soon — use Continue with X for now.");
+    });
+    document.getElementById("joinGrok")?.addEventListener("click", () => {
+      window.open("https://x.com/grok", "_blank", "noopener");
+    });
+    document.getElementById("joinEmailGo")?.addEventListener("click", () => {
+      const email = document.getElementById("joinEmail")?.value?.trim();
+      if (!email || !email.includes("@")) {
+        joinToast("Enter a valid email, or Continue with X.");
+        return;
+      }
+      joinToast("Email magic link coming soon — use Continue with X for now.");
+    });
+    document.getElementById("joinEmail")?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("joinEmailGo")?.click();
+      }
+    });
+    async function tryPhantom() {
+      const provider = window.solana || window.phantom?.solana;
+      if (provider?.isPhantom) {
+        try {
+          await provider.connect();
+          joinToast("Phantom connected. Welcome to the Pack.");
+          return;
+        } catch (err) {
+          joinToast("Phantom connection cancelled.");
+          return;
+        }
+      }
+      window.open("https://phantom.app/", "_blank", "noopener");
+      joinToast("Install Phantom, then try again.");
+    }
+    document.getElementById("joinPhantom")?.addEventListener("click", tryPhantom);
+    document.getElementById("joinCoinbase")?.addEventListener("click", () => {
+      window.open("https://www.coinbase.com/wallet", "_blank", "noopener");
+      joinToast("Open Coinbase Wallet, then return to the Citadel.");
+    });
+    document.getElementById("joinMoreWallets")?.addEventListener("click", () => {
+      joinToast("More wallets soon — try Phantom or Continue with X.");
+    });
+
+    // ── Left nav (pump.fun-style): Home · Creator Forges · Videos ──
+    const NAV_VIEWS = new Set(["home", "forges", "videos", "creator", "player"]);
+    const PROFILE_CREATOR_KEY = "citadel-creator-profile-v1";
+    const PROFILE_PLAYER_KEY = "citadel-player-profile-v1";
+
+    function loadProfile(key, defaults) {
+      try {
+        return { ...defaults, ...JSON.parse(localStorage.getItem(key) || "{}") };
+      } catch {
+        return { ...defaults };
+      }
+    }
+    function saveProfile(key, data) {
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    function playerRank(likesGiven) {
+      if (likesGiven >= 40) return "Alpha";
+      if (likesGiven >= 20) return "Hunter";
+      if (likesGiven >= 8) return "Scout";
+      if (likesGiven >= 3) return "Paw";
+      return "Pup";
+    }
+
+    function fillCreatorProfile() {
+      const d = loadProfile(PROFILE_CREATOR_KEY, {
+        name: "Forge Hero",
+        handle: "@creator",
+        specialty: "Mini-Quests · Bolt Stories",
+        bio: "",
+      });
+      const nameEl = document.getElementById("cName");
+      const handleEl = document.getElementById("cHandle");
+      const specEl = document.getElementById("cSpecialty");
+      const bioEl = document.getElementById("cBio");
+      if (nameEl) nameEl.value = d.name || "";
+      if (handleEl) handleEl.value = d.handle || "";
+      if (specEl) specEl.value = d.specialty || "";
+      if (bioEl) bioEl.value = d.bio || "";
+
+      // Stats from user-submitted creations + seed items matching handle/name loosely
+      const mine = loadUserItems();
+      const creations = mine.length;
+      const likes = mine.reduce((s, i) => s + (i.howls || 0), 0);
+      const views = mine.reduce((s, i) => s + (i.views || 0), 0);
+      const avgRes = creations
+        ? Math.round(mine.reduce((s, i) => s + (i.resonance || 0), 0) / creations)
+        : 0;
+      const set = (id, v) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = typeof v === "number" ? formatCount(v) : v;
+      };
+      set("cStatCreations", creations);
+      set("cStatLikes", likes);
+      set("cStatViews", views);
+      set("cStatRes", avgRes);
+    }
+
+    function fillPlayerProfile() {
+      const d = loadProfile(PROFILE_PLAYER_KEY, {
+        name: "Pack Runner",
+        handle: "@player",
+        favorite: "Lightning Dash",
+        bio: "",
+      });
+      const nameEl = document.getElementById("pName");
+      const handleEl = document.getElementById("pHandle");
+      const favEl = document.getElementById("pFavorite");
+      const bioEl = document.getElementById("pBio");
+      if (nameEl) nameEl.value = d.name || "";
+      if (handleEl) handleEl.value = d.handle || "";
+      if (favEl) favEl.value = d.favorite || "";
+      if (bioEl) bioEl.value = d.bio || "";
+
+      const likesGiven = state.howled?.size || 0;
+      const viewsTab = state.viewedSession?.size || 0;
+      // total howls across pack as “energy felt”
+      const energy = allItems().reduce((s, i) => s + (i.howls || 0), 0);
+      const set = (id, v) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = typeof v === "number" ? formatCount(v) : v;
+      };
+      set("pStatLikes", likesGiven);
+      set("pStatViews", viewsTab);
+      set("pStatHowls", energy);
+      set("pStatRank", playerRank(likesGiven));
+    }
+
+    function setNavView(view) {
+      const shell = document.getElementById("shell");
+      if (!shell) return;
+      const v = NAV_VIEWS.has(view) ? view : "home";
+      shell.dataset.view = v;
+      document.querySelectorAll(".side-nav-item[data-nav]").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.nav === v);
+      });
+      if (v === "creator") fillCreatorProfile();
+      if (v === "player") fillPlayerProfile();
+
+      if (v === "home") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const map = {
+          forges: "forgesView",
+          videos: "videosView",
+          creator: "creatorProfileView",
+          player: "playerProfileView",
+        };
+        const target = document.getElementById(map[v]);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+    document.getElementById("navHome")?.addEventListener("click", () => setNavView("home"));
+    document.getElementById("navHall")?.addEventListener("click", () => setNavView("home"));
+    document.getElementById("navForges")?.addEventListener("click", () => setNavView("forges"));
+    document.getElementById("navVideos")?.addEventListener("click", () => setNavView("videos"));
+    document.getElementById("navCreator")?.addEventListener("click", () => setNavView("creator"));
+    document.getElementById("navPlayer")?.addEventListener("click", () => setNavView("player"));
+    document.getElementById("navSubmit")?.addEventListener("click", openSubmit);
+
+    document.getElementById("creatorProfileForm")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      saveProfile(PROFILE_CREATOR_KEY, {
+        name: document.getElementById("cName")?.value?.trim() || "Forge Hero",
+        handle: document.getElementById("cHandle")?.value?.trim() || "@creator",
+        specialty: document.getElementById("cSpecialty")?.value?.trim() || "",
+        bio: document.getElementById("cBio")?.value?.trim() || "",
+      });
+      toast("Creator profile saved ⚡");
+      fillCreatorProfile();
+    });
+    document.getElementById("playerProfileForm")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      saveProfile(PROFILE_PLAYER_KEY, {
+        name: document.getElementById("pName")?.value?.trim() || "Pack Runner",
+        handle: document.getElementById("pHandle")?.value?.trim() || "@player",
+        favorite: document.getElementById("pFavorite")?.value?.trim() || "",
+        bio: document.getElementById("pBio")?.value?.trim() || "",
+      });
+      toast("Player profile saved ⚡");
+      fillPlayerProfile();
+    });
+    document.getElementById("creatorGoSubmit")?.addEventListener("click", openSubmit);
+    document.getElementById("playerGoHall")?.addEventListener("click", () => setNavView("home"));
+
+    // Videos panel → play reels / jump to feed filter
+    document.getElementById("videosView")?.addEventListener("click", (e) => {
+      const card = e.target.closest("[data-play-story]");
+      if (card) {
+        launchPlay(card.dataset.playStory);
+        return;
+      }
+      if (e.target.closest("#videosShowFeed")) {
+        setNavView("home");
+        state.type = "bolt-story";
+        document.querySelectorAll("#typeFilters .chip").forEach((c) => {
+          c.classList.toggle("active", c.dataset.type === "bolt-story");
+        });
+        render();
+        document.getElementById("exploreToolbar")?.scrollIntoView({ behavior: "smooth" });
+      }
     });
     document.querySelectorAll("[data-close]").forEach((el) => el.addEventListener("click", closeSubmit));
     document.querySelectorAll("[data-close-detail]").forEach((el) => el.addEventListener("click", closeDetail));
@@ -2878,8 +5198,18 @@
     document.addEventListener("keydown", (e) => {
       // Escape: close modals, or clear search if focused
       if (e.key === "Escape") {
+        const playOpen = document.getElementById("playModal").classList.contains("open");
+        const joinOpen = document.getElementById("joinModal")?.classList.contains("open");
         const submitOpen = document.getElementById("submitModal").classList.contains("open");
         const detailOpen = document.getElementById("detailModal").classList.contains("open");
+        if (playOpen) {
+          closePlay();
+          return;
+        }
+        if (joinOpen) {
+          closeJoin();
+          return;
+        }
         if (submitOpen || detailOpen) {
           closeSubmit();
           closeDetail();

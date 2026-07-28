@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Storm Corridor Sprint · Boltverse Mini-Quest</title>
+  <style>
+    :root {
+      --cyan: #2ee6ff;
+      --cyan-soft: #7ef0ff;
+      --gold: #e8c56a;
+      --bg: #010208;
+      --text: #eef3ff;
+      --muted: #8b9bb8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: var(--bg); color: var(--text);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      touch-action: none; user-select: none; -webkit-user-select: none;
+    }
+    #c { display: block; width: 100%; height: 100%; }
+    #hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+    /* Cinematic Unreal-style frame: vignette + cool grade */
+    #hud::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      background:
+        radial-gradient(ellipse 75% 70% at 50% 45%, transparent 35%, rgba(0, 4, 16, 0.55) 100%),
+        linear-gradient(180deg, rgba(8, 20, 40, 0.25) 0%, transparent 18%, transparent 78%, rgba(0, 6, 18, 0.45) 100%);
+    }
+    #hud > * { position: relative; z-index: 2; }
+    .top-bar {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(180deg, rgba(1,2,8,0.85) 0%, transparent 100%);
+    }
+    .stat {
+      min-width: 118px; padding: 0.6rem 1rem; border-radius: 14px;
+      border: 1px solid rgba(46, 230, 255, 0.35);
+      background: linear-gradient(145deg, rgba(8, 18, 36, 0.85), rgba(4, 10, 22, 0.75));
+      backdrop-filter: blur(14px);
+      box-shadow: 0 0 28px rgba(46, 230, 255, 0.15), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .stat label {
+      display: block; font-size: 0.62rem; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.2rem;
+    }
+    .stat strong {
+      font-size: 1.4rem; font-weight: 800; letter-spacing: 0.02em;
+      color: var(--cyan-soft);
+      text-shadow: 0 0 20px rgba(46, 230, 255, 0.7);
+    }
+    .stat.gold strong { color: var(--gold); text-shadow: 0 0 18px rgba(232, 197, 106, 0.55); }
+    .stat.warn strong { color: #ff6b8a; animation: pulse 0.55s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    .title-chip {
+      position: absolute; top: 1.05rem; left: 50%; transform: translateX(-50%);
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(238,243,255,0.85); padding: 0.45rem 1.1rem; border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.28);
+      background: rgba(4, 10, 22, 0.65);
+      box-shadow: 0 0 24px rgba(46, 230, 255, 0.12);
+      white-space: nowrap;
+    }
+    .crosshair {
+      position: absolute; left: 50%; top: 50%; width: 18px; height: 18px;
+      margin: -9px 0 0 -9px;
+      border: 1.5px solid rgba(126, 240, 255, 0.5);
+      border-radius: 50%;
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.4);
+      opacity: 0.65;
+    }
+    .crosshair::after {
+      content: ""; position: absolute; left: 50%; top: 50%;
+      width: 3px; height: 3px; margin: -1.5px 0 0 -1.5px;
+      border-radius: 50%; background: #fff;
+      box-shadow: 0 0 8px var(--cyan);
+    }
+    .hint {
+      position: absolute; bottom: 1.3rem; left: 50%; transform: translateX(-50%);
+      font-size: 0.76rem; color: var(--muted); letter-spacing: 0.05em; text-align: center;
+      padding: 0.5rem 1rem; border-radius: 999px;
+      background: rgba(4, 10, 22, 0.55); border: 1px solid rgba(46, 230, 255, 0.15);
+    }
+    .overlay {
+      position: fixed; inset: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: center;
+      background:
+        radial-gradient(ellipse 55% 45% at 50% 40%, rgba(46, 230, 255, 0.16), transparent 55%),
+        rgba(1, 2, 8, 0.88);
+      backdrop-filter: blur(16px);
+      opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+    }
+    .overlay.show { opacity: 1; pointer-events: auto; }
+    .panel {
+      width: min(440px, 92vw); padding: 2rem 1.6rem 1.6rem; border-radius: 22px;
+      border: 1px solid rgba(46, 230, 255, 0.32);
+      background: linear-gradient(165deg, rgba(14, 26, 52, 0.96), rgba(6, 12, 28, 0.98));
+      box-shadow: 0 28px 90px rgba(0,0,0,0.6), 0 0 50px rgba(46, 230, 255, 0.15);
+      text-align: center;
+    }
+    .panel h1 {
+      font-size: 1.55rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.45rem;
+      background: linear-gradient(90deg, var(--cyan-soft), #fff, var(--gold));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .panel p { color: var(--muted); font-size: 0.94rem; line-height: 1.55; margin-bottom: 1.2rem; }
+    .panel .meta { display: flex; justify-content: center; gap: 0.65rem; margin-bottom: 1.3rem; flex-wrap: wrap; }
+    .panel .meta span {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.38rem 0.75rem; border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.28); color: var(--cyan-soft);
+      background: rgba(0,0,0,0.3);
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.75rem 1.5rem; border-radius: 999px; border: none; cursor: pointer;
+      font-weight: 700; font-size: 0.98rem; font-family: inherit; color: #021018;
+      background: linear-gradient(135deg, #1ad4f0, #0ea5c9 55%, #c9a44a);
+      box-shadow: 0 0 32px rgba(46, 230, 255, 0.45);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn .btn-bolt {
+      width: 2.35rem; height: 2.35rem;
+      object-fit: contain;
+      display: block;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 8px rgba(2, 16, 24, 0.4));
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 0 48px rgba(46, 230, 255, 0.6); }
+    .btn:hover .btn-bolt { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.45)); }
+    .btn:active { transform: scale(0.98); }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid rgba(46, 230, 255, 0.25); box-shadow: none; margin-left: 0.5rem;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(46, 230, 255, 0.45); box-shadow: none; }
+    .mobile-pad {
+      display: none; position: fixed; bottom: 1rem; left: 1rem; right: 1rem;
+      z-index: 15; pointer-events: none;
+    }
+    .joy, .look-zone { pointer-events: auto; }
+    .joy {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 1px solid rgba(46, 230, 255, 0.3);
+      background: rgba(4, 10, 22, 0.45); position: relative; touch-action: none;
+    }
+    .joy-knob {
+      position: absolute; left: 50%; top: 50%; width: 48px; height: 48px;
+      margin: -24px 0 0 -24px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, var(--cyan-soft), #0ea5c9);
+      box-shadow: 0 0 18px rgba(46, 230, 255, 0.5); opacity: 0.9;
+    }
+    .look-zone {
+      position: fixed; right: 0; top: 0; width: 55%; height: 100%;
+      z-index: 12; touch-action: none;
+    }
+    @media (pointer: coarse) {
+      .mobile-pad { display: flex; justify-content: flex-start; }
+      .hint { bottom: 9rem; font-size: 0.7rem; }
+      .crosshair { opacity: 0.3; }
+    }
+    .flash {
+      position: fixed; inset: 0; z-index: 18; pointer-events: none;
+      background: rgba(180, 230, 255, 0.4); opacity: 0;
+    }
+    .vignette {
+      position: fixed; inset: 0; z-index: 9; pointer-events: none;
+      background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div class="vignette"></div>
+  <div class="flash" id="flash"></div>
+
+  <div id="hud" hidden>
+    <div class="title-chip">Storm Corridor Sprint</div>
+    <div class="top-bar">
+      <div class="stat gold">
+        <label>Orbs</label>
+        <strong id="orbCount">0 / 12</strong>
+      </div>
+      <div class="stat" id="timerStat">
+        <label>Time</label>
+        <strong id="timer">2:00</strong>
+      </div>
+    </div>
+    <div class="crosshair"></div>
+    <div class="hint" id="hint">WASD / arrows · mouse look · collect 12 orbs</div>
+  </div>
+
+  <div class="look-zone" id="lookZone" hidden></div>
+  <div class="mobile-pad" id="mobilePad" hidden>
+    <div class="joy" id="joy"><div class="joy-knob" id="joyKnob"></div></div>
+  </div>
+
+  <div class="overlay show" id="startOverlay">
+    <div class="panel">
+      <h1>Storm Corridor Sprint</h1>
+      <p>Sprint the storm corridor. Collect <strong style="color:var(--cyan-soft)">12</strong> glowing orbs before the timer ends. Pure Bolt energy — short, loud, alive.</p>
+      <div class="meta">
+        <span>2:00 max</span>
+        <span>12 orbs</span>
+        <span>Mini-Quest</span>
+      </div>
+      <button class="btn" id="btnStart" type="button">
+        <span>Begin Sprint</span>
+        <img class="btn-bolt" src="assets/bolt-icon.png" alt="" width="38" height="38" />
+      </button>
+      <button class="btn btn-ghost" id="btnBack" type="button">Back to Citadel</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="endOverlay">
+    <div class="panel">
+      <h1 id="endTitle">Core charged</h1>
+      <p id="endMsg">Victory. Resonance flows into the Star Core.</p>
+      <div class="meta">
+        <span id="endOrbs">12 / 12</span>
+        <span id="endTime">—</span>
+      </div>
+      <button class="btn" id="btnRetry" type="button">
+        <span>Sprint again</span>
+        <img class="btn-bolt" src="assets/bolt-icon.png" alt="" width="38" height="38" />
+      </button>
+      <button class="btn btn-ghost" id="btnBack2" type="button">Back to Citadel</button>
+    </div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+    import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+    import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+    // NOTE: do NOT import local .js texture modules here.
+    // Chrome blocks sibling ES-module loads on file:// (null origin / CORS).
+    // Plates load via plain Image + relative path — works from disk and http.
+
+    const ORB_GOAL = 12;
+    const DURATION = 120;
+    const CORRIDOR_LEN = 320;
+    const SPEED = 30;
+    const SPRINT_MULT = 1.5;
+
+    const canvas = document.getElementById("c");
+    const hud = document.getElementById("hud");
+    const startOverlay = document.getElementById("startOverlay");
+    const endOverlay = document.getElementById("endOverlay");
+    const orbCountEl = document.getElementById("orbCount");
+    const timerEl = document.getElementById("timer");
+    const timerStat = document.getElementById("timerStat");
+    const flashEl = document.getElementById("flash");
+    const lookZone = document.getElementById("lookZone");
+    const mobilePad = document.getElementById("mobilePad");
+    const joy = document.getElementById("joy");
+    const joyKnob = document.getElementById("joyKnob");
+    const hint = document.getElementById("hint");
+    const isTouch = matchMedia("(pointer: coarse)").matches;
+
+    // Audio
+    let audioCtx = null;
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+    function beep(freq, dur, type = "sine", gain = 0.08) {
+      if (!audioCtx) return;
+      const t = audioCtx.currentTime;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, t);
+      o.frequency.exponentialRampToValueAtTime(Math.max(40, freq * 1.5), t + dur);
+      g.gain.setValueAtTime(gain, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t); o.stop(t + dur);
+    }
+    function sfxCollect() {
+      ensureAudio();
+      beep(560, 0.07, "sine", 0.1);
+      setTimeout(() => beep(920, 0.14, "triangle", 0.07), 35);
+    }
+    function sfxWin() {
+      ensureAudio();
+      [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => beep(f, 0.22, "sine", 0.08), i * 85));
+    }
+    function sfxLose() {
+      ensureAudio();
+      beep(160, 0.4, "sawtooth", 0.05);
+    }
+
+    // Renderer — Unreal-style ACES grade, slightly lifted exposure
+    const renderer = new THREE.WebGLRenderer({
+      canvas, antialias: true, powerPreference: "high-performance", alpha: false,
+    });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+
+    const scene = new THREE.Scene();
+    // Atmospheric depth: deep navy with cyan cast (not pure black void)
+    const FOG_NEAR = new THREE.Color(0x102848);
+    const FOG_DEEP = new THREE.Color(0x0a1830);
+    const FOG_STORM = new THREE.Color(0x1a3860);
+    const BG_COLOR = new THREE.Color(0x060e1c);
+    scene.background = BG_COLOR.clone();
+    scene.fog = new THREE.FogExp2(FOG_NEAR.getHex(), 0.0058);
+
+    const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.08, 500);
+    camera.position.set(0, 1.65, 10);
+
+    const controls = new PointerLockControls(camera, document.body);
+
+    // ── Fake studio env map for PBR metal / crystal reflections ──
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    pmrem.compileEquirectangularShader();
+    function buildEnvMap() {
+      const envScene = new THREE.Scene();
+      // Gradient sky dome
+      const skyGeo = new THREE.SphereGeometry(40, 32, 24);
+      const skyMat = new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        uniforms: {
+          top: { value: new THREE.Color(0x1a5088) },
+          mid: { value: new THREE.Color(0x0a2040) },
+          bot: { value: new THREE.Color(0x040a14) },
+          gold: { value: new THREE.Color(0x6a5020) },
+        },
+        vertexShader: `
+          varying vec3 vPos;
+          void main() {
+            vPos = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 top, mid, bot, gold;
+          varying vec3 vPos;
+          void main() {
+            float h = normalize(vPos).y * 0.5 + 0.5;
+            vec3 c = mix(bot, mid, smoothstep(0.0, 0.45, h));
+            c = mix(c, top, smoothstep(0.4, 1.0, h));
+            // warm key highlight for metal reflections
+            float hot = pow(max(normalize(vPos).y * 0.5 + 0.35, 0.0), 8.0);
+            c += gold * hot * 0.55;
+            float cyanHot = pow(max(dot(normalize(vPos), normalize(vec3(0.4, 0.6, 0.5))), 0.0), 12.0);
+            c += vec3(0.3, 0.85, 1.0) * cyanHot * 0.7;
+            gl_FragColor = vec4(c, 1.0);
+          }
+        `,
+      });
+      envScene.add(new THREE.Mesh(skyGeo, skyMat));
+      const rt = pmrem.fromScene(envScene, 0.04);
+      envScene.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) o.material.dispose();
+      });
+      return rt.texture;
+    }
+    const envMap = buildEnvMap();
+    scene.environment = envMap;
+
+    // Post: UnrealBloom — glow on emissives / crystals, not whole frame
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(
+      new THREE.Vector2(innerWidth, innerHeight),
+      0.55,  // strength
+      0.55,  // radius
+      0.42   // threshold — crystals & orbs bloom, plates stay sharp
+    );
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+
+    // Three-point + corridor volume lights (Unreal-ish key/fill/rim)
+    scene.add(new THREE.AmbientLight(0x1a3048, 0.55));
+    scene.add(new THREE.HemisphereLight(0x6ab0e0, 0x0a1428, 0.65));
+    const key = new THREE.DirectionalLight(0xd8f6ff, 1.15);
+    key.position.set(4, 12, 6);
+    scene.add(key);
+    const fill = new THREE.DirectionalLight(0xe8c56a, 0.35);
+    fill.position.set(-10, 3, -2);
+    scene.add(fill);
+    const rim = new THREE.PointLight(0x2ee6ff, 1.4, 55);
+    rim.position.set(0, 2.2, 0);
+    scene.add(rim);
+    const boltLight = new THREE.PointLight(0xdff6ff, 0, 90);
+    scene.add(boltLight);
+    const coreGlow = new THREE.PointLight(0x7ef0ff, 0.7, 28);
+    camera.add(coreGlow);
+    coreGlow.position.set(0, 0, -2);
+    // Foot-path glow that follows player
+    const pathGlow = new THREE.PointLight(0x3ad8ff, 1.1, 18);
+    camera.add(pathGlow);
+    pathGlow.position.set(0, -1.2, -3);
+    scene.add(camera);
+
+    const world = new THREE.Group();
+    scene.add(world);
+
+    // Nebula backdrop spheres (far) — cooler depth layers
+    function nebula(color, pos, scale, opacity) {
+      const m = new THREE.Mesh(
+        new THREE.SphereGeometry(1, 24, 24),
+        new THREE.MeshBasicMaterial({
+          color, transparent: true, opacity,
+          blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.BackSide,
+        })
+      );
+      m.position.copy(pos);
+      m.scale.setScalar(scale);
+      scene.add(m);
+      return m;
+    }
+    nebula(0x1a3a80, new THREE.Vector3(-30, 10, -80), 55, 0.07);
+    nebula(0x4a2080, new THREE.Vector3(40, -5, -120), 70, 0.055);
+    nebula(0x0a4060, new THREE.Vector3(0, 20, -200), 90, 0.05);
+    nebula(0x163050, new THREE.Vector3(0, -15, -150), 80, 0.04);
+
+    // ── Soft god-ray light shafts (cheap cones — no bloom crank) ──
+    const shaftsGroup = new THREE.Group();
+    world.add(shaftsGroup);
+    const shaftMeshes = [];
+
+    function makeLightShaft(opts) {
+      const {
+        z, x = 0, y = 5.2,
+        length = 11,
+        topR = 0.15,
+        botR = 2.4,
+        color = 0x7ef0ff,
+        opacity = 0.055,
+        tiltX = 0.15,
+        tiltZ = 0,
+        gold = false,
+      } = opts;
+
+      // Cone: tip at top (light source), base toward floor
+      // CylinderGeometry(radiusTop, radiusBottom, height) — small top, wide bottom
+      const geo = new THREE.CylinderGeometry(topR, botR, length, 20, 1, true);
+      const mat = new THREE.MeshBasicMaterial({
+        color: gold ? 0xe8c56a : color,
+        transparent: true,
+        opacity,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y - length * 0.35, z);
+      mesh.rotation.x = tiltX;
+      mesh.rotation.z = tiltZ;
+      // second softer shell
+      const shell = new THREE.Mesh(
+        new THREE.CylinderGeometry(topR * 1.3, botR * 1.35, length * 1.05, 16, 1, true),
+        new THREE.MeshBasicMaterial({
+          color: gold ? 0xf5e0a8 : 0xaef6ff,
+          transparent: true,
+          opacity: opacity * 0.45,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        })
+      );
+      mesh.add(shell);
+      mesh.userData = {
+        baseOpacity: opacity,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.4 + Math.random() * 0.5,
+      };
+      shaftsGroup.add(mesh);
+      shaftMeshes.push(mesh);
+      return mesh;
+    }
+
+    // Place shafts along corridor — cinematic volume without heavy post
+    for (let i = 0; i < 14; i++) {
+      const z = -18 - i * 22;
+      const side = (i % 2 === 0) ? 1 : -1;
+      makeLightShaft({
+        z,
+        x: side * (1.2 + (i % 3) * 0.6),
+        y: 5.5,
+        length: 10 + (i % 3) * 1.5,
+        botR: 1.8 + (i % 4) * 0.35,
+        tiltX: 0.08 + (i % 3) * 0.04,
+        tiltZ: side * (0.12 + (i % 2) * 0.08),
+        opacity: 0.065 + (i % 3) * 0.012,
+        gold: i % 5 === 0,
+      });
+      // occasional center shaft
+      if (i % 3 === 1) {
+        makeLightShaft({
+          z: z - 6,
+          x: 0,
+          y: 5.8,
+          length: 12,
+          botR: 2.8,
+          topR: 0.2,
+          tiltX: 0.05,
+          opacity: 0.04,
+          gold: false,
+        });
+      }
+    }
+
+    // Horizontal haze slabs for layered depth (height fog feel)
+    const hazeGroup = new THREE.Group();
+    world.add(hazeGroup);
+    for (let i = 0; i < 8; i++) {
+      const haze = new THREE.Mesh(
+        new THREE.PlaneGeometry(18, 22),
+        new THREE.MeshBasicMaterial({
+          color: i % 2 === 0 ? 0x1a4068 : 0x243050,
+          transparent: true,
+          opacity: 0.035,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        })
+      );
+      haze.position.set(0, -0.5 + (i % 3) * 0.8, -30 - i * 38);
+      haze.rotation.x = -Math.PI / 2.4;
+      haze.userData.phase = i * 0.8;
+      hazeGroup.add(haze);
+    }
+
+    // ── Imagine Boltverse texture plates ──
+    // file:// safe: use HTML Image WITHOUT crossOrigin (TextureLoader defaults to
+    // "anonymous", which Chrome blocks for local files). Paths resolve from this HTML.
+    function prepTex(tex, repeat = 2, isEmissive = false) {
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(repeat, repeat);
+      tex.colorSpace = isEmissive ? THREE.NoColorSpace : THREE.SRGBColorSpace;
+      tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy?.() || 4);
+      tex.needsUpdate = true;
+      return tex;
+    }
+
+    function loadLocalPlate(relPath, repeat, isEmissive = false) {
+      const tex = new THREE.Texture();
+      prepTex(tex, repeat, isEmissive);
+      // Dark slate placeholder so tunnel never flashes magenta/black
+      const ph = document.createElement("canvas");
+      ph.width = ph.height = 8;
+      const ctx = ph.getContext("2d");
+      ctx.fillStyle = isEmissive ? "#000000" : "#0c2848";
+      ctx.fillRect(0, 0, 8, 8);
+      tex.image = ph;
+      tex.needsUpdate = true;
+
+      const img = new Image();
+      // Do not set img.crossOrigin — required for file://
+      img.decoding = "async";
+      img.onload = () => {
+        tex.image = img;
+        tex.needsUpdate = true;
+        console.info("[StormCorridor] plate ready:", relPath, img.naturalWidth + "px");
+      };
+      img.onerror = () => {
+        console.warn("[StormCorridor] plate failed:", relPath, "url tried:", img.src);
+      };
+      // Resolve next to this game HTML (works for file:// and http://)
+      try {
+        img.src = new URL(relPath, import.meta.url).href;
+      } catch {
+        img.src = relPath;
+      }
+      return tex;
+    }
+
+    const wallMap = loadLocalPlate("textures/wall-boltverse.jpg", 2.5);
+    const wallEmissive = loadLocalPlate("textures/emissive-energy.jpg", 1.8, true);
+    const floorMap = loadLocalPlate("textures/floor-boltverse.jpg", 4);
+    floorMap.rotation = Math.PI / 2;
+    floorMap.center.set(0.5, 0.5);
+
+    let wallMatsRef = null;
+    let runwayMatRef = null;
+    let sidePlateMats = [];
+    console.info("[StormCorridor] loading Boltverse plates from", new URL("textures/", import.meta.url).href);
+
+    // Wall material — Unreal-style: lit slate plates + wet specular + energy veins
+    function makeWallMaterial(seed = 0) {
+      return new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        fog: false,
+        uniforms: {
+          uTime: { value: 0 },
+          uSeed: { value: seed },
+          uColorDeep: { value: new THREE.Color(0x0a1a30) },
+          uColorMid: { value: new THREE.Color(0x163050) },
+          uRim: { value: new THREE.Color(0x7ef0ff) },
+          uAccent: { value: new THREE.Color(0xe8c56a) },
+          uMap: { value: wallMap },
+          uEmissiveMap: { value: wallEmissive },
+          uMapMix: { value: 1.0 },
+          uEmissiveStrength: { value: 0.55 },
+          uFogColor: { value: FOG_NEAR.clone() },
+          uFogDensity: { value: 0.006 },
+        },
+        vertexShader: `
+          varying vec3 vWorldPos;
+          varying vec3 vNormal;
+          varying vec3 vViewDir;
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            vec4 wp = modelMatrix * vec4(position, 1.0);
+            vWorldPos = wp.xyz;
+            vNormal = normalize(mat3(modelMatrix) * normal);
+            vViewDir = cameraPosition - wp.xyz;
+            gl_Position = projectionMatrix * viewMatrix * wp;
+          }
+        `,
+        fragmentShader: `
+          uniform float uTime;
+          uniform float uSeed;
+          uniform vec3 uColorDeep;
+          uniform vec3 uColorMid;
+          uniform vec3 uRim;
+          uniform vec3 uAccent;
+          uniform sampler2D uMap;
+          uniform sampler2D uEmissiveMap;
+          uniform float uMapMix;
+          uniform float uEmissiveStrength;
+          uniform vec3 uFogColor;
+          uniform float uFogDensity;
+          varying vec3 vWorldPos;
+          varying vec3 vNormal;
+          varying vec3 vViewDir;
+          varying vec2 vUv;
+
+          float hash(vec3 p) {
+            p = fract(p * 0.3183099 + vec3(0.1, 0.2, 0.3) + uSeed);
+            p *= 17.0;
+            return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+          }
+          float noise(vec3 x) {
+            vec3 i = floor(x);
+            vec3 f = fract(x);
+            f = f * f * (3.0 - 2.0 * f);
+            return mix(
+              mix(mix(hash(i), hash(i + vec3(1,0,0)), f.x),
+                  mix(hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x), f.y),
+              mix(mix(hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x),
+                  mix(hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x), f.y),
+              f.z
+            );
+          }
+          float fbm(vec3 p) {
+            float v = 0.0;
+            float a = 0.5;
+            for (int i = 0; i < 4; i++) {
+              v += a * noise(p);
+              p *= 2.1;
+              a *= 0.5;
+            }
+            return v;
+          }
+
+          void main() {
+            vec3 n = normalize(vNormal);
+            vec3 viewDir = normalize(vViewDir);
+            if (dot(n, viewDir) < 0.0) n = -n;
+            float ndv = max(dot(n, viewDir), 0.0);
+            float fres = pow(1.0 - ndv, 2.8);
+
+            // Plate UVs — denser tiling so runes read in corridor
+            vec2 uv = vUv * vec2(4.0, 2.2);
+            uv.y += uTime * 0.008;
+            vec3 plate = texture2D(uMap, uv).rgb;
+            // Lift dark slate so it doesn't crush to pure black
+            plate = plate * 1.45 + 0.06;
+            plate = pow(plate, vec3(0.92));
+
+            vec2 euv = vUv * vec2(2.4, 1.5) + vec2(uTime * 0.02, uTime * 0.05);
+            vec3 emit = texture2D(uEmissiveMap, euv).rgb;
+
+            float n1 = fbm(vWorldPos * 0.4 + vec3(0.0, 0.0, uTime * 0.08));
+            float n2 = fbm(vWorldPos * 1.1 - vec3(0.0, uTime * 0.05, 0.0));
+
+            // Panel groove mask (fake bevels)
+            vec2 panelUV = vUv * vec2(8.0, 4.0);
+            vec2 pf = fract(panelUV) - 0.5;
+            float groove = smoothstep(0.42, 0.48, abs(pf.x)) + smoothstep(0.42, 0.48, abs(pf.y));
+            groove = clamp(groove, 0.0, 1.0);
+
+            vec3 base = mix(uColorDeep, uColorMid, n1 * 0.4 + 0.25);
+            vec3 col = mix(base, plate, uMapMix);
+
+            // Wet metal specular streak (cheap anisotropic feel)
+            vec3 halfL = normalize(viewDir + normalize(vec3(0.3, 0.85, 0.4)));
+            float spec = pow(max(dot(n, halfL), 0.0), 48.0);
+            float spec2 = pow(max(dot(n, halfL), 0.0), 12.0);
+            col += uRim * spec * 0.55;
+            col += vec3(0.55, 0.7, 0.9) * spec2 * 0.12;
+
+            // Energy veins
+            col += emit * uEmissiveStrength * (0.7 + 0.3 * n2);
+            col += uRim * smoothstep(0.6, 0.95, n1) * 0.08;
+            col += uAccent * smoothstep(0.8, 0.97, n2) * 0.06;
+
+            // Panel edges darken + rim gold/cyan
+            col *= 1.0 - groove * 0.35;
+            col += uRim * groove * 0.12;
+            col += uAccent * groove * groove * 0.08;
+
+            // Grazing edge glow (Unreal fresnel)
+            col += uRim * fres * 0.32;
+            col += uAccent * fres * fres * 0.12;
+
+            // Ambient lift so plates never crush
+            col += uColorMid * 0.12;
+
+            float dist = length(vViewDir);
+            float fogFactor = 1.0 - exp(-uFogDensity * uFogDensity * dist * dist);
+            col = mix(col, uFogColor, clamp(fogFactor, 0.0, 0.78));
+
+            gl_FragColor = vec4(col, 1.0);
+          }
+        `,
+      });
+    }
+
+    const wallMats = [];
+    wallMatsRef = wallMats;
+    // Corridor profile: designed beats (narrow choke → wide chamber → arch)
+    // radius multiplier along length for landmarks
+    function radiusAtSegment(i, total) {
+      const t = i / total;
+      // base breathing
+      let r = 6.6 + Math.sin(i * 0.55) * 0.25;
+      // choke points
+      if (i % 7 === 3) r *= 0.78;
+      // wide chambers
+      if (i % 7 === 5) r *= 1.28;
+      // gentle overall taper then open near end
+      r *= 1.0 + Math.sin(t * Math.PI) * 0.12;
+      if (t > 0.85) r *= 1.15;
+      return r;
+    }
+
+    // Main tunnel — higher segment density for smoother walls
+    const SEG = 32;
+    for (let i = 0; i < SEG; i++) {
+      const z = i * 10.5;
+      const r0 = radiusAtSegment(i, SEG);
+      const r1 = radiusAtSegment(Math.min(i + 1, SEG - 1), SEG);
+      const mat = makeWallMaterial(i * 0.37);
+      wallMats.push(mat);
+      const tube = new THREE.Mesh(
+        new THREE.CylinderGeometry(r0, r1, 10.7, 64, 1, true),
+        mat
+      );
+      tube.rotation.x = Math.PI / 2;
+      tube.position.z = -z - 5.25;
+      world.add(tube);
+
+      // Inner lit panel ring (PBR + plate map) — Unreal “surface detail” layer
+      if (i % 2 === 0) {
+        const panelMat = new THREE.MeshPhysicalMaterial({
+          map: wallMap,
+          color: 0xc8d8e8,
+          emissive: 0x0a2840,
+          emissiveMap: wallEmissive,
+          emissiveIntensity: 0.45,
+          metalness: 0.72,
+          roughness: 0.38,
+          clearcoat: 0.45,
+          clearcoatRoughness: 0.25,
+          envMap,
+          envMapIntensity: 0.85,
+          side: THREE.BackSide,
+          transparent: true,
+          opacity: 0.55,
+        });
+        sidePlateMats.push(panelMat);
+        const panel = new THREE.Mesh(
+          new THREE.CylinderGeometry(r0 * 0.97, r1 * 0.97, 4.5, 48, 1, true),
+          panelMat
+        );
+        panel.rotation.x = Math.PI / 2;
+        panel.position.z = tube.position.z;
+        world.add(panel);
+      }
+
+      // Soft energy sheath
+      const sheath = new THREE.Mesh(
+        new THREE.CylinderGeometry(r0 + 0.35, r1 + 0.35, 10.5, 40, 1, true),
+        new THREE.MeshBasicMaterial({
+          color: 0x2ee6ff,
+          transparent: true,
+          opacity: 0.012 + (i % 2) * 0.006,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      sheath.rotation.x = Math.PI / 2;
+      sheath.position.z = tube.position.z;
+      world.add(sheath);
+    }
+
+    // Gate rings — thick metal + emissive trim (less “wireframe”, more Unreal)
+    const rings = [];
+    for (let i = 0; i < 28; i++) {
+      const z = -i * 12;
+      const seg = Math.min(SEG - 1, Math.floor((-z) / 10.5));
+      const rr = radiusAtSegment(seg, SEG) + 0.1;
+      const isLandmark = i % 4 === 0;
+      const torus = new THREE.Mesh(
+        new THREE.TorusGeometry(rr, isLandmark ? 0.18 : 0.09, 14, 80),
+        new THREE.MeshPhysicalMaterial({
+          color: isLandmark ? 0x2a4060 : 0x1a3048,
+          map: wallMap,
+          emissive: isLandmark ? 0xe8c56a : 0x2ee6ff,
+          emissiveMap: wallEmissive,
+          emissiveIntensity: isLandmark ? 0.75 : 0.5,
+          metalness: 0.95,
+          roughness: 0.22,
+          clearcoat: 0.6,
+          clearcoatRoughness: 0.15,
+          envMap,
+          envMapIntensity: 1.2,
+        })
+      );
+      torus.position.z = z;
+      torus.rotation.x = Math.PI / 2;
+      world.add(torus);
+      rings.push(torus);
+
+      if (isLandmark) {
+        const outer = new THREE.Mesh(
+          new THREE.TorusGeometry(rr + 0.45, 0.05, 10, 64),
+          new THREE.MeshBasicMaterial({
+            color: 0x7ef0ff,
+            transparent: true,
+            opacity: 0.35,
+            blending: THREE.AdditiveBlending,
+          })
+        );
+        outer.position.z = z;
+        outer.rotation.x = Math.PI / 2;
+        world.add(outer);
+        // Gold inner trim
+        const gold = new THREE.Mesh(
+          new THREE.TorusGeometry(rr - 0.25, 0.035, 8, 48),
+          new THREE.MeshPhysicalMaterial({
+            color: 0xe8c56a,
+            emissive: 0xc9a44a,
+            emissiveIntensity: 0.65,
+            metalness: 1,
+            roughness: 0.15,
+            envMap,
+            envMapIntensity: 1.4,
+          })
+        );
+        gold.position.z = z;
+        gold.rotation.x = Math.PI / 2;
+        world.add(gold);
+
+        const pillar = new THREE.PointLight(0xe8c56a, 1.1, 22);
+        pillar.position.set(0, 0.5, z);
+        world.add(pillar);
+      }
+    }
+
+    // ── Corridor landmarks: crystal alcoves, gate arches, floating shards ──
+    const landmarks = new THREE.Group();
+    world.add(landmarks);
+
+    function crystalMat(gold = false) {
+      return new THREE.MeshPhysicalMaterial({
+        color: gold ? 0xffe6a0 : 0xaef6ff,
+        emissive: gold ? 0xc9a44a : 0x0891b2,
+        emissiveIntensity: gold ? 0.55 : 0.7,
+        metalness: 0.15,
+        roughness: 0.08,
+        transmission: 0.55,
+        thickness: 0.6,
+        ior: 1.45,
+        clearcoat: 1,
+        clearcoatRoughness: 0.08,
+        transparent: true,
+        opacity: 0.92,
+        envMap,
+        envMapIntensity: 1.6,
+        side: THREE.DoubleSide,
+      });
+    }
+
+    function addAlcove(z, side) {
+      const group = new THREE.Group();
+      group.position.z = z;
+      const arch = new THREE.Mesh(
+        new THREE.TorusGeometry(1.9, 0.12, 12, 32, Math.PI),
+        new THREE.MeshPhysicalMaterial({
+          color: 0x1a3048,
+          map: wallMap,
+          emissive: 0x2ee6ff,
+          emissiveIntensity: 0.55,
+          metalness: 0.9,
+          roughness: 0.28,
+          clearcoat: 0.5,
+          envMap,
+          envMapIntensity: 1.1,
+        })
+      );
+      arch.rotation.y = side > 0 ? -Math.PI / 2 : Math.PI / 2;
+      arch.position.set(side * 5.2, 0.2, 0);
+      group.add(arch);
+      // Niche back plate
+      const niche = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.4, 3.2),
+        new THREE.MeshPhysicalMaterial({
+          map: wallMap,
+          color: 0xb0c4d8,
+          emissive: 0x0a2038,
+          emissiveMap: wallEmissive,
+          emissiveIntensity: 0.4,
+          metalness: 0.6,
+          roughness: 0.4,
+          envMap,
+          envMapIntensity: 0.7,
+          side: THREE.DoubleSide,
+        })
+      );
+      niche.position.set(side * 5.55, 0.3, 0);
+      niche.rotation.y = side > 0 ? -Math.PI / 2 : Math.PI / 2;
+      group.add(niche);
+      for (let k = 0; k < 6; k++) {
+        const c = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.22 + Math.random() * 0.32, 1),
+          crystalMat(k % 3 === 0)
+        );
+        c.position.set(
+          side * (4.5 + Math.random() * 0.45),
+          -0.9 + Math.random() * 2.4,
+          (Math.random() - 0.5) * 1.1
+        );
+        c.scale.y = 1.8 + Math.random() * 2.2;
+        c.rotation.set(Math.random() * 0.4, Math.random(), Math.random() * 0.4);
+        group.add(c);
+      }
+      const alcoveLight = new THREE.PointLight(side > 0 ? 0x2ee6ff : 0xe8c56a, 0.9, 12);
+      alcoveLight.position.set(side * 4.8, 0.5, 0);
+      group.add(alcoveLight);
+      landmarks.add(group);
+    }
+
+    function addGateArch(z) {
+      const g = new THREE.Group();
+      g.position.z = z;
+      const r = 5.2;
+      const pillarMat = new THREE.MeshPhysicalMaterial({
+        color: 0x1a3048,
+        map: wallMap,
+        emissive: 0x1a6088,
+        emissiveMap: wallEmissive,
+        emissiveIntensity: 0.45,
+        metalness: 0.85,
+        roughness: 0.3,
+        clearcoat: 0.4,
+        envMap,
+        envMapIntensity: 1.0,
+      });
+      for (const side of [-1, 1]) {
+        const col = new THREE.Mesh(new THREE.BoxGeometry(0.55, 4.6, 0.55), pillarMat);
+        col.position.set(side * r * 0.72, 0.0, 0);
+        g.add(col);
+        // Capital
+        const cap = new THREE.Mesh(
+          new THREE.BoxGeometry(0.75, 0.22, 0.75),
+          new THREE.MeshPhysicalMaterial({
+            color: 0xe8c56a,
+            emissive: 0xc9a44a,
+            emissiveIntensity: 0.5,
+            metalness: 1,
+            roughness: 0.2,
+            envMap,
+            envMapIntensity: 1.3,
+          })
+        );
+        cap.position.set(side * r * 0.72, 2.2, 0);
+        g.add(cap);
+      }
+      const beam = new THREE.Mesh(
+        new THREE.TorusGeometry(r * 0.82, 0.14, 12, 40, Math.PI),
+        new THREE.MeshPhysicalMaterial({
+          color: 0x203850,
+          emissive: 0xe8c56a,
+          emissiveIntensity: 0.55,
+          metalness: 0.95,
+          roughness: 0.18,
+          clearcoat: 0.6,
+          envMap,
+          envMapIntensity: 1.2,
+        })
+      );
+      beam.rotation.z = Math.PI;
+      beam.position.y = 1.7;
+      g.add(beam);
+      for (let s = 0; s < 8; s++) {
+        const shard = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.18 + Math.random() * 0.2, 1),
+          crystalMat(s % 4 === 0)
+        );
+        const a = (s / 8) * Math.PI * 2;
+        shard.position.set(Math.cos(a) * 3.0, Math.sin(a) * 1.4 + 0.6, (Math.random() - 0.5) * 0.6);
+        shard.scale.y = 1.5 + Math.random();
+        shard.userData.spin = 0.35 + Math.random() * 0.5;
+        g.add(shard);
+      }
+      landmarks.add(g);
+      return g;
+    }
+
+    // Place landmarks along corridor
+    for (let i = 0; i < 6; i++) {
+      const z = -35 - i * 48;
+      addAlcove(z, i % 2 === 0 ? 1 : -1);
+      if (i % 2 === 0) addGateArch(z - 18);
+    }
+
+    // Floating crystal debris (fewer, higher quality)
+    for (let i = 0; i < 5; i++) {
+      const z = -50 - i * 58;
+      for (let j = 0; j < 5; j++) {
+        const rock = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.2 + Math.random() * 0.35, 1),
+          crystalMat(Math.random() > 0.7)
+        );
+        rock.position.set(
+          (Math.random() - 0.5) * 7,
+          (Math.random() - 0.5) * 4,
+          z + (Math.random() - 0.5) * 6
+        );
+        rock.scale.y = 1.4 + Math.random() * 1.5;
+        rock.userData.drift = (Math.random() - 0.5) * 0.25;
+        rock.userData.spin = 0.2 + Math.random() * 0.4;
+        landmarks.add(rock);
+      }
+    }
+
+    // Floor runway — wide reflective Boltverse hall plate
+    const runwayMat = new THREE.MeshPhysicalMaterial({
+      map: floorMap,
+      color: 0xe8f2ff,
+      emissive: 0x0c3048,
+      emissiveMap: wallEmissive,
+      emissiveIntensity: 0.55,
+      metalness: 0.65,
+      roughness: 0.28,
+      clearcoat: 0.85,
+      clearcoatRoughness: 0.12,
+      envMap,
+      envMapIntensity: 1.15,
+      reflectivity: 0.6,
+    });
+    runwayMatRef = runwayMat;
+    const runway = new THREE.Mesh(
+      new THREE.PlaneGeometry(7.2, CORRIDOR_LEN, 1, 80),
+      runwayMat
+    );
+    runway.rotation.x = -Math.PI / 2;
+    runway.position.set(0, -2.35, -CORRIDOR_LEN / 2);
+    world.add(runway);
+
+    // Mirror-like energy core lane
+    const runwayCore = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.4, CORRIDOR_LEN, 1, 40),
+      new THREE.MeshPhysicalMaterial({
+        color: 0xaef6ff,
+        emissive: 0x2ee6ff,
+        emissiveIntensity: 0.9,
+        metalness: 1,
+        roughness: 0.05,
+        clearcoat: 1,
+        transparent: true,
+        opacity: 0.55,
+        envMap,
+        envMapIntensity: 1.5,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    runwayCore.rotation.x = -Math.PI / 2;
+    runwayCore.position.set(0, -2.31, -CORRIDOR_LEN / 2);
+    world.add(runwayCore);
+
+    // Outer floor shoulders (darker slate borders)
+    for (const side of [-1, 1]) {
+      const shoulder = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.2, CORRIDOR_LEN, 1, 40),
+        new THREE.MeshPhysicalMaterial({
+          map: wallMap,
+          color: 0x8aa0b8,
+          emissive: 0x081828,
+          emissiveMap: wallEmissive,
+          emissiveIntensity: 0.25,
+          metalness: 0.7,
+          roughness: 0.45,
+          envMap,
+          envMapIntensity: 0.6,
+        })
+      );
+      shoulder.rotation.x = -Math.PI / 2;
+      shoulder.position.set(side * 4.6, -2.36, -CORRIDOR_LEN / 2);
+      world.add(shoulder);
+    }
+
+    // Side wall banner plates
+    for (let i = 0; i < 8; i++) {
+      const z = -28 - i * 38;
+      for (const side of [-1, 1]) {
+        const sideMat = new THREE.MeshPhysicalMaterial({
+          map: wallMap,
+          color: 0xd0e0f0,
+          emissive: 0x0a2840,
+          emissiveMap: wallEmissive,
+          emissiveIntensity: 0.5,
+          metalness: 0.55,
+          roughness: 0.35,
+          clearcoat: 0.4,
+          envMap,
+          envMapIntensity: 0.9,
+          side: THREE.DoubleSide,
+        });
+        sidePlateMats.push(sideMat);
+        const plate = new THREE.Mesh(new THREE.PlaneGeometry(4.0, 3.2), sideMat);
+        plate.position.set(side * 5.5, 0.5, z);
+        plate.rotation.y = side > 0 ? -Math.PI / 2 : Math.PI / 2;
+        world.add(plate);
+      }
+    }
+
+    // Edge rails — glowing neon guides
+    for (const side of [-1, 1]) {
+      const rail = new THREE.Mesh(
+        new THREE.BoxGeometry(0.14, 0.1, CORRIDOR_LEN),
+        new THREE.MeshPhysicalMaterial({
+          color: 0x1a6088,
+          emissive: 0x2ee6ff,
+          emissiveIntensity: 1.1,
+          metalness: 1,
+          roughness: 0.12,
+          envMap,
+          envMapIntensity: 1.2,
+        })
+      );
+      rail.position.set(side * 3.4, -2.18, -CORRIDOR_LEN / 2);
+      world.add(rail);
+      const railGlow = new THREE.Mesh(
+        new THREE.BoxGeometry(0.28, 0.04, CORRIDOR_LEN),
+        new THREE.MeshBasicMaterial({
+          color: 0x7ef0ff,
+          transparent: true,
+          opacity: 0.25,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      railGlow.position.set(side * 3.4, -2.12, -CORRIDOR_LEN / 2);
+      world.add(railGlow);
+    }
+
+    // Wall-mounted crystal clusters (replaces random cones)
+    const crystalGroup = new THREE.Group();
+    world.add(crystalGroup);
+    for (let i = 0; i < 48; i++) {
+      const h = 1.4 + Math.random() * 3.5;
+      const geo = new THREE.OctahedronGeometry(0.22 + Math.random() * 0.35, 1);
+      const c = new THREE.Mesh(geo, crystalMat(Math.random() > 0.72));
+      const ang = Math.random() * Math.PI * 2;
+      const r = 5.4 + Math.random() * 1.2;
+      c.position.set(
+        Math.cos(ang) * r,
+        Math.sin(ang) * r * 0.5,
+        -8 - Math.random() * (CORRIDOR_LEN - 20)
+      );
+      c.scale.set(1, h * 0.6, 1);
+      c.rotation.set(Math.random() * 0.4, Math.random() * Math.PI, Math.random() * 0.4);
+      crystalGroup.add(c);
+    }
+
+    // Helix energy ribbons along corridor
+    function makeRibbon(radius, turns, color, z0) {
+      const pts = [];
+      const segs = 200;
+      for (let i = 0; i <= segs; i++) {
+        const t = i / segs;
+        const ang = t * Math.PI * 2 * turns;
+        pts.push(new THREE.Vector3(
+          Math.cos(ang) * radius,
+          Math.sin(ang) * radius * 0.7,
+          z0 - t * CORRIDOR_LEN * 0.9
+        ));
+      }
+      const curve = new THREE.CatmullRomCurve3(pts);
+      const tube = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, segs, 0.06, 6, false),
+        new THREE.MeshBasicMaterial({
+          color,
+          transparent: true,
+          opacity: 0.28,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      world.add(tube);
+      return tube;
+    }
+    const ribbonA = makeRibbon(5.8, 3.5, 0x2ee6ff, -5);
+    const ribbonB = makeRibbon(5.5, -2.8, 0xe8c56a, -12);
+
+    // ── Soft glow particle sprites (Unreal-style air dust / sparks) ──
+    function makeSoftSprite(kind = "glow") {
+      const s = 128;
+      const c = document.createElement("canvas");
+      c.width = c.height = s;
+      const g = c.getContext("2d");
+      const cx = s / 2, cy = s / 2;
+      if (kind === "spark") {
+        // Soft core + 4-point sparkle rays
+        const grd = g.createRadialGradient(cx, cy, 0, cx, cy, s * 0.48);
+        grd.addColorStop(0, "rgba(255,255,255,1)");
+        grd.addColorStop(0.12, "rgba(220,250,255,0.95)");
+        grd.addColorStop(0.35, "rgba(100,220,255,0.35)");
+        grd.addColorStop(1, "rgba(0,0,0,0)");
+        g.fillStyle = grd;
+        g.fillRect(0, 0, s, s);
+        g.globalCompositeOperation = "lighter";
+        // horizontal ray
+        const rayH = g.createLinearGradient(0, cy, s, cy);
+        rayH.addColorStop(0, "rgba(255,255,255,0)");
+        rayH.addColorStop(0.5, "rgba(200,245,255,0.85)");
+        rayH.addColorStop(1, "rgba(255,255,255,0)");
+        g.fillStyle = rayH;
+        g.fillRect(0, cy - 2, s, 4);
+        // vertical ray
+        const rayV = g.createLinearGradient(cx, 0, cx, s);
+        rayV.addColorStop(0, "rgba(255,255,255,0)");
+        rayV.addColorStop(0.5, "rgba(200,245,255,0.75)");
+        rayV.addColorStop(1, "rgba(255,255,255,0)");
+        g.fillStyle = rayV;
+        g.fillRect(cx - 2, 0, 4, s);
+      } else if (kind === "ember") {
+        const grd = g.createRadialGradient(cx, cy, 0, cx, cy, s * 0.5);
+        grd.addColorStop(0, "rgba(255,250,230,1)");
+        grd.addColorStop(0.15, "rgba(255,210,120,0.95)");
+        grd.addColorStop(0.4, "rgba(232,180,80,0.4)");
+        grd.addColorStop(1, "rgba(0,0,0,0)");
+        g.fillStyle = grd;
+        g.fillRect(0, 0, s, s);
+      } else {
+        // Soft volumetric dust orb
+        const grd = g.createRadialGradient(cx, cy, 0, cx, cy, s * 0.5);
+        grd.addColorStop(0, "rgba(255,255,255,0.95)");
+        grd.addColorStop(0.2, "rgba(180,240,255,0.55)");
+        grd.addColorStop(0.55, "rgba(80,180,230,0.18)");
+        grd.addColorStop(1, "rgba(0,0,0,0)");
+        g.fillStyle = grd;
+        g.fillRect(0, 0, s, s);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.needsUpdate = true;
+      return tex;
+    }
+    const texGlow = makeSoftSprite("glow");
+    const texSpark = makeSoftSprite("spark");
+    const texEmber = makeSoftSprite("ember");
+
+    function makeSoftField(opts) {
+      const {
+        count,
+        sizeMin = 0.08,
+        sizeMax = 0.35,
+        colorA = new THREE.Color(0x7ef0ff),
+        colorB = new THREE.Color(0xaef6ff),
+        spread = { x: 14, y: 10, z: CORRIDOR_LEN },
+        map = texGlow,
+        opacity = 0.85,
+        zSpeed = 14,
+        floatAmp = 0.35,
+        twinkle = 1.0,
+      } = opts;
+
+      const pos = new Float32Array(count * 3);
+      const sizes = new Float32Array(count);
+      const phases = new Float32Array(count);
+      const colors = new Float32Array(count * 3);
+      const seeds = new Float32Array(count);
+      const base = new Float32Array(count * 3); // home XY for drift
+
+      for (let i = 0; i < count; i++) {
+        const x = (Math.random() - 0.5) * spread.x;
+        const y = (Math.random() - 0.5) * spread.y;
+        const z = -Math.random() * spread.z;
+        pos[i * 3] = x;
+        pos[i * 3 + 1] = y;
+        pos[i * 3 + 2] = z;
+        base[i * 3] = x;
+        base[i * 3 + 1] = y;
+        base[i * 3 + 2] = z;
+        sizes[i] = sizeMin + Math.random() * (sizeMax - sizeMin);
+        phases[i] = Math.random() * Math.PI * 2;
+        seeds[i] = Math.random();
+        const c = colorA.clone().lerp(colorB, Math.random());
+        // slight gold mix for some dust
+        if (Math.random() > 0.85) c.lerp(new THREE.Color(0xe8c56a), 0.55);
+        colors[i * 3] = c.r;
+        colors[i * 3 + 1] = c.g;
+        colors[i * 3 + 2] = c.b;
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+      geo.setAttribute("aSize", new THREE.BufferAttribute(sizes, 1));
+      geo.setAttribute("aPhase", new THREE.BufferAttribute(phases, 1));
+      geo.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
+      geo.setAttribute("aSeed", new THREE.BufferAttribute(seeds, 1));
+
+      const mat = new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: {
+          uMap: { value: map },
+          uTime: { value: 0 },
+          uOpacity: { value: opacity },
+          uTwinkle: { value: twinkle },
+          uPixelRatio: { value: Math.min(devicePixelRatio, 2) },
+        },
+        vertexShader: `
+          attribute float aSize;
+          attribute float aPhase;
+          attribute vec3 aColor;
+          attribute float aSeed;
+          uniform float uTime;
+          uniform float uPixelRatio;
+          uniform float uTwinkle;
+          varying vec3 vColor;
+          varying float vAlpha;
+          void main() {
+            vColor = aColor;
+            float tw = 0.65 + 0.35 * sin(uTime * (1.2 + aSeed * 2.5) + aPhase);
+            tw = mix(1.0, tw, uTwinkle);
+            vAlpha = tw;
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            // Soft perspective size + slight pulse
+            float sz = aSize * (0.9 + 0.2 * sin(uTime * 2.0 + aPhase));
+            gl_PointSize = sz * uPixelRatio * (220.0 / -mv.z);
+            gl_PointSize = clamp(gl_PointSize, 1.5, 96.0);
+            gl_Position = projectionMatrix * mv;
+          }
+        `,
+        fragmentShader: `
+          uniform sampler2D uMap;
+          uniform float uOpacity;
+          varying vec3 vColor;
+          varying float vAlpha;
+          void main() {
+            vec4 tex = texture2D(uMap, gl_PointCoord);
+            float a = tex.a * uOpacity * vAlpha;
+            if (a < 0.01) discard;
+            // Premultiply soft core so bloom catches bright centers
+            vec3 col = vColor * tex.rgb * (0.75 + 0.5 * tex.r);
+            gl_FragColor = vec4(col, a);
+          }
+        `,
+      });
+
+      const points = new THREE.Points(geo, mat);
+      points.frustumCulled = false;
+      points.userData = {
+        base, zSpeed, floatAmp, count, spread,
+        posAttr: geo.attributes.position,
+      };
+      return points;
+    }
+
+    // Far starfield (soft, large, slow)
+    const stars = makeSoftField({
+      count: 420,
+      sizeMin: 0.35,
+      sizeMax: 1.4,
+      colorA: new THREE.Color(0x8ec8ff),
+      colorB: new THREE.Color(0xe8f6ff),
+      spread: { x: 100, y: 55, z: CORRIDOR_LEN + 100 },
+      map: texSpark,
+      opacity: 0.55,
+      zSpeed: 2,
+      floatAmp: 0.15,
+      twinkle: 1.2,
+    });
+    scene.add(stars);
+
+    // Air dust — main floating motes in corridor
+    const dust = makeSoftField({
+      count: 480,
+      sizeMin: 0.12,
+      sizeMax: 0.55,
+      colorA: new THREE.Color(0x2ee6ff),
+      colorB: new THREE.Color(0xaef6ff),
+      spread: { x: 12, y: 9, z: CORRIDOR_LEN },
+      map: texGlow,
+      opacity: 0.75,
+      zSpeed: 12,
+      floatAmp: 0.55,
+      twinkle: 0.7,
+    });
+    world.add(dust);
+
+    // Fine energy motes (smaller, faster, denser near path)
+    const motes = makeSoftField({
+      count: 280,
+      sizeMin: 0.06,
+      sizeMax: 0.22,
+      colorA: new THREE.Color(0x7ef0ff),
+      colorB: new THREE.Color(0xffffff),
+      spread: { x: 8, y: 6, z: CORRIDOR_LEN },
+      map: texGlow,
+      opacity: 0.9,
+      zSpeed: 22,
+      floatAmp: 0.35,
+      twinkle: 1.0,
+    });
+    world.add(motes);
+
+    // Gold embers / storm sparks
+    const embers = makeSoftField({
+      count: 160,
+      sizeMin: 0.1,
+      sizeMax: 0.4,
+      colorA: new THREE.Color(0xe8c56a),
+      colorB: new THREE.Color(0xfff0c0),
+      spread: { x: 10, y: 7, z: CORRIDOR_LEN },
+      map: texEmber,
+      opacity: 0.85,
+      zSpeed: 8,
+      floatAmp: 0.8,
+      twinkle: 1.4,
+    });
+    world.add(embers);
+
+    // Bright sparkle flashes (rare star sprites)
+    const sparkles = makeSoftField({
+      count: 90,
+      sizeMin: 0.25,
+      sizeMax: 0.9,
+      colorA: new THREE.Color(0xffffff),
+      colorB: new THREE.Color(0x7ef0ff),
+      spread: { x: 11, y: 8, z: CORRIDOR_LEN },
+      map: texSpark,
+      opacity: 0.95,
+      zSpeed: 16,
+      floatAmp: 0.4,
+      twinkle: 1.8,
+    });
+    world.add(sparkles);
+
+    // Speed streaks — soft elongated glow points parented to camera
+    const streakN = 90;
+    const streakPos = new Float32Array(streakN * 3);
+    const streakSize = new Float32Array(streakN);
+    const streakPhase = new Float32Array(streakN);
+    const streakCol = new Float32Array(streakN * 3);
+    for (let i = 0; i < streakN; i++) {
+      streakPos[i * 3] = (Math.random() - 0.5) * 11;
+      streakPos[i * 3 + 1] = (Math.random() - 0.5) * 8;
+      streakPos[i * 3 + 2] = -Math.random() * 40;
+      streakSize[i] = 0.08 + Math.random() * 0.25;
+      streakPhase[i] = Math.random() * 6.28;
+      const warm = Math.random() > 0.8;
+      streakCol[i * 3] = warm ? 0.91 : 0.55;
+      streakCol[i * 3 + 1] = warm ? 0.77 : 0.94;
+      streakCol[i * 3 + 2] = warm ? 0.42 : 1.0;
+    }
+    const streakGeo = new THREE.BufferGeometry();
+    streakGeo.setAttribute("position", new THREE.BufferAttribute(streakPos, 3));
+    streakGeo.setAttribute("aSize", new THREE.BufferAttribute(streakSize, 1));
+    streakGeo.setAttribute("aPhase", new THREE.BufferAttribute(streakPhase, 1));
+    streakGeo.setAttribute("aColor", new THREE.BufferAttribute(streakCol, 3));
+    streakGeo.setAttribute("aSeed", new THREE.BufferAttribute(streakPhase, 1));
+    const streakMat = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: {
+        uMap: { value: texGlow },
+        uTime: { value: 0 },
+        uOpacity: { value: 0.2 },
+        uTwinkle: { value: 0.3 },
+        uPixelRatio: { value: Math.min(devicePixelRatio, 2) },
+        uStretch: { value: 1.0 },
+      },
+      vertexShader: `
+        attribute float aSize;
+        attribute float aPhase;
+        attribute vec3 aColor;
+        attribute float aSeed;
+        uniform float uTime;
+        uniform float uPixelRatio;
+        uniform float uStretch;
+        varying vec3 vColor;
+        varying float vAlpha;
+        void main() {
+          vColor = aColor;
+          vAlpha = 0.7 + 0.3 * sin(uTime * 3.0 + aPhase);
+          vec4 mv = modelViewMatrix * vec4(position, 1.0);
+          // Stretch when moving fast (simulated by larger points + soft sprite)
+          float sz = aSize * (1.0 + uStretch * 1.8);
+          gl_PointSize = sz * uPixelRatio * (260.0 / max(-mv.z, 0.5));
+          gl_PointSize = clamp(gl_PointSize, 2.0, 120.0);
+          gl_Position = projectionMatrix * mv;
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D uMap;
+        uniform float uOpacity;
+        varying vec3 vColor;
+        varying float vAlpha;
+        void main() {
+          // Stretch UV vertically for motion-blur feel
+          vec2 uv = gl_PointCoord;
+          uv.y = (uv.y - 0.5) * 0.45 + 0.5;
+          vec4 tex = texture2D(uMap, uv);
+          float a = tex.a * uOpacity * vAlpha;
+          if (a < 0.01) discard;
+          gl_FragColor = vec4(vColor * tex.rgb * 1.2, a);
+        }
+      `,
+    });
+    const streaks = new THREE.Points(streakGeo, streakMat);
+    streaks.frustumCulled = false;
+    camera.add(streaks);
+
+    // Shared tick helper for soft fields
+    const softFields = [dust, motes, embers, sparkles, stars];
+    function tickSoftField(field, dt, t, camZ, extraSpeed = 0) {
+      const { base, zSpeed, floatAmp, count, posAttr } = field.userData;
+      const arr = posAttr.array;
+      const spd = zSpeed + extraSpeed;
+      field.material.uniforms.uTime.value = t;
+      for (let i = 0; i < count; i++) {
+        const i3 = i * 3;
+        const ph = field.geometry.attributes.aPhase.array[i];
+        const seed = field.geometry.attributes.aSeed.array[i];
+        // Drift + float (figure-8-ish)
+        arr[i3] = base[i3] + Math.sin(t * (0.4 + seed) + ph) * floatAmp * (0.6 + seed);
+        arr[i3 + 1] = base[i3 + 1] + Math.cos(t * (0.55 + seed * 0.8) + ph * 1.3) * floatAmp;
+        arr[i3 + 2] += spd * dt;
+        // Recycle past camera
+        if (arr[i3 + 2] > camZ + 10) {
+          arr[i3 + 2] -= field.userData.spread.z;
+          base[i3] = (Math.random() - 0.5) * field.userData.spread.x;
+          base[i3 + 1] = (Math.random() - 0.5) * field.userData.spread.y;
+          arr[i3] = base[i3];
+          arr[i3 + 1] = base[i3 + 1];
+        }
+      }
+      posAttr.needsUpdate = true;
+    }
+
+    // Storm orbs — multi-layer beauty
+    const orbs = [];
+    const orbGroup = new THREE.Group();
+    world.add(orbGroup);
+
+    function createOrb(z, index) {
+      const g = new THREE.Group();
+      const goldOrb = index % 3 === 0;
+      const core = new THREE.Mesh(
+        new THREE.SphereGeometry(0.4, 40, 40),
+        new THREE.MeshPhysicalMaterial({
+          color: goldOrb ? 0xfff0c8 : 0xe8ffff,
+          emissive: goldOrb ? 0xe8c56a : 0x2ee6ff,
+          emissiveIntensity: 1.2,
+          metalness: 0.2,
+          roughness: 0.08,
+          clearcoat: 1,
+          clearcoatRoughness: 0.05,
+          transmission: 0.35,
+          thickness: 0.5,
+          envMap,
+          envMapIntensity: 1.8,
+        })
+      );
+      const mid = new THREE.Mesh(
+        new THREE.SphereGeometry(0.62, 28, 28),
+        new THREE.MeshBasicMaterial({
+          color: goldOrb ? 0xe8c56a : 0x2ee6ff,
+          transparent: true,
+          opacity: 0.22,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      const outer = new THREE.Mesh(
+        new THREE.SphereGeometry(0.95, 24, 24),
+        new THREE.MeshBasicMaterial({
+          color: goldOrb ? 0xffe6a0 : 0x67e8f9,
+          transparent: true,
+          opacity: 0.1,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(0.78, 0.04, 12, 56),
+        new THREE.MeshPhysicalMaterial({
+          color: goldOrb ? 0xe8c56a : 0xaef6ff,
+          emissive: goldOrb ? 0xc9a44a : 0x2ee6ff,
+          emissiveIntensity: 0.9,
+          metalness: 1,
+          roughness: 0.15,
+          envMap,
+          envMapIntensity: 1.4,
+        })
+      );
+      ring.rotation.x = Math.PI / 2.5;
+      const ring2 = ring.clone();
+      ring2.rotation.x = Math.PI / 1.7;
+      ring2.scale.setScalar(1.18);
+      g.add(core, mid, outer, ring, ring2);
+
+      const x = Math.sin(index * 1.7) * 2.6;
+      const y = 0.3 + Math.cos(index * 0.9) * 1.0;
+      g.position.set(x, y, z);
+      g.userData = { collected: false, baseY: y, phase: Math.random() * Math.PI * 2 };
+      const pl = new THREE.PointLight(goldOrb ? 0xe8c56a : 0x7ef0ff, 1.4, 14);
+      g.add(pl);
+      orbGroup.add(g);
+      orbs.push(g);
+    }
+    for (let i = 0; i < ORB_GOAL; i++) {
+      const z = -22 - i * ((CORRIDOR_LEN - 50) / (ORB_GOAL - 1));
+      createOrb(z, i);
+    }
+
+    // Horizon storm core — multi-layer Unreal-style end beacon
+    const horizon = new THREE.Group();
+    horizon.position.set(0, 1.2, -CORRIDOR_LEN + 8);
+    const hCore = new THREE.Mesh(
+      new THREE.SphereGeometry(1.6, 40, 40),
+      new THREE.MeshPhysicalMaterial({
+        color: 0xe8ffff,
+        emissive: 0x2ee6ff,
+        emissiveIntensity: 1.4,
+        metalness: 0.1,
+        roughness: 0.05,
+        transmission: 0.4,
+        thickness: 1,
+        clearcoat: 1,
+        envMap,
+        envMapIntensity: 2,
+      })
+    );
+    const hShell = new THREE.Mesh(
+      new THREE.SphereGeometry(2.4, 32, 32),
+      new THREE.MeshBasicMaterial({
+        color: 0x2ee6ff,
+        transparent: true,
+        opacity: 0.18,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    const hRing = new THREE.Mesh(
+      new THREE.TorusGeometry(2.8, 0.08, 12, 64),
+      new THREE.MeshPhysicalMaterial({
+        color: 0xe8c56a,
+        emissive: 0xc9a44a,
+        emissiveIntensity: 0.9,
+        metalness: 1,
+        roughness: 0.15,
+        envMap,
+        envMapIntensity: 1.5,
+      })
+    );
+    hRing.rotation.x = Math.PI / 2;
+    horizon.add(hCore, hShell, hRing);
+    world.add(horizon);
+    const horizonLight = new THREE.PointLight(0x2ee6ff, 4.0, 90);
+    horizonLight.position.copy(horizon.position);
+    world.add(horizonLight);
+
+    // Lightning
+    const lightningGroup = new THREE.Group();
+    world.add(lightningGroup);
+    function spawnLightning() {
+      lightningGroup.clear();
+      const pts = [];
+      let x = (Math.random() - 0.5) * 10;
+      let y = 5 + Math.random() * 2;
+      const z0 = camera.position.z - 8 - Math.random() * 50;
+      for (let i = 0; i < 16; i++) {
+        pts.push(new THREE.Vector3(x, y, z0 - i * 1.1));
+        x += (Math.random() - 0.5) * 2.2;
+        y -= 0.55 + Math.random() * 0.55;
+      }
+      const geo = new THREE.BufferGeometry().setFromPoints(pts);
+      const line = new THREE.Line(geo, new THREE.LineBasicMaterial({
+        color: 0xe8ffff, transparent: true, opacity: 1,
+        blending: THREE.AdditiveBlending,
+      }));
+      const glow = new THREE.Line(geo, new THREE.LineBasicMaterial({
+        color: 0x2ee6ff, transparent: true, opacity: 0.35,
+        blending: THREE.AdditiveBlending,
+      }));
+      lightningGroup.add(line, glow);
+      boltLight.intensity = 5;
+      boltLight.position.copy(pts[2]);
+      flashEl.style.transition = "none";
+      flashEl.style.opacity = "0.22";
+      flashEl.style.background = "rgba(180, 230, 255, 0.25)";
+      requestAnimationFrame(() => {
+        flashEl.style.transition = "opacity 0.4s ease";
+        flashEl.style.opacity = "0";
+      });
+      setTimeout(() => {
+        lightningGroup.clear();
+        boltLight.intensity = 0;
+      }, 200);
+    }
+
+    // Game state
+    let running = false;
+    let collected = 0;
+    let timeLeft = DURATION;
+    let last = performance.now();
+    let lightningTimer = 1.5;
+    let endTimeLeft = DURATION;
+    const keys = Object.create(null);
+    const velocity = new THREE.Vector3();
+    const direction = new THREE.Vector3();
+    let joyVec = { x: 0, y: 0 };
+    let lookTouch = null;
+    let lastTouch = { x: 0, y: 0 };
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return m + ":" + String(sec).padStart(2, "0");
+    }
+    function updateHUD() {
+      orbCountEl.textContent = collected + " / " + ORB_GOAL;
+      timerEl.textContent = formatTime(Math.max(0, timeLeft));
+      timerStat.classList.toggle("warn", timeLeft <= 15 && running);
+    }
+
+    function resetGame() {
+      collected = 0;
+      timeLeft = DURATION;
+      endTimeLeft = DURATION;
+      camera.position.set(0, 1.65, 10);
+      camera.rotation.set(0, 0, 0);
+      velocity.set(0, 0, 0);
+      orbs.forEach((o) => {
+        o.userData.collected = false;
+        o.visible = true;
+        o.scale.setScalar(1);
+      });
+      updateHUD();
+    }
+
+    function startGame() {
+      ensureAudio();
+      resetGame();
+      running = true;
+      startOverlay.classList.remove("show");
+      endOverlay.classList.remove("show");
+      hud.hidden = false;
+      if (isTouch) {
+        mobilePad.hidden = false;
+        lookZone.hidden = false;
+        hint.textContent = "Joystick move · drag right side to look";
+      } else {
+        hint.textContent = "WASD / arrows · mouse look · Shift sprint · Esc release mouse";
+        controls.lock();
+      }
+      last = performance.now();
+    }
+
+    function endGame(win) {
+      running = false;
+      endTimeLeft = timeLeft;
+      if (controls.isLocked) controls.unlock();
+      hud.hidden = true;
+      mobilePad.hidden = true;
+      lookZone.hidden = true;
+      endOverlay.classList.add("show");
+      document.getElementById("endTitle").textContent = win ? "Core charged" : "Corridor closed";
+      document.getElementById("endMsg").textContent = win
+        ? "All 12 storm orbs claimed. Pure Bolt energy — Resonance surges through the Star Core."
+        : "Time ran out. The storm swallowed the path. Rise and sprint again.";
+      document.getElementById("endOrbs").textContent = collected + " / " + ORB_GOAL;
+      document.getElementById("endTime").textContent = win
+        ? formatTime(DURATION - endTimeLeft) + " clear"
+        : "0:00";
+      if (win) sfxWin(); else sfxLose();
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({
+            type: "citadel-play-result", game: "storm-corridor-sprint",
+            win, collected, goal: ORB_GOAL,
+          }, "*");
+        }
+      } catch (_) {}
+    }
+
+    // ── Orb collect juice: shockwave + particle burst ──
+    const vfxGroup = new THREE.Group();
+    scene.add(vfxGroup);
+    const activeVfx = [];
+
+    function spawnCollectVfx(pos) {
+      // Shockwave ring
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(0.3, 0.045, 8, 40),
+        new THREE.MeshBasicMaterial({
+          color: 0xaef6ff,
+          transparent: true,
+          opacity: 0.9,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        })
+      );
+      ring.position.copy(pos);
+      ring.lookAt(camera.position);
+      vfxGroup.add(ring);
+
+      // Outer gold shock
+      const ring2 = new THREE.Mesh(
+        new THREE.TorusGeometry(0.25, 0.03, 8, 32),
+        new THREE.MeshBasicMaterial({
+          color: 0xe8c56a,
+          transparent: true,
+          opacity: 0.7,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      ring2.position.copy(pos);
+      ring2.rotation.copy(ring.rotation);
+      vfxGroup.add(ring2);
+
+      // Burst particles
+      const n = 28;
+      const ppos = new Float32Array(n * 3);
+      const pvel = [];
+      for (let i = 0; i < n; i++) {
+        ppos[i * 3] = pos.x;
+        ppos[i * 3 + 1] = pos.y;
+        ppos[i * 3 + 2] = pos.z;
+        const dir = new THREE.Vector3(
+          Math.random() - 0.5,
+          Math.random() - 0.5,
+          Math.random() - 0.5
+        ).normalize().multiplyScalar(4 + Math.random() * 8);
+        pvel.push(dir);
+      }
+      const pgeo = new THREE.BufferGeometry();
+      pgeo.setAttribute("position", new THREE.BufferAttribute(ppos, 3));
+      const pts = new THREE.Points(
+        pgeo,
+        new THREE.PointsMaterial({
+          color: 0x7ef0ff,
+          size: 0.14,
+          transparent: true,
+          opacity: 1,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          sizeAttenuation: true,
+        })
+      );
+      vfxGroup.add(pts);
+
+      // Soft flash sphere
+      const flashBall = new THREE.Mesh(
+        new THREE.SphereGeometry(0.4, 12, 12),
+        new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.55,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      flashBall.position.copy(pos);
+      vfxGroup.add(flashBall);
+
+      activeVfx.push({
+        ring, ring2, pts, pvel, flashBall,
+        age: 0,
+        life: 0.55,
+      });
+    }
+
+    function updateVfx(dt) {
+      for (let i = activeVfx.length - 1; i >= 0; i--) {
+        const v = activeVfx[i];
+        v.age += dt;
+        const t = v.age / v.life;
+        if (t >= 1) {
+          vfxGroup.remove(v.ring, v.ring2, v.pts, v.flashBall);
+          v.ring.geometry.dispose();
+          v.ring2.geometry.dispose();
+          v.pts.geometry.dispose();
+          activeVfx.splice(i, 1);
+          continue;
+        }
+        const s = 1 + t * 6;
+        v.ring.scale.setScalar(s);
+        v.ring2.scale.setScalar(s * 1.15);
+        v.ring.material.opacity = 0.9 * (1 - t);
+        v.ring2.material.opacity = 0.65 * (1 - t);
+        v.flashBall.scale.setScalar(1 + t * 3);
+        v.flashBall.material.opacity = 0.5 * (1 - t);
+
+        const arr = v.pts.geometry.attributes.position.array;
+        for (let p = 0; p < v.pvel.length; p++) {
+          arr[p * 3] += v.pvel[p].x * dt;
+          arr[p * 3 + 1] += v.pvel[p].y * dt;
+          arr[p * 3 + 2] += v.pvel[p].z * dt;
+        }
+        v.pts.geometry.attributes.position.needsUpdate = true;
+        v.pts.material.opacity = 1 - t;
+        v.pts.material.size = 0.14 * (1 - t * 0.6);
+      }
+    }
+
+    function collectOrb(orb) {
+      if (orb.userData.collected) return;
+      orb.userData.collected = true;
+      const pos = orb.position.clone();
+      orb.visible = false;
+      collected += 1;
+      updateHUD();
+      sfxCollect();
+      spawnCollectVfx(pos);
+      bloom.strength = 0.85;
+      setTimeout(() => { bloom.strength = 0.55; }, 180);
+      flashEl.style.transition = "none";
+      flashEl.style.opacity = "0.12";
+      flashEl.style.background = "rgba(46, 230, 255, 0.22)";
+      requestAnimationFrame(() => {
+        flashEl.style.transition = "opacity 0.28s ease";
+        flashEl.style.opacity = "0";
+      });
+      if (collected >= ORB_GOAL) endGame(true);
+    }
+
+    addEventListener("keydown", (e) => {
+      keys[e.code] = true;
+      if (e.code === "Escape" && running && !isTouch) controls.unlock();
+    });
+    addEventListener("keyup", (e) => { keys[e.code] = false; });
+    canvas.addEventListener("click", () => {
+      if (running && !isTouch && !controls.isLocked) controls.lock();
+    });
+
+    function bindJoy(el) {
+      const rect = () => el.getBoundingClientRect();
+      const setFrom = (cx, cy) => {
+        const r = rect();
+        const mx = r.left + r.width / 2;
+        const my = r.top + r.height / 2;
+        let dx = (cx - mx) / (r.width / 2);
+        let dy = (cy - my) / (r.height / 2);
+        const len = Math.hypot(dx, dy) || 1;
+        if (len > 1) { dx /= len; dy /= len; }
+        joyVec.x = dx; joyVec.y = -dy;
+        joyKnob.style.transform = `translate(${dx * 28}px, ${dy * 28}px)`;
+      };
+      const clear = () => {
+        joyVec.x = 0; joyVec.y = 0;
+        joyKnob.style.transform = "translate(0,0)";
+      };
+      el.addEventListener("touchstart", (e) => { e.preventDefault(); setFrom(e.changedTouches[0].clientX, e.changedTouches[0].clientY); }, { passive: false });
+      el.addEventListener("touchmove", (e) => { e.preventDefault(); setFrom(e.changedTouches[0].clientX, e.changedTouches[0].clientY); }, { passive: false });
+      el.addEventListener("touchend", clear);
+      el.addEventListener("touchcancel", clear);
+    }
+    bindJoy(joy);
+
+    lookZone.addEventListener("touchstart", (e) => {
+      const t = e.changedTouches[0];
+      lookTouch = t.identifier;
+      lastTouch.x = t.clientX; lastTouch.y = t.clientY;
+    }, { passive: true });
+    lookZone.addEventListener("touchmove", (e) => {
+      for (const t of e.changedTouches) {
+        if (t.identifier !== lookTouch) continue;
+        const dx = t.clientX - lastTouch.x;
+        const dy = t.clientY - lastTouch.y;
+        lastTouch.x = t.clientX; lastTouch.y = t.clientY;
+        camera.rotation.y -= dx * 0.005;
+        camera.rotation.x -= dy * 0.004;
+        camera.rotation.x = Math.max(-1.2, Math.min(1.2, camera.rotation.x));
+      }
+    }, { passive: true });
+    lookZone.addEventListener("touchend", () => { lookTouch = null; });
+
+    document.getElementById("btnStart").onclick = startGame;
+    document.getElementById("btnRetry").onclick = startGame;
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        try { window.parent.postMessage({ type: "citadel-play-close" }, "*"); } catch (_) {}
+      }
+      if (history.length > 1) history.back();
+      else location.href = "../index.html";
+    }
+    document.getElementById("btnBack").onclick = goBack;
+    document.getElementById("btnBack2").onclick = goBack;
+    if (new URLSearchParams(location.search).get("autostart") === "1") setTimeout(startGame, 250);
+
+    addEventListener("resize", () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+      composer.setSize(innerWidth, innerHeight);
+      bloom.setSize(innerWidth, innerHeight);
+    });
+
+    function tick(now) {
+      requestAnimationFrame(tick);
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      const t = now * 0.001;
+
+      // Richer fog: breathe cyan-navy vs deeper indigo (keep plates readable near camera)
+      const fogMix = 0.5 + 0.5 * Math.sin(t * 0.15);
+      const fogCol = FOG_NEAR.clone().lerp(FOG_STORM, fogMix * 0.45);
+      fogCol.lerp(FOG_DEEP, 0.25);
+      scene.fog.color.copy(fogCol);
+      scene.background.copy(BG_COLOR).lerp(fogCol, 0.35);
+      const depth = THREE.MathUtils.clamp(-camera.position.z / CORRIDOR_LEN, 0, 1);
+      scene.fog.density = 0.005 + depth * 0.0025;
+
+      // Wall shader time + match manual fog to scene
+      for (let i = 0; i < wallMats.length; i++) {
+        const u = wallMats[i].uniforms;
+        u.uTime.value = t;
+        u.uFogColor.value.copy(fogCol);
+        u.uFogDensity.value = scene.fog.density;
+      }
+
+      // God-ray shafts: soft opacity pulse
+      for (let i = 0; i < shaftMeshes.length; i++) {
+        const s = shaftMeshes[i];
+        const pulse = 0.75 + 0.25 * Math.sin(t * s.userData.speed + s.userData.phase);
+        const op = s.userData.baseOpacity * pulse;
+        s.material.opacity = op;
+        if (s.children[0]) s.children[0].material.opacity = op * 0.45;
+      }
+      // Haze slabs drift slowly
+      hazeGroup.children.forEach((h, i) => {
+        h.material.opacity = 0.028 + 0.012 * Math.sin(t * 0.35 + h.userData.phase);
+        h.position.x = Math.sin(t * 0.12 + i) * 0.4;
+      });
+
+      // Collect VFX
+      updateVfx(dt);
+
+      // Orbs breathe
+      orbs.forEach((o) => {
+        if (o.userData.collected) return;
+        o.position.y = o.userData.baseY + Math.sin(t * 2.8 + o.userData.phase) * 0.28;
+        o.rotation.y += dt * 1.8;
+        o.children[3].rotation.z += dt * 2.2;
+        o.children[4].rotation.z -= dt * 1.6;
+        const s = 1 + Math.sin(t * 4 + o.userData.phase) * 0.06;
+        o.scale.setScalar(s);
+      });
+
+      // Rings pulse
+      rings.forEach((r, i) => {
+        r.material.emissiveIntensity = 0.35 + Math.sin(t * 2 + i * 0.4) * 0.18;
+      });
+
+      // Landmark drift / spin
+      landmarks.traverse((obj) => {
+        if (obj.userData.spin) obj.rotation.y += dt * obj.userData.spin;
+        if (obj.userData.drift) {
+          obj.position.y += Math.sin(t + obj.position.z) * obj.userData.drift * dt;
+        }
+      });
+
+      // Ribbons slow spin feel via rotation of whole world ribbons
+      ribbonA.rotation.z = t * 0.08;
+      ribbonB.rotation.z = -t * 0.06;
+      horizon.scale.setScalar(1 + Math.sin(t * 1.5) * 0.08);
+      horizon.rotation.y = t * 0.25;
+      if (horizon.children[2]) horizon.children[2].rotation.z = t * 0.6;
+
+      // Soft air particles — float, drift, recycle
+      const camZ = camera.position.z;
+      tickSoftField(dust, dt, t, camZ);
+      tickSoftField(motes, dt, t, camZ, 4);
+      tickSoftField(embers, dt, t, camZ, -2);
+      tickSoftField(sparkles, dt, t, camZ, 2);
+      tickSoftField(stars, dt, t, camZ, -1);
+
+      // Camera speed streaks
+      const spos = streaks.geometry.attributes.position.array;
+      const streakSpd = running ? 70 : 18;
+      for (let i = 0; i < streakN; i++) {
+        spos[i * 3 + 2] += dt * streakSpd;
+        if (spos[i * 3 + 2] > 4) {
+          spos[i * 3] = (Math.random() - 0.5) * 11;
+          spos[i * 3 + 1] = (Math.random() - 0.5) * 8;
+          spos[i * 3 + 2] = -20 - Math.random() * 30;
+        }
+      }
+      streaks.geometry.attributes.position.needsUpdate = true;
+      streakMat.uniforms.uTime.value = t;
+
+      if (!running) {
+        camera.position.x = Math.sin(t * 0.35) * 0.55;
+        camera.position.y = 1.65 + Math.sin(t * 0.5) * 0.12;
+        camera.position.z = 10 + Math.sin(t * 0.2) * 0.5;
+        camera.lookAt(0, 1.3, -25);
+        streakMat.uniforms.uOpacity.value = 0.12;
+        streakMat.uniforms.uStretch.value = 0.3;
+        composer.render();
+        return;
+      }
+
+      timeLeft -= dt;
+      if (timeLeft <= 0) {
+        timeLeft = 0;
+        updateHUD();
+        endGame(false);
+        composer.render();
+        return;
+      }
+      if (Math.floor(timeLeft) !== Math.floor(timeLeft + dt)) updateHUD();
+
+      const sprint = keys["ShiftLeft"] || keys["ShiftRight"];
+      const speed = SPEED * (sprint ? SPRINT_MULT : 1);
+      direction.set(0, 0, 0);
+      if (isTouch) {
+        direction.x = joyVec.x;
+        direction.z = -joyVec.y;
+      } else {
+        if (keys["KeyW"] || keys["ArrowUp"]) direction.z -= 1;
+        if (keys["KeyS"] || keys["ArrowDown"]) direction.z += 1;
+        if (keys["KeyA"] || keys["ArrowLeft"]) direction.x -= 1;
+        if (keys["KeyD"] || keys["ArrowRight"]) direction.x += 1;
+      }
+      if (direction.lengthSq() > 0) direction.normalize();
+
+      const yaw = camera.rotation.y;
+      const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+      const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+      const move = new THREE.Vector3()
+        .addScaledVector(forward, -direction.z)
+        .addScaledVector(right, direction.x);
+
+      velocity.x = THREE.MathUtils.damp(velocity.x, move.x * speed, 9, dt);
+      velocity.z = THREE.MathUtils.damp(velocity.z, move.z * speed, 9, dt);
+      camera.position.x += velocity.x * dt;
+      camera.position.z += velocity.z * dt;
+      camera.position.x = THREE.MathUtils.clamp(camera.position.x, -4.0, 4.0);
+      camera.position.y = 1.65;
+      camera.position.z = THREE.MathUtils.clamp(camera.position.z, -CORRIDOR_LEN + 18, 14);
+
+      rim.position.set(camera.position.x, 2.8, camera.position.z - 5);
+
+      const p = camera.position;
+      orbs.forEach((o) => {
+        if (!o.userData.collected && o.position.distanceTo(p) < 1.75) collectOrb(o);
+      });
+
+      lightningTimer -= dt;
+      if (lightningTimer <= 0) {
+        spawnLightning();
+        lightningTimer = 1.8 + Math.random() * 2.8;
+      }
+
+      const moving = direction.lengthSq() > 0.01;
+      const targetFov = sprint && moving ? 86 : 72;
+      camera.fov = THREE.MathUtils.damp(camera.fov, targetFov, 7, dt);
+      camera.updateProjectionMatrix();
+      // Streaks thicken / brighten when sprinting
+      const stOp = moving ? (sprint ? 0.75 : 0.4) : 0.14;
+      const stStretch = moving ? (sprint ? 2.4 : 1.2) : 0.4;
+      streakMat.uniforms.uOpacity.value = THREE.MathUtils.damp(
+        streakMat.uniforms.uOpacity.value, stOp, 6, dt
+      );
+      streakMat.uniforms.uStretch.value = THREE.MathUtils.damp(
+        streakMat.uniforms.uStretch.value, stStretch, 6, dt
+      );
+      // Dust denser feel when moving (opacity pulse)
+      dust.material.uniforms.uOpacity.value = moving ? 0.9 : 0.7;
+      motes.material.uniforms.uOpacity.value = moving ? 1.0 : 0.75;
+      bloom.strength = THREE.MathUtils.damp(bloom.strength, sprint && moving ? 0.72 : 0.55, 4, dt);
+
+      composer.render();
+    }
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>

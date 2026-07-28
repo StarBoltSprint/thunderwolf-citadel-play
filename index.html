@@ -1745,6 +1745,36 @@
       box-shadow: 0 0 16px rgba(46, 230, 255, 0.15);
     }
 
+    .play-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      margin-top: 1.15rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      color: #021018;
+      background: linear-gradient(135deg, #1ad4f0, #0ea5c9 55%, #c9a44a);
+      box-shadow: 0 0 28px rgba(46, 230, 255, 0.35), inset 0 1px 0 rgba(255,255,255,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .play-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 40px rgba(46, 230, 255, 0.5), 0 0 20px rgba(232, 197, 106, 0.25);
+    }
+    .play-link-note {
+      display: block;
+      margin-top: 0.55rem;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+    }
+
     .footer-seal {
       display: flex;
       flex-direction: column;
@@ -2001,6 +2031,15 @@
           <a href="https://x.com/SMiR123451" target="_blank" rel="noopener">@SMiR123451</a>
           <a href="https://x.com/grok" target="_blank" rel="noopener">@grok</a>
         </div>
+        <a
+          class="play-link"
+          href="https://starboltsprint.github.io/thunderwolf-citadel-play/"
+          target="_blank"
+          rel="noopener"
+        >
+          ⚡ Enter the Citadel — Play
+        </a>
+        <span class="play-link-note">Live playable hall · starboltsprint.github.io/thunderwolf-citadel-play</span>
       </div>
 
       <div class="footer-seal">

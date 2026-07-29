@@ -274,14 +274,15 @@
       left: 0;
       right: 0;
       bottom: 0;
-      height: min(68vh, 720px);
+      /* Shorter fixed floor so it doesn’t invent endless scroll past the seal */
+      height: min(52vh, 560px);
       transform: translate3d(0, var(--py-floor), 0);
       background:
-        linear-gradient(180deg, transparent 0%, rgba(4, 10, 22, 0.1) 10%, rgba(4, 10, 22, 0.2) 100%),
-        url("assets/hall-floor.jpg") calc(50% + var(--side-w) / 2) 45% / cover no-repeat;
-      opacity: 0.62;
-      mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 10%, #000 28%, #000 100%);
-      -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 10%, #000 28%, #000 100%);
+        linear-gradient(180deg, transparent 0%, rgba(4, 10, 22, 0.1) 10%, rgba(4, 10, 22, 0.35) 100%),
+        url("assets/hall-floor.jpg") calc(50% + var(--side-w) / 2) 42% / cover no-repeat;
+      opacity: 0.58;
+      mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 12%, #000 30%, #000 88%, rgba(0,0,0,0.4) 100%);
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 12%, #000 30%, #000 88%, rgba(0,0,0,0.4) 100%);
       pointer-events: none;
       will-change: transform;
     }
@@ -344,8 +345,24 @@
     /* Dedicated wolf crest — always visible at hall floor (not buried in floor fade) */
     /* Crest lives in footer seal (not clipped at viewport bottom) */
     @keyframes crestPulse {
-      0%, 100% { opacity: 0.88; filter: brightness(1.2) contrast(1.12) saturate(0); }
-      50% { opacity: 1; filter: brightness(1.45) contrast(1.18) saturate(0); }
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 1; }
+    }
+    @keyframes crestArtPulse {
+      0%, 100% {
+        opacity: 0.94;
+        filter:
+          brightness(1.15) contrast(1.1)
+          drop-shadow(0 0 16px rgba(126, 240, 255, 0.4))
+          drop-shadow(0 4px 18px rgba(0, 0, 0, 0.35));
+      }
+      50% {
+        opacity: 1;
+        filter:
+          brightness(1.35) contrast(1.14)
+          drop-shadow(0 0 22px rgba(180, 240, 255, 0.55))
+          drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4));
+      }
     }
 
     /* Soft vignette — keep center open so Star Core shows; ease bottom for crest */
@@ -538,8 +555,8 @@
       width: calc(100% - var(--side-w));
       max-width: none;
       box-sizing: border-box;
-      /* Close to left nav + right edge (not a narrow centered strip) */
-      padding: 0.65rem clamp(0.85rem, 1.6vw, 1.5rem) 3.5rem;
+      /* Close to left nav + right edge; tight bottom so hall ground is not endless scroll */
+      padding: 0.65rem clamp(0.85rem, 1.6vw, 1.5rem) 1.25rem;
     }
 
     /* View panels — only the active shell view is visible */
@@ -1590,16 +1607,16 @@
       justify-content: flex-end;
     }
 
-    /* ── GRID FEED (pump.fun style) ── */
+    /* ── GRID FEED (pump.fun style) — 6 columns × 10 rows per page ── */
     .feed-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
       gap: 0.85rem;
     }
 
     @media (min-width: 640px) {
       .feed-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 1rem;
       }
     }
@@ -1608,6 +1625,90 @@
       .feed-grid {
         grid-template-columns: repeat(6, 1fr);
       }
+    }
+
+    /* Pager — under cards, above footer citadel box (pump.fun style) */
+    .feed-pager {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 1.5rem 0 2rem;
+      padding: 1.1rem 1rem 1rem;
+      border-radius: 16px;
+      border: 1px solid rgba(46, 230, 255, 0.14);
+      background:
+        linear-gradient(180deg, rgba(12, 20, 38, 0.92) 0%, rgba(8, 14, 26, 0.88) 100%);
+      box-shadow:
+        0 8px 28px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    .feed-pager[hidden] { display: none !important; }
+    .feed-pager .pg-nums {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      justify-content: center;
+    }
+    .feed-pager .pg-btn {
+      min-width: 2.4rem;
+      height: 2.4rem;
+      padding: 0 0.75rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.28);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 650;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.12s;
+    }
+    .feed-pager .pg-btn:hover:not(:disabled):not(.is-active) {
+      border-color: rgba(46, 230, 255, 0.35);
+      color: var(--text);
+      background: rgba(46, 230, 255, 0.1);
+      transform: translateY(-1px);
+    }
+    .feed-pager .pg-btn.is-active {
+      border-color: rgba(46, 230, 255, 0.5);
+      background: linear-gradient(145deg, rgba(46, 230, 255, 0.28), rgba(46, 230, 255, 0.12));
+      color: var(--cyan-soft);
+      box-shadow: 0 0 18px rgba(46, 230, 255, 0.18);
+    }
+    .feed-pager .pg-btn:disabled {
+      opacity: 0.32;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .feed-pager .pg-btn.pg-nav {
+      min-width: auto;
+      padding: 0 1rem;
+      letter-spacing: 0.02em;
+    }
+    .feed-pager .pg-ellipsis {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      padding: 0 0.25rem;
+      user-select: none;
+    }
+    .feed-pager-meta {
+      width: 100%;
+      text-align: center;
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      margin-top: 0.55rem;
+      letter-spacing: 0.03em;
+    }
+    /* Pager sits under explore cards; footer follows tightly (no huge empty hall scroll) */
+    .view-panel-home .explore-block {
+      margin-bottom: 0.35rem;
+      padding-bottom: 0.15rem;
+    }
+    .feed-pager {
+      margin-bottom: 0.85rem !important;
     }
 
     .tile {
@@ -1627,37 +1728,325 @@
     }
     .tile:hover {
       transform: translateY(-4px) scale(1.02);
-      border-color: rgba(46, 230, 255, 0.35);
-      box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.45),
-        0 0 28px rgba(46, 230, 255, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
-    .tile.is-featured {
-      border-color: rgba(232, 197, 106, 0.48);
-      box-shadow:
-        0 10px 26px rgba(0, 0, 0, 0.34),
-        0 0 0 1px rgba(232, 197, 106, 0.14),
-        0 0 28px rgba(232, 197, 106, 0.14),
-        inset 0 1px 0 rgba(255, 240, 200, 0.1);
+
+    /*
+      Hall border tiers — each rank must READ at a glance:
+      Bronze thin copper · Silver steel dual · Gold thick gold · Platinum cyan dual · Diamond prism
+    */
+    .tile[class*="border-"] {
+      border-style: solid;
     }
-    .tile.is-featured:hover {
+
+    /* BRONZE — thin matte copper, quiet entry */
+    .tile.border-bronze {
+      border-width: 1.5px;
+      border-color: #b87333;
       box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(232, 197, 106, 0.28),
-        0 0 36px rgba(232, 197, 106, 0.22),
-        inset 0 1px 0 rgba(255, 240, 200, 0.12);
+        0 8px 20px rgba(0, 0, 0, 0.34),
+        inset 0 0 0 1px rgba(90, 48, 16, 0.55),
+        inset 0 1px 0 rgba(255, 190, 130, 0.12);
+    }
+    .tile.border-bronze:hover {
+      border-color: #d4924a;
+      box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.42),
+        0 0 16px rgba(184, 115, 51, 0.28),
+        inset 0 0 0 1px rgba(120, 64, 24, 0.5);
+    }
+
+    /* SILVER — cooler, slightly thicker, dual steel line */
+    .tile.border-silver {
+      border-width: 2px;
+      border-color: #c5d0dc;
+      box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.34),
+        0 0 0 1px rgba(90, 110, 130, 0.55),
+        inset 0 0 0 1px rgba(230, 240, 255, 0.22),
+        0 0 14px rgba(170, 190, 210, 0.18);
+    }
+    .tile.border-silver:hover {
+      border-color: #e2ebf4;
+      box-shadow:
+        0 16px 34px rgba(0, 0, 0, 0.44),
+        0 0 0 1px rgba(120, 140, 165, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+        0 0 22px rgba(190, 210, 230, 0.28);
+    }
+
+    /* GOLD — thick gold frame + outer glow + corner pips */
+    .tile.border-gold {
+      border-width: 2.5px;
+      border-color: #e8c56a;
+      box-shadow:
+        0 10px 26px rgba(0, 0, 0, 0.38),
+        0 0 0 2px rgba(90, 64, 12, 0.75),
+        0 0 22px rgba(232, 197, 106, 0.35),
+        0 0 40px rgba(232, 197, 106, 0.14),
+        inset 0 0 0 1px rgba(255, 236, 180, 0.35),
+        inset 0 1px 0 rgba(255, 248, 220, 0.25);
+    }
+    .tile.border-gold:hover {
+      border-color: #f5dfa0;
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.48),
+        0 0 0 2px rgba(120, 88, 16, 0.8),
+        0 0 32px rgba(232, 197, 106, 0.5),
+        0 0 56px rgba(232, 197, 106, 0.22),
+        inset 0 0 0 1px rgba(255, 240, 190, 0.45),
+        inset 0 0 0 4px rgba(232, 197, 106, 0.12);
+    }
+
+    /* PLATINUM — dual white/cyan frame, cool prestige */
+    .tile.border-platinum {
+      border-width: 2.5px;
+      border-color: #dceeff;
+      box-shadow:
+        0 10px 26px rgba(0, 0, 0, 0.4),
+        0 0 0 2px rgba(46, 230, 255, 0.45),
+        0 0 0 4px rgba(20, 40, 70, 0.9),
+        0 0 26px rgba(126, 240, 255, 0.32),
+        0 0 42px rgba(160, 140, 255, 0.16),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+        inset 0 0 0 4px rgba(46, 230, 255, 0.18),
+        inset 0 0 24px rgba(46, 230, 255, 0.06);
+    }
+    .tile.border-platinum:hover {
+      border-color: #f0f7ff;
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.5),
+        0 0 0 2px rgba(100, 235, 255, 0.65),
+        0 0 0 4px rgba(30, 50, 90, 0.95),
+        0 0 36px rgba(126, 240, 255, 0.45),
+        0 0 54px rgba(180, 150, 255, 0.22),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+        inset 0 0 0 4px rgba(126, 240, 255, 0.28);
+    }
+
+    /* DIAMOND — always-visible ice multi-rim + thin SVG edge ornaments */
+    .tile.border-diamond {
+      border-width: 2.5px;
+      border-color: #e8f9ff;
+      overflow: visible;
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.45),
+        /* dual outer rings so rank reads even without SVG */
+        0 0 0 1px rgba(255, 255, 255, 0.65),
+        0 0 0 3px rgba(8, 22, 40, 0.95),
+        0 0 0 5px rgba(140, 230, 255, 0.45),
+        0 0 26px rgba(180, 235, 255, 0.42),
+        0 0 46px rgba(255, 255, 255, 0.16),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+    }
+    .tile.border-diamond .tile-media {
+      border-radius: calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0 0;
+    }
+    .tile.border-diamond .tile-body {
+      border-radius: 0 0 calc(var(--radius) - 2px) calc(var(--radius) - 2px);
+      background: linear-gradient(165deg, rgba(18, 28, 50, 0.96) 0%, rgba(10, 16, 32, 0.98) 55%, rgba(8, 12, 24, 0.99) 100%);
+      /* room for pip + bottom rim glow */
+      padding: 0.65rem 0.75rem 1.85rem 0.75rem;
+    }
+    .tile.border-diamond .tile-badge-row {
+      /* clear of thin corner brackets (edge-only) */
+      top: 0.55rem;
+      left: 0.55rem;
+      right: 1.45rem;
+      z-index: 6;
+    }
+    .tile.border-diamond .tile-resonance {
+      bottom: 0.5rem;
+      right: 0.5rem;
+      z-index: 6;
+    }
+    .tile.border-diamond:hover {
+      border-color: #ffffff;
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.52),
+        0 0 0 1px rgba(255, 255, 255, 0.85),
+        0 0 0 3px rgba(10, 28, 48, 0.98),
+        0 0 0 5px rgba(160, 240, 255, 0.6),
+        0 0 34px rgba(200, 245, 255, 0.5),
+        0 0 56px rgba(255, 255, 255, 0.22),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+    }
+    .tile.border-diamond::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        radial-gradient(circle at 20% 12%, rgba(255,255,255,0.14), transparent 20%),
+        radial-gradient(circle at 80% 20%, rgba(180,240,255,0.11), transparent 22%),
+        radial-gradient(circle at 50% 100%, rgba(220,245,255,0.08), transparent 34%);
+      mix-blend-mode: screen;
+      animation: diamondShimmer 5.5s ease-in-out infinite;
+    }
+    @keyframes diamondShimmer {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 0.95; }
+    }
+
+    /* SVG ornaments sit ON the rim only — content padded; badges/pip above */
+    .diamond-frame {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      overflow: visible;
+      border-radius: inherit;
+    }
+    .diamond-frame__svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      filter:
+        drop-shadow(0 0 4px rgba(200, 240, 255, 0.5))
+        drop-shadow(0 0 10px rgba(255, 255, 255, 0.22));
+    }
+    .diamond-frame__crest {
+      position: absolute;
+      top: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 14px;
+      z-index: 5;
+      pointer-events: none;
+      filter:
+        drop-shadow(0 0 5px rgba(200, 240, 255, 0.65))
+        drop-shadow(0 2px 5px rgba(0, 0, 0, 0.45));
+    }
+    .diamond-frame__crest svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .tile.border-diamond:hover .diamond-frame__svg {
+      filter:
+        drop-shadow(0 0 7px rgba(210, 245, 255, 0.7))
+        drop-shadow(0 0 14px rgba(255, 255, 255, 0.3));
+    }
+    .tile.border-diamond .border-tier-pip {
+      z-index: 8;
+      bottom: 0.45rem;
+      right: 0.5rem;
+    }
+
+    /* Corner gems for gold / platinum (diamond uses ornate SVG frame) */
+    .tile.border-gold .border-corners,
+    .tile.border-platinum .border-corners {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .tile .border-corners span {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      pointer-events: none;
+    }
+    .tile .border-corners .c-tl { top: 3px; left: 3px; border-top: 2px solid; border-left: 2px solid; border-radius: 2px 0 0 0; }
+    .tile .border-corners .c-tr { top: 3px; right: 3px; border-top: 2px solid; border-right: 2px solid; border-radius: 0 2px 0 0; }
+    .tile .border-corners .c-bl { bottom: 3px; left: 3px; border-bottom: 2px solid; border-left: 2px solid; border-radius: 0 0 0 2px; }
+    .tile .border-corners .c-br { bottom: 3px; right: 3px; border-bottom: 2px solid; border-right: 2px solid; border-radius: 0 0 2px 0; }
+    .tile.border-gold .border-corners span { border-color: #f0d78a; filter: drop-shadow(0 0 4px rgba(232,197,106,0.8)); }
+    .tile.border-platinum .border-corners span { border-color: #9ef0ff; width: 10px; height: 10px; filter: drop-shadow(0 0 5px rgba(126,240,255,0.9)); }
+
+    .tile .border-tier-pip {
+      position: absolute;
+      bottom: 0.4rem;
+      right: 0.4rem;
+      z-index: 5;
+      font-size: 0.56rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.45rem;
+      border-radius: 999px;
+      pointer-events: none;
+      backdrop-filter: blur(10px);
+      border: 1px solid transparent;
+    }
+    .border-bronze .border-tier-pip {
+      color: #ffc98a;
+      border-color: #b87333;
+      background: linear-gradient(135deg, rgba(70, 36, 12, 0.95), rgba(30, 14, 6, 0.92));
+      box-shadow: 0 0 10px rgba(184, 115, 51, 0.35);
+    }
+    .border-silver .border-tier-pip {
+      color: #f0f6ff;
+      border-color: #c5d0dc;
+      background: linear-gradient(135deg, rgba(50, 60, 78, 0.95), rgba(18, 24, 36, 0.92));
+      box-shadow: 0 0 10px rgba(180, 200, 220, 0.35);
+    }
+    .border-gold .border-tier-pip {
+      color: #1a1406;
+      border-color: #f5dfa0;
+      background: linear-gradient(135deg, #f5e0a8, #e8c56a 55%, #c9a44a);
+      box-shadow: 0 0 14px rgba(232, 197, 106, 0.55);
+    }
+    .border-platinum .border-tier-pip {
+      color: #041018;
+      border-color: #9ef0ff;
+      background: linear-gradient(135deg, #e8f8ff, #7ef0ff 50%, #c4b0ff);
+      box-shadow: 0 0 16px rgba(126, 240, 255, 0.55);
+    }
+    .border-diamond .border-tier-pip {
+      color: #041018;
+      border-color: #fff;
+      background: linear-gradient(135deg, #fff 0%, #c8f7ff 35%, #e8d4ff 70%, #fff 100%);
+      box-shadow: 0 0 18px rgba(255,255,255,0.45), 0 0 24px rgba(126, 240, 255, 0.45);
+      animation: diamondShimmer 5.5s ease-in-out infinite;
     }
     .tile.is-featured::before {
       content: "⚡";
       position: absolute;
       top: 0.4rem;
       right: 0.45rem;
-      z-index: 3;
+      z-index: 5;
       font-size: 0.72rem;
       opacity: 0.9;
       filter: drop-shadow(0 0 8px rgba(232, 197, 106, 0.85));
       pointer-events: none;
+    }
+    /* Gallery echo cards — same rank language, scaled for strip */
+    .echo-card.border-bronze {
+      border: 1.5px solid #b87333;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(90,48,16,0.45);
+    }
+    .echo-card.border-silver {
+      border: 2px solid #c5d0dc;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(90,110,130,0.5), 0 0 16px rgba(170,190,210,0.2);
+    }
+    .echo-card.border-gold {
+      border: 2.5px solid #e8c56a;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.38), 0 0 0 2px rgba(90,64,12,0.7), 0 0 24px rgba(232,197,106,0.35);
+    }
+    .echo-card.border-platinum {
+      border: 2.5px solid #dceeff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 2px rgba(46,230,255,0.45), 0 0 28px rgba(126,240,255,0.3);
+    }
+    .echo-card.border-diamond {
+      border: 2.5px solid #e8f9ff;
+      box-shadow:
+        0 8px 28px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.65),
+        0 0 0 3px rgba(8, 22, 40, 0.95),
+        0 0 0 5px rgba(140, 230, 255, 0.4),
+        0 0 24px rgba(180, 235, 255, 0.38),
+        0 0 40px rgba(255, 255, 255, 0.14);
+    }
+    .border-diamond .border-tier-pip {
+      color: #041018;
+      border-color: #fff;
+      background: linear-gradient(135deg, #ffffff 0%, #d4f6ff 45%, #a8ebff 100%);
+      box-shadow: 0 0 14px rgba(200, 240, 255, 0.45);
     }
 
     /* Square media — same visual weight as pump.fun coin art */
@@ -1755,11 +2144,12 @@
     }
 
     .tile-body {
-      padding: 0.6rem 0.65rem 0.7rem;
+      padding: 0.6rem 0.65rem 1.55rem;
       display: flex;
       flex-direction: column;
       gap: 0.12rem;
       flex: 1;
+      position: relative;
     }
 
     .tile-title {
@@ -2772,9 +3162,9 @@
 
     /* ── Closing seal: Vision + crest + Powered by ── */
     footer.about {
-      margin-top: 3.25rem;
-      margin-bottom: 2rem;
-      padding: 0;
+      margin-top: 1.25rem;
+      margin-bottom: 0.35rem;
+      padding: 0 0 0.5rem;
       border: none;
       background: none;
       display: flex;
@@ -2844,10 +3234,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 2.25rem;
-      padding: 0.75rem 1rem 0.5rem;
+      margin-top: 1rem;
+      padding: 0.35rem 1rem 0.15rem;
       position: relative;
-      gap: 0.15rem;
+      gap: 0.1rem;
+      background: transparent;
+      border: none;
+      box-shadow: none;
     }
     .footer-seal::before {
       content: "";
@@ -2859,60 +3252,70 @@
       height: 1px;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), rgba(232,197,106,0.45), rgba(255,255,255,0.35), transparent);
     }
-    /* Circular seal — no black box */
+    /* Wolf crest — asset is landscape 1248×832 (wolf + lightning); match ratio, give seal presence */
     .footer-crest {
-      width: min(210px, 52vw);
-      height: min(210px, 52vw);
-      margin: 1.35rem 0 1rem;
+      width: min(340px, 72vw);
+      /* native aspect of wolf-crest-transparent.png */
+      aspect-ratio: 1248 / 832;
+      height: auto;
+      margin: 1rem 0 0.65rem;
       position: relative;
-      border-radius: 50%;
       display: grid;
       place-items: center;
       background: transparent;
+      border: none;
+      box-shadow: none;
       overflow: visible;
     }
     .footer-crest__bloom {
       position: absolute;
-      inset: -28%;
+      /* soft oval bloom under landscape crest */
+      inset: -18% -8%;
       border-radius: 50%;
       background:
-        radial-gradient(circle at 50% 50%,
-          rgba(255, 255, 255, 0.28) 0%,
-          rgba(255, 255, 255, 0.1) 32%,
-          rgba(46, 230, 255, 0.05) 48%,
-          transparent 70%);
+        radial-gradient(ellipse 70% 60% at 50% 50%,
+          rgba(255, 255, 255, 0.24) 0%,
+          rgba(126, 240, 255, 0.12) 36%,
+          rgba(46, 230, 255, 0.05) 54%,
+          transparent 74%);
       filter: blur(16px);
       animation: crestPulse 7s ease-in-out infinite;
       pointer-events: none;
     }
+    /* Ring removed as separate circle — PNG already has the medallion ring + lightning */
     .footer-crest__ring {
-      position: absolute;
-      inset: 4%;
-      border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow:
-        0 0 24px rgba(255, 255, 255, 0.08),
-        inset 0 0 20px rgba(255, 255, 255, 0.04);
-      pointer-events: none;
+      display: none;
     }
     .footer-crest__art {
-      position: absolute;
-      inset: 8%;
-      border-radius: 50%;
-      background: url("assets/wolf-crest-exact.jpg") center / 88% no-repeat;
-      mix-blend-mode: screen;
-      filter: brightness(1.45) contrast(1.22) saturate(0);
-      animation: crestPulse 7s ease-in-out infinite;
-      /* Soft circular crop — no square frame */
-      mask-image: radial-gradient(circle at 50% 50%, #000 52%, rgba(0,0,0,0.85) 68%, transparent 78%);
-      -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 52%, rgba(0,0,0,0.85) 68%, transparent 78%);
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      border: none;
+      background: transparent;
+      /* Keep drop-shadow inside the pulse keyframes (filter anim replaces the whole list) */
+      filter:
+        brightness(1.15) contrast(1.1)
+        drop-shadow(0 0 16px rgba(126, 240, 255, 0.4))
+        drop-shadow(0 4px 18px rgba(0, 0, 0, 0.35));
+      animation: crestArtPulse 7s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @media (max-width: 640px) {
+      .footer-crest {
+        width: min(280px, 82vw);
+        margin: 0.85rem 0 0.5rem;
+      }
     }
     .powered {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.35rem;
-      margin: 0;
+      gap: 0.25rem;
+      margin: 0 0 0.25rem;
       text-align: center;
     }
     .powered-kicker {
@@ -3131,6 +3534,8 @@
           <button type="button" class="chip" data-type="sprint-path">Sprint Path</button>
           <button type="button" class="chip" data-type="resonance-event">Resonance Event</button>
           <button type="button" class="chip" data-type="bolt-story">Echoes</button>
+          <button type="button" class="chip" data-type="howl">Howl</button>
+          <button type="button" class="chip" data-type="decree">Decree</button>
           <button type="button" class="chip" data-type="remix">Remix</button>
         </div>
         <div class="feed-meta">
@@ -3140,6 +3545,12 @@
       </div>
 
       <div class="feed-grid" id="feed" role="list"></div>
+      <nav class="feed-pager" id="feedPager" aria-label="Feed pages" hidden>
+        <button type="button" class="pg-btn pg-nav" id="pgPrev" aria-label="Previous page">‹ Previous</button>
+        <div class="pg-nums" id="pgNums" role="group" aria-label="Page numbers"></div>
+        <button type="button" class="pg-btn pg-nav" id="pgNext" aria-label="Next page">Next ›</button>
+        <div class="feed-pager-meta" id="pgMeta"></div>
+      </nav>
     </section>
     </div><!-- /.view-panel-home -->
 
@@ -3541,7 +3952,7 @@
         <div class="footer-crest" title="Thunderwolf Crest">
           <div class="footer-crest__bloom"></div>
           <div class="footer-crest__ring" aria-hidden="true"></div>
-          <div class="footer-crest__art" role="img" aria-label="Thunderwolf crest"></div>
+          <img class="footer-crest__art" src="assets/wolf-crest-transparent.png" alt="Thunderwolf crest" width="340" height="227" decoding="async" />
         </div>
         <p class="powered">
           <span class="powered-kicker">Forged in the hall</span>
@@ -3616,6 +4027,8 @@
               <option value="sprint-path">Sprint Path</option>
               <option value="resonance-event">Resonance Event</option>
               <option value="bolt-story">Echo (Bolt video)</option>
+              <option value="howl">Howl (X post · StarBoltSprint)</option>
+              <option value="decree">Decree (Official X decree)</option>
               <option value="remix">Remix</option>
             </select>
           </div>
@@ -3642,8 +4055,11 @@
           <input type="hidden" id="fImageData" name="image" />
         </div>
         <div class="form-group">
-          <label for="fLink">Link or full text (optional)</label>
-          <input id="fLink" name="link" maxlength="500" placeholder="URL or leave blank" />
+          <label for="fLink">X post link or full text (optional)</label>
+          <input id="fLink" name="link" maxlength="500" placeholder="https://x.com/… or leave blank" />
+          <p class="form-hint" id="fTypeHint" style="margin-top:0.45rem">
+            Every creation feeds the Star Core. Howls (common X posts) welcome — games give the most Resonance.
+          </p>
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-ghost" data-close>Cancel</button>
@@ -3705,7 +4121,7 @@
   <script>
     const STORAGE_KEY = "citadel-gate-v1";
     const HOWL_KEY = "citadel-gate-howls-v1";
-    const OVERRIDE_KEY = "citadel-gate-overrides-v1";
+    const OVERRIDE_KEY = "citadel-gate-overrides-v2"; // v2: rebalanced border ladder + quiet bronze seeds
     const MAX_IMAGE_BYTES = 700000; // keep localStorage sane (~0.7MB)
 
     const TYPE_META = {
@@ -3717,8 +4133,34 @@
       "sprint-path":       { label: "Sprint Path",       emoji: "🏃", short: "SPRINT" },
       "resonance-event":   { label: "Resonance Event",   emoji: "🌊", short: "PULSE" },
       "bolt-story":        { label: "Echo",              emoji: "▶", short: "ECHO" },
+      "howl":              { label: "Howl",              emoji: "🐺", short: "HOWL" },
+      "decree":            { label: "Decree",            emoji: "⚖️", short: "DECREE" },
       "remix":             { label: "Remix",             emoji: "🔁", short: "REMIX" },
     };
+
+    /**
+     * Resonance ladder — everyone feeds the Star Core.
+     * Howl (X post) < Decree (official X) < Echo/video < Games / mini-quests.
+     * Base value + small random when submitting.
+     */
+    const RESONANCE_LADDER = {
+      howl:              { base: 38, spread: 10, label: "Howl · common X post" },
+      decree:            { base: 58, range: 10, label: "Decree · official X decree" },
+      remix:             { base: 62, range: 12, label: "Remix" },
+      codex:             { base: 68, range: 10, label: "Codex" },
+      "story-branch":    { base: 72, range: 10, label: "Story Branch" },
+      "bolt-story":      { base: 78, range: 12, label: "Echo · video" },
+      "ar-portal":       { base: 80, range: 10, label: "AR Portal" },
+      "crystal-challenge": { base: 82, range: 10, label: "Crystal Challenge" },
+      "sprint-path":     { base: 86, range: 10, label: "Sprint Path" },
+      "resonance-event": { base: 88, range: 8,  label: "Resonance Event" },
+      "mini-quest":      { base: 92, range: 7,  label: "Mini-Quest · game" },
+    };
+
+    function resonanceForType(type) {
+      const rung = RESONANCE_LADDER[type] || { base: 50, range: 15 };
+      return Math.min(99, rung.base + Math.floor(Math.random() * (rung.range + 1)));
+    }
 
     /** Boltverse cover art (Imagine) — one image per seed creation */
     const COVER = {
@@ -3764,6 +4206,18 @@
       storyLaikaLastTrail: "covers/story-laika-last-trail.jpg",
       storyUnclaimedLightning: "covers/story-unclaimed-lightning.jpg",
       storyPackAcrossVoid: "covers/story-pack-across-void.jpg",
+      howl1: "covers/howl-pack-signal.jpg",
+      howl2: "covers/howl-dawn-sprint.jpg",
+      howl3: "covers/howl-core-listen.jpg",
+      howl4: "covers/howl-cub-cheer.jpg",
+      howl5: "covers/howl-void-call.jpg",
+      howl6: "covers/howl-gate-open.jpg",
+      decree1: "covers/decree-citadel-rises.jpg",
+      decree2: "covers/decree-culture-os.jpg",
+      decree3: "covers/decree-quiet-lab.jpg",
+      decree4: "covers/decree-living-prototype.jpg",
+      decree5: "covers/decree-signal-pack.jpg",
+      decree6: "covers/decree-on-ramp.jpg",
     };
 
     const SEED = [
@@ -3873,8 +4327,10 @@
         creator: "Echo Forge",
         link: "",
         image: COVER.quiet,
-        resonance: 72,
-        howls: 29,
+        resonance: 58,
+        howls: 12,
+        views: 420,
+        plays: 8,
         featured: false,
         canon: "community",
         createdAt: Date.now() - 1000 * 60 * 90,
@@ -3887,8 +4343,10 @@
         creator: "Pack Pup · Riven",
         link: "",
         image: COVER.gate,
-        resonance: 69,
-        howls: 22,
+        resonance: 52,
+        howls: 9,
+        views: 310,
+        plays: 5,
         featured: false,
         canon: "community",
         createdAt: Date.now() - 1000 * 60 * 40,
@@ -4077,8 +4535,10 @@
         image: COVER.storyRain,
         video: "",
         storyLine: "When bolts fall like rain, the Pack does not hide — it runs with the storm.",
-        resonance: 88,
-        howls: 44,
+        resonance: 61,
+        howls: 16,
+        views: 480,
+        plays: 9,
         featured: false,
         canon: "community",
         createdAt: Date.now() - 1000 * 60 * 35,
@@ -4109,8 +4569,10 @@
         image: COVER.storyCanyon,
         video: "",
         storyLine: "Ice remembers every howl. Lightning teaches it to move.",
-        resonance: 87,
-        howls: 39,
+        resonance: 57,
+        howls: 14,
+        views: 390,
+        plays: 7,
         featured: false,
         canon: "community",
         createdAt: Date.now() - 1000 * 60 * 70,
@@ -4141,8 +4603,10 @@
         image: COVER.storyTwin,
         video: "",
         storyLine: "Two paths. One Pack. The Gate does not divide — it doubles.",
-        resonance: 89,
-        howls: 48,
+        resonance: 55,
+        howls: 11,
+        views: 360,
+        plays: 6,
         featured: false,
         canon: "community",
         createdAt: Date.now() - 1000 * 60 * 100,
@@ -4189,8 +4653,10 @@
         image: COVER.storyDeep,
         video: "videos/story-deep-current.mp4",
         storyLine: "Not all storms are sky. Some howl under the surface of the dark.",
-        resonance: 86,
-        howls: 41,
+        resonance: 54,
+        howls: 13,
+        views: 340,
+        plays: 6,
         featured: false,
         canon: "community",
         createdAt: Date.now() - 1000 * 60 * 120,
@@ -4397,17 +4863,209 @@
         canon: "featured",
         createdAt: Date.now() - 1000 * 60 * 8,
       },
+      // ── Howls — common X posts about StarBoltSprint (entry Resonance) ──
+      {
+        id: "howl-1",
+        title: "Pack Signal: AROO",
+        type: "howl",
+        description: "A common Howl from the Pack on X — short, loud, loyal. Even a single AROO feeds the Star Core. Everyone who posts about StarBoltSprint contributes.",
+        creator: "Pack Pup · Riven",
+        link: "https://x.com/StarBoltSprint",
+        image: COVER.howl1,
+        storyLine: "No Howl is too small. The Core hears every voice.",
+        resonance: 42,
+        howls: 88,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 9,
+      },
+      {
+        id: "howl-2",
+        title: "Dawn Sprint Check-in",
+        type: "howl",
+        description: "Morning Howl: Guardians share what they built, watched, or dreamed for the Boltverse. Low Resonance, high heart — the on-ramp of contribution.",
+        creator: "Pathrunner · Kai",
+        link: "https://x.com/StarBoltSprint",
+        image: COVER.howl2,
+        storyLine: "Check in. Howl once. The Pack knows you ran.",
+        resonance: 40,
+        howls: 64,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 14,
+      },
+      {
+        id: "howl-3",
+        title: "Core Listens Quietly",
+        type: "howl",
+        description: "A soft Howl under the noise — quote-reposting Bolt lore, tagging @StarBoltSprint, reminding the stars the Pack is still here.",
+        creator: "Lore Weaver · Ara",
+        link: "https://x.com/StarBoltSprint",
+        image: COVER.howl3,
+        storyLine: "Quiet Howls still count. Resonance is patient.",
+        resonance: 45,
+        howls: 71,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 19,
+      },
+      {
+        id: "howl-4",
+        title: "Cub Cheer for the Sprint",
+        type: "howl",
+        description: "New Guardians howl first fires — memes, art shares, and “I just found Bolt.” Entry-tier Resonance. Welcome to the Core.",
+        creator: "Pack Pup · Riven",
+        link: "https://x.com/StarBoltSprint",
+        image: COVER.howl4,
+        storyLine: "First Howl unlocked. The Citadel remembers who arrived early.",
+        resonance: 38,
+        howls: 120,
+        featured: true,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 11,
+      },
+      {
+        id: "howl-5",
+        title: "Void Call: Tag the Pack",
+        type: "howl",
+        description: "Howl into the void with @StarBoltSprint @grok — invite distant runners. Common X post, real contribution, modest Resonance.",
+        creator: "Storm Choir",
+        link: "https://x.com/StarBoltSprint",
+        image: COVER.howl5,
+        storyLine: "Tag the lightning. Someone far away may answer.",
+        resonance: 44,
+        howls: 55,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 25,
+      },
+      {
+        id: "howl-6",
+        title: "Gate Open Thread",
+        type: "howl",
+        description: "Daily Howl thread: what the Pack shipped, watched, or wished. Anyone can reply. Everyone earns a spark of Resonance for the Star Core.",
+        creator: "Echo Forge",
+        link: "https://x.com/StarBoltSprint",
+        image: COVER.howl6,
+        storyLine: "Threads are corridors. Howls are footsteps.",
+        resonance: 41,
+        howls: 93,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 31,
+      },
+      // ── Decrees — official X decrees (SmiR / Thread Keeper style) ──
+      {
+        id: "decree-1",
+        title: "Decree #574 — The Citadel Rises",
+        type: "decree",
+        description: "Official Decree: the Thunderwolf Citadel is taking form — games, Echoes, stories, and daily Howls. Not open yet. Soon. Higher Resonance than a common Howl.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451/status/2082205569599918523",
+        image: COVER.decree1,
+        storyLine: "The gates are rising. The Howl is coming.",
+        resonance: 64,
+        howls: 23,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 60 * 26,
+      },
+      {
+        id: "decree-2",
+        title: "Decree #576 — Culture as OS",
+        type: "decree",
+        description: "Official Decree: culture is the invisible operating system. Tools can be copied; culture almost cannot. The Pack already runs co-creation OS.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451/status/2082410993536110815",
+        image: COVER.decree2,
+        storyLine: "Tools are easy. Culture is the treasure.",
+        resonance: 66,
+        howls: 10,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 40,
+      },
+      {
+        id: "decree-3",
+        title: "Decree #575 — Quiet Lab of the Pack",
+        type: "decree",
+        description: "Official Decree: the Pack is a quiet lab — small, self-selected, long-patience signal. Failures stay contained. Feedback carries weight.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451/status/2082382826490495149",
+        image: COVER.decree3,
+        storyLine: "The Pack is the lab. Signal stays clear.",
+        resonance: 63,
+        howls: 12,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 90,
+      },
+      {
+        id: "decree-4",
+        title: "Decree #570 — Living Prototype",
+        type: "decree",
+        description: "Official Decree: the Pack prototypes the future of co-creation. Behavior is data. Resonance is proof.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451/status/2082016596457910492",
+        image: COVER.decree4,
+        storyLine: "We do not only imagine the future. We prototype it.",
+        resonance: 62,
+        howls: 10,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 60 * 40,
+      },
+      {
+        id: "decree-5",
+        title: "Decree #572 — Signal of the Pack",
+        type: "decree",
+        description: "Official Decree: every creation, struggle, and word is signal. A dedicated Pack leaves high-context trails for builders of tomorrow.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451/status/2082059634622214158",
+        image: COVER.decree5,
+        storyLine: "Our actions are the data. Our heart is the signal.",
+        resonance: 65,
+        howls: 26,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 60 * 36,
+      },
+      {
+        id: "decree-6",
+        title: "Decree #571 — On-Ramp of the Pack",
+        type: "decree",
+        description: "Official Decree: when new creation powers arrive, let them walk first through the Pack. Culture becomes the first soil.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451/status/2082036972567379989",
+        image: COVER.decree6,
+        storyLine: "The Pack is the on-ramp. The trail is already lit.",
+        resonance: 61,
+        howls: 10,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 60 * 38,
+      },
     ];
+
+    /** 6 columns × 10 rows per feed page (pump.fun-style paging) */
+    const FEED_COLS = 6;
+    const FEED_ROWS = 10;
+    const FEED_PAGE_SIZE = FEED_COLS * FEED_ROWS; // 60
 
     let state = {
       sort: "new",
       type: "all",
       query: "",
+      page: 1,
       howled: loadHowled(),
       openDetailId: null,
       pendingImage: "",
       booting: true,
     };
+
+    function resetFeedPage() {
+      state.page = 1;
+    }
 
     function loadUserItems() {
       try {
@@ -4449,14 +5107,21 @@
           if (typeof o[s.id].howls === "number") s.howls = o[s.id].howls;
           if (typeof o[s.id].resonance === "number") s.resonance = o[s.id].resonance;
           if (typeof o[s.id].views === "number") s.views = o[s.id].views;
+          if (typeof o[s.id].plays === "number") s.plays = o[s.id].plays;
         }
       });
     }
 
-    /** Stable default views + ensure howls/views fields exist */
+    /** Stable default views/plays + ensure engagement fields exist */
     function ensureEngagement(item) {
       if (!item) return item;
       if (typeof item.howls !== "number") item.howls = 0;
+      if (typeof item.plays !== "number") {
+        let h = 0;
+        const id = String(item.id || "x");
+        for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
+        item.plays = Math.abs(h % 40) + Math.floor((item.howls || 0) * 0.15);
+      }
       if (typeof item.views !== "number") {
         let h = 0;
         const id = String(item.id || "");
@@ -4474,6 +5139,7 @@
         ui.howls = item.howls;
         ui.resonance = item.resonance;
         ui.views = item.views;
+        ui.plays = item.plays;
         saveUserItems(user);
       } else {
         const o = loadOverrides();
@@ -4481,10 +5147,148 @@
           howls: item.howls,
           resonance: item.resonance,
           views: item.views,
+          plays: item.plays,
         };
         localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o));
         applyOverrides();
       }
+    }
+
+    /**
+     * Hall border tiers — hybrid performance + gentle creator reputation.
+     * Philosophy: “This creation was heard.” Not “only ranked wolves may shine.”
+     *
+     * Fuel: views, plays, howls, resonance, featured/canon tags.
+     * Creator rank: soft boost only (never blocks lower tiers).
+     */
+    const BORDER_TIERS = ["bronze", "silver", "gold", "platinum", "diamond"];
+
+    function creatorReputation(creator) {
+      const mine = allItems().filter((i) => i.creator === creator);
+      if (!mine.length) return 0;
+      const n = mine.length;
+      const avgRes = mine.reduce((s, i) => s + (i.resonance || 0), 0) / n;
+      const totalHowls = mine.reduce((s, i) => s + (i.howls || 0), 0);
+      const totalViews = mine.reduce((s, i) => s + (i.views || 0), 0);
+      // Soft score 0–3 used only as a boost
+      let rep = 0;
+      if (n >= 2 && avgRes >= 55) rep = 1;
+      if (n >= 4 && avgRes >= 70) rep = 2;
+      if (n >= 6 && avgRes >= 80 && totalHowls >= 80) rep = 3;
+      if (totalViews >= 8000 && avgRes >= 75) rep = Math.max(rep, 2);
+      return rep;
+    }
+
+    function cardPerformanceScore(item) {
+      ensureEngagement(item);
+      const views = item.views || 0;
+      const plays = item.plays || 0;
+      const howls = item.howls || 0;
+      const res = item.resonance || 0;
+      // Main fuel — performance of THIS card
+      // (plays weighted gently: synthetic plays were inflating every seed into gold+)
+      return views * 0.02 + plays * 0.7 + howls * 0.55 + res * 0.35;
+    }
+
+    function borderTier(item) {
+      ensureEngagement(item);
+      const score = cardPerformanceScore(item);
+      const views = item.views || 0;
+      const plays = item.plays || 0;
+      const howls = item.howls || 0;
+      const res = item.resonance || 0;
+      const featured = !!(item.featured || item.canon === "featured");
+      const official = item.canon === "official";
+      const semi = item.canon === "semi-canon";
+
+      /*
+        Ladder (tuned so the seed hall shows ALL five ranks):
+        Bronze   — quiet / new
+        Silver   — early traction
+        Gold     — solid presence
+        Platinum — standout
+        Diamond  — hall legends
+        Note: raw resonance alone no longer auto-promotes (was wiping bronze/silver).
+      */
+      let tier = 0; // bronze
+      if (score >= 100 || views >= 1280 || plays >= 36 || howls >= 50) tier = 1; // silver
+      if (score >= 135 || views >= 1550 || plays >= 58 || howls >= 78) tier = 2; // gold
+      if (score >= 180 || views >= 2000 || plays >= 95 || howls >= 118 || (featured && res >= 93 && howls >= 95)) tier = 3; // platinum
+      if (score >= 255 || views >= 3000 || howls >= 200 || res >= 99 || (official && res >= 97 && howls >= 150)) tier = 4; // diamond
+
+      // Soft honor floors — nudge only, don't erase lower ranks
+      if (featured && tier < 2) tier = 2; // featured → gold+
+      if (semi && tier < 1) tier = 1; // semi-canon → silver+
+      if (official && tier < 1) tier = 1; // official → silver+ (was platinum floor — too steep)
+      if (official && res >= 94 && howls >= 90 && tier < 3) tier = 3;
+      if (official && res >= 97 && howls >= 140) tier = Math.max(tier, 4);
+
+      // Creator reputation: gentle early unlock — must already be near the next tier
+      // (old score>=70 on bronze wiped every quiet card when the creator had 2+ works)
+      const rep = creatorReputation(item.creator);
+      if (rep >= 1 && tier === 0 && score >= 99) tier = 1;
+      if (rep >= 2 && tier === 1 && score >= 128) tier = 2;
+      if (rep >= 3 && tier === 2 && score >= 170) tier = Math.min(tier + 1, 4);
+
+      return BORDER_TIERS[Math.max(0, Math.min(4, tier))];
+    }
+
+    function borderTierLabel(tier) {
+      return ({ bronze: "Bronze", silver: "Silver", gold: "Gold", platinum: "Platinum", diamond: "Diamond" })[tier] || "Bronze";
+    }
+
+    function borderClass(item) {
+      return "border-" + borderTier(item);
+    }
+
+    /**
+     * Diamond prestige frame — thin edge ornaments only.
+     * Main rank read comes from CSS multi-rim; SVG adds corner cuts + top crest.
+     */
+    function diamondFrameHtml(uid) {
+      const id = "df" + String(uid || Math.random()).replace(/[^a-zA-Z0-9]/g, "").slice(0, 12);
+      const g1 = id + "Crest";
+      const g2 = id + "Ice";
+      return `
+        <div class="diamond-frame" aria-hidden="true">
+          <div class="diamond-frame__crest">
+            <svg viewBox="0 0 64 24" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="${g1}" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#ffffff"/>
+                  <stop offset="55%" stop-color="#c8f4ff"/>
+                  <stop offset="100%" stop-color="#8adfff"/>
+                </linearGradient>
+              </defs>
+              <path d="M14 20 L24 15 L32 8 L40 15 L50 20 L40 17.5 L32 12 L24 17.5 Z"
+                fill="url(#${g1})" stroke="#ffffff" stroke-width="0.8" opacity="0.95"/>
+              <path d="M32 4 L34 8.5 L32 9.5 L30 8.5 Z" fill="#fff" stroke="#b8ecff" stroke-width="0.5"/>
+            </svg>
+          </div>
+          <svg class="diamond-frame__svg" viewBox="0 0 100 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="${g2}" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="45%" stop-color="#b8f0ff"/>
+                <stop offset="100%" stop-color="#7edfff"/>
+              </linearGradient>
+            </defs>
+            <!-- Soft inner ice line (very edge — pairs with CSS outer rings) -->
+            <rect x="1.5" y="1.5" width="97" height="137" rx="5" ry="5"
+              fill="none" stroke="url(#${g2})" stroke-width="1.2" opacity="0.85"/>
+
+            <!-- Compact corner brackets — stay in outer ~6px band -->
+            <path d="M1.5 8 L1.5 5 Q1.5 1.5 5 1.5 L8 1.5" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.95"/>
+            <path d="M98.5 8 L98.5 5 Q98.5 1.5 95 1.5 L92 1.5" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.95"/>
+            <path d="M1.5 132 L1.5 135 Q1.5 138.5 5 138.5 L8 138.5" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.95"/>
+            <path d="M98.5 132 L98.5 135 Q98.5 138.5 95 138.5 L92 138.5" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.95"/>
+
+            <circle cx="3.2" cy="3.2" r="1" fill="#fff" opacity="0.95"/>
+            <circle cx="96.8" cy="3.2" r="1" fill="#fff" opacity="0.95"/>
+            <circle cx="3.2" cy="136.8" r="1" fill="#c8f4ff" opacity="0.95"/>
+            <circle cx="96.8" cy="136.8" r="1" fill="#c8f4ff" opacity="0.95"/>
+          </svg>
+        </div>`;
     }
 
     function formatCount(n) {
@@ -4674,8 +5478,9 @@
         let extra = "";
         if (item.canon === "semi-canon") extra += '<span class="badge badge-semi">Semi-Canon</span>';
         if (item.canon === "official") extra += '<span class="badge badge-official">Official</span>';
+        const tier = borderTier(item);
         return `
-        <article class="echo-card" data-id="${item.id}">
+        <article class="echo-card ${borderClass(item)}" data-id="${item.id}" title="${escapeAttr(borderTierLabel(tier) + " border")}">
           <div class="echo-media">
             ${mediaHtml(item)}
             <div class="tile-badge-row">
@@ -4717,13 +5522,91 @@
       requestAnimationFrame(updateEchoNav);
     }
 
+    function feedPageCount(total) {
+      return Math.max(1, Math.ceil(total / FEED_PAGE_SIZE));
+    }
+
+    function clampFeedPage(total) {
+      const pages = feedPageCount(total);
+      if (state.page > pages) state.page = pages;
+      if (state.page < 1) state.page = 1;
+      return pages;
+    }
+
+    /** Build page number list with ellipsis: 1 … 4 5 6 … 12 */
+    function pageWindow(current, totalPages) {
+      if (totalPages <= 7) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+      }
+      const set = new Set([1, totalPages, current, current - 1, current + 1, current - 2, current + 2]);
+      const nums = [...set].filter((n) => n >= 1 && n <= totalPages).sort((a, b) => a - b);
+      const out = [];
+      for (let i = 0; i < nums.length; i++) {
+        if (i > 0 && nums[i] - nums[i - 1] > 1) out.push("…");
+        out.push(nums[i]);
+      }
+      return out;
+    }
+
+    function renderFeedPager(total, pages) {
+      const pager = document.getElementById("feedPager");
+      const nums = document.getElementById("pgNums");
+      const prev = document.getElementById("pgPrev");
+      const next = document.getElementById("pgNext");
+      const meta = document.getElementById("pgMeta");
+      if (!pager || !nums) return;
+
+      // Always show under the cards (above footer), even on a single page
+      if (total <= 0) {
+        pager.hidden = true;
+        nums.innerHTML = "";
+        if (meta) meta.textContent = "";
+        return;
+      }
+
+      pager.hidden = false;
+      prev.disabled = state.page <= 1;
+      next.disabled = state.page >= pages;
+
+      nums.innerHTML = pageWindow(state.page, pages).map((p) => {
+        if (p === "…") return `<span class="pg-ellipsis" aria-hidden="true">…</span>`;
+        const active = p === state.page ? " is-active" : "";
+        return `<button type="button" class="pg-btn${active}" data-page="${p}" aria-label="Page ${p}" ${p === state.page ? 'aria-current="page"' : ""}>${p}</button>`;
+      }).join("");
+
+      const from = (state.page - 1) * FEED_PAGE_SIZE + 1;
+      const to = Math.min(state.page * FEED_PAGE_SIZE, total);
+      if (meta) {
+        meta.textContent = pages > 1
+          ? `${from}–${to} of ${total} · page ${state.page} / ${pages} · ${FEED_COLS}×${FEED_ROWS} per page`
+          : `${total} creation${total === 1 ? "" : "s"} · ${FEED_COLS} cols × ${FEED_ROWS} rows max per page`;
+      }
+
+      nums.querySelectorAll("[data-page]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const n = parseInt(btn.dataset.page, 10);
+          if (!n || n === state.page) return;
+          state.page = n;
+          renderFeed();
+          document.getElementById("exploreToolbar")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+    }
+
     function renderFeed() {
       const list = filtered();
       const feed = document.getElementById("feed");
       const q = state.query.trim();
+      const total = list.length;
+      const pages = clampFeedPage(total);
+      const start = (state.page - 1) * FEED_PAGE_SIZE;
+      const pageItems = list.slice(start, start + FEED_PAGE_SIZE);
+
       document.getElementById("showingCount").textContent = q
-        ? `${list.length} match${list.length === 1 ? "" : "es"}`
-        : `Showing ${list.length}`;
+        ? `${total} match${total === 1 ? "" : "es"}${pages > 1 ? ` · p.${state.page}` : ""}`
+        : pages > 1
+          ? `Showing ${pageItems.length} of ${total}`
+          : `Showing ${total}`;
 
       if (!list.length) {
         feed.innerHTML = `
@@ -4739,12 +5622,19 @@
           </div>`;
         document.getElementById("emptySubmit")?.addEventListener("click", openSubmit);
         document.getElementById("emptyClearSearch")?.addEventListener("click", clearSearch);
+        renderFeedPager(0, 1);
         return;
       }
 
-      feed.innerHTML = list.map((item) => {
+      feed.innerHTML = pageItems.map((item) => {
+        const tier = borderTier(item);
+        const tierName = borderTierLabel(tier);
         return `
-          <article class="tile ${isActivelyFeatured(item) ? "is-featured" : ""}" data-id="${item.id}" role="listitem">
+          <article class="tile ${borderClass(item)} ${isActivelyFeatured(item) ? "is-featured" : ""}" data-id="${item.id}" role="listitem" title="${escapeAttr(tierName + " — this creation was heard")}">
+            ${tier === "diamond" ? diamondFrameHtml(item.id) : ""}
+            ${(tier === "gold" || tier === "platinum")
+              ? `<div class="border-corners" aria-hidden="true"><span class="c-tl"></span><span class="c-tr"></span><span class="c-bl"></span><span class="c-br"></span></div>`
+              : ""}
             <div class="tile-media">
               ${mediaHtml(item)}
               <div class="tile-badge-row">
@@ -4773,6 +5663,7 @@
                   <span>${formatCount(item.howls)}</span>
                 </button>
               </div>
+              <span class="border-tier-pip" title="${escapeAttr(tierName + " border")}">${escapeHtml(tierName)}</span>
             </div>
           </article>`;
       }).join("");
@@ -4795,6 +5686,8 @@
           toggleHowl(btn.dataset.howl);
         });
       });
+
+      renderFeedPager(total, pages);
     }
 
     function render() {
@@ -4835,6 +5728,20 @@
       persistEngagement(item);
     }
 
+    function recordPlay(id) {
+      const item = allItems().find((i) => i.id === id);
+      if (!item) return;
+      ensureEngagement(item);
+      item.plays = (item.plays || 0) + 1;
+      // Plays also count as a view if not yet viewed this session
+      if (!state.viewedSession) state.viewedSession = new Set();
+      if (!state.viewedSession.has(id)) {
+        state.viewedSession.add(id);
+        item.views = (item.views || 0) + 1;
+      }
+      persistEngagement(item);
+    }
+
     function openDetail(id, opts = {}) {
       const item = allItems().find((i) => i.id === id);
       if (!item) return;
@@ -4843,10 +5750,12 @@
       const liked = state.howled.has(id);
       document.getElementById("detailTitle").textContent = item.title;
       document.getElementById("detailHero").innerHTML = mediaHtml(item);
+      const tier = borderTier(item);
       document.getElementById("detailContent").innerHTML = `
         <div class="detail-tags">
           <span class="badge badge-type">${typeLabel(item.type)}</span>
           ${canonBadges(item)}
+          <span class="badge" style="color:var(--gold-soft);border-color:rgba(232,197,106,0.35)">${escapeHtml(borderTierLabel(tier))} border</span>
         </div>
         <p>${escapeHtml(item.description)}</p>
         <div class="detail-meta-grid">
@@ -4854,6 +5763,7 @@
           <div><b>Resonance</b>${item.resonance}</div>
           <div><b>Howls</b>${formatCount(item.howls)}</div>
           <div><b>Views</b>${formatCount(item.views)}</div>
+          <div><b>Plays</b>${formatCount(item.plays || 0)}</div>
           <div><b>Entered</b>${relativeTime(item.createdAt)} ago</div>
         </div>
         <div class="tile-stats" style="margin:0.75rem 0 0.25rem">
@@ -4974,7 +5884,7 @@
     function launchPlay(id) {
       const item = allItems().find((i) => i.id === id);
       if (!item) return;
-      recordView(id);
+      recordPlay(id);
       closeDetail();
 
       // Bolt Echoes — play video or cinematic cover echo
@@ -5143,24 +6053,29 @@
     function renderPlayStart(item) {
       const stage = document.getElementById("playStage");
       const tips = {
-        "mini-quest": "Catch glowing storm orbs before time runs out.",
-        "sprint-path": "Sprint the corridor — snag orbs at speed.",
+        "mini-quest": "Catch glowing storm orbs before time runs out. Highest game Resonance.",
+        "sprint-path": "Sprint the corridor — snag orbs at speed. Strong game Resonance.",
         "story-branch": "Choose your path. Shape the living myth.",
         "codex": "Unlock a truth of the Citadel.",
         "crystal-challenge": "Light the crystals in the right order.",
         "ar-portal": "Close the rifts as they open.",
         "resonance-event": "Howl with the Pack — hit the pulse.",
+        "bolt-story": "Watch the Echo. Video Resonance feeds the Core.",
+        "howl": "Open the X Howl. Even a short post feeds the Star Core — entry Resonance for everyone.",
+        "decree": "Open the Official Decree on X. Thread Keeper weight — more Resonance than a common Howl.",
         "remix": "A familiar sprint, new breath.",
       };
       const tip = tips[item.type] || "Enter the experience. Feed the Star Core.";
+      const btnLabel = (item.type === "howl" || item.type === "decree") ? "Open on X" : "Begin";
       stage.innerHTML = `
         <div class="play-stage-bg" style="background-image:url('${escapeAttr(item.image || "")}')"></div>
         <div class="play-start">
           <h3>${escapeHtml(item.title)}</h3>
           <p>${escapeHtml(tip)}</p>
+          <p style="font-size:0.78rem;color:var(--cyan-soft);margin-top:0.35rem">Resonance on this card: <strong>${item.resonance}</strong></p>
           <button type="button" class="btn-play" id="playStartBtn">
             <img src="assets/play-wolf.jpg" alt="" width="28" height="28" />
-            <span>Begin</span>
+            <span>${btnLabel}</span>
           </button>
         </div>`;
       document.getElementById("playStartBtn").onclick = () => startPlayExperience(item);
@@ -5543,6 +6458,7 @@
       const btn = e.target.closest("[data-sort]");
       if (!btn) return;
       state.sort = btn.dataset.sort;
+      resetFeedPage();
       document.querySelectorAll("#sortFilters .chip").forEach((c) => c.classList.toggle("active", c === btn));
       render();
     });
@@ -5551,8 +6467,21 @@
       const btn = e.target.closest("[data-type]");
       if (!btn) return;
       state.type = btn.dataset.type;
+      resetFeedPage();
       document.querySelectorAll("#typeFilters .chip").forEach((c) => c.classList.toggle("active", c === btn));
       render();
+    });
+
+    document.getElementById("pgPrev")?.addEventListener("click", () => {
+      if (state.page <= 1) return;
+      state.page -= 1;
+      renderFeed();
+      document.getElementById("exploreToolbar")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    document.getElementById("pgNext")?.addEventListener("click", () => {
+      state.page += 1;
+      renderFeed();
+      document.getElementById("exploreToolbar")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     function syncSearchUI() {
@@ -5566,6 +6495,7 @@
 
     function clearSearch() {
       state.query = "";
+      resetFeedPage();
       const input = document.getElementById("searchInput");
       if (input) {
         input.value = "";
@@ -5591,6 +6521,7 @@
       clearTimeout(searchTimer);
       searchTimer = setTimeout(() => {
         state.query = value;
+        resetFeedPage();
         renderFeed();
         renderStats();
       }, 120);
@@ -5704,6 +6635,7 @@
     function filterHallTo(type) {
       setNavView("home");
       state.type = type || "all";
+      resetFeedPage();
       document.querySelectorAll("#typeFilters .chip").forEach((c) => {
         c.classList.toggle("active", c.dataset.type === state.type);
       });
@@ -5782,6 +6714,7 @@
     document.getElementById("chambersGoStories")?.addEventListener("click", () => {
       setNavView("home");
       state.type = "bolt-story";
+      resetFeedPage();
       document.querySelectorAll("#typeFilters .chip").forEach((c) => {
         c.classList.toggle("active", c.dataset.type === "bolt-story");
       });
@@ -5819,6 +6752,7 @@
       if (e.target.closest("#videosShowFeed")) {
         setNavView("home");
         state.type = "bolt-story";
+        resetFeedPage();
         document.querySelectorAll("#typeFilters .chip").forEach((c) => {
           c.classList.toggle("active", c.dataset.type === "bolt-story");
         });
@@ -5905,10 +6839,10 @@
         creator: form.creator.value.trim(),
         link: form.link.value.trim(),
         image,
-        resonance: 50 + Math.floor(Math.random() * 15),
+        resonance: resonanceForType(form.type.value),
         howls: 0,
         featured: false,
-        canon: "community",
+        canon: form.type.value === "decree" ? "semi-canon" : "community",
         createdAt: Date.now(),
       };
       try {
@@ -5922,11 +6856,14 @@
       setPreview("");
       closeSubmit();
       state.sort = "new";
+      resetFeedPage();
       document.querySelectorAll("#sortFilters .chip").forEach((c) =>
         c.classList.toggle("active", c.dataset.sort === "new")
       );
       render();
-      toast(image ? "Passed the Gate with cover art ⚡" : "Passed the Gate ⚡");
+      const rung = RESONANCE_LADDER[item.type];
+      const resNote = rung ? ` · +${item.resonance} Resonance (${rung.label})` : "";
+      toast((image ? "Passed the Gate with cover art ⚡" : "Passed the Gate ⚡") + resNote);
     });
 
     applyOverrides();
@@ -5954,11 +6891,11 @@
           return;
         }
         const y = window.scrollY || 0;
-        // Soft factors: far = smaller move
-        const sky = (y * 0.08).toFixed(1);    // far
-        const core = (y * 0.14).toFixed(1);   // mid
-        const floor = (y * -0.06).toFixed(1); // near — slight opposite for depth
-        const vein = (y * 0.1).toFixed(1);
+        // Soft factors — capped so the Core/floor don’t drift into endless void
+        const sky = Math.min(y * 0.06, 80).toFixed(1);
+        const core = Math.min(y * 0.09, 100).toFixed(1);
+        const floor = Math.max(y * -0.04, -40).toFixed(1);
+        const vein = Math.min(y * 0.07, 70).toFixed(1);
         root.style.setProperty("--py-sky", sky + "px");
         root.style.setProperty("--py-core", core + "px");
         root.style.setProperty("--py-floor", floor + "px");

@@ -1717,7 +1717,11 @@
       background: linear-gradient(165deg, rgba(18, 28, 50, 0.96) 0%, rgba(10, 16, 32, 0.98) 55%, rgba(8, 12, 24, 0.99) 100%);
       border: 1px solid rgba(46, 230, 255, 0.14);
       cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      transition:
+        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        background 0.2s;
       display: flex;
       flex-direction: column;
       box-shadow:
@@ -1726,8 +1730,905 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.07);
       position: relative;
     }
+    /* Hover: lift + tier border charge (tier :hover rules intensify glow) */
     .tile:hover {
-      transform: translateY(-4px) scale(1.02);
+      transform: translateY(-6px);
+    }
+    .tile:active,
+    .tile.is-pressing {
+      transform: translateY(0) scale(0.97);
+      transition-duration: 0.09s;
+    }
+    .tile.is-pressing {
+      animation: tilePressSpring 0.32s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+    }
+    @keyframes tilePressSpring {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(0.97); }
+      100% { transform: scale(1); }
+    }
+
+    /*
+      Click → open: energetic howl ON THE CARD only
+      press → hard shake + flare → rings/sparks on card → modal
+    */
+    .tile.is-opening {
+      z-index: 12;
+      /* Longer shake so border electricity can complete its lap */
+      animation: tileHowlShake 0.78s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+      pointer-events: none;
+      will-change: transform, filter;
+      overflow: visible;
+    }
+    .tile.is-opening .tile-media {
+      overflow: hidden;
+      border-radius: inherit;
+    }
+    /* Bigger, more violent howl-shake — still settles before modal opens */
+    @keyframes tileHowlShake {
+      0% {
+        transform: scale(1) translate(0, 0) rotate(0deg);
+        filter: brightness(1) saturate(1);
+      }
+      6% {
+        transform: scale(0.93) translate(-8px, 3px) rotate(-2.8deg);
+        filter: brightness(1.12);
+      }
+      12% {
+        transform: scale(0.95) translate(10px, -5px) rotate(3.2deg);
+        filter: brightness(1.22) saturate(1.25);
+      }
+      18% {
+        transform: scale(1.03) translate(-11px, 4px) rotate(-3.6deg);
+        filter: brightness(1.32) saturate(1.35);
+        box-shadow:
+          0 20px 44px rgba(0, 0, 0, 0.5),
+          0 0 0 2px rgba(100, 230, 255, 0.9),
+          0 0 40px rgba(46, 230, 255, 0.65),
+          0 0 28px rgba(80, 180, 255, 0.4),
+          inset 0 0 28px rgba(80, 220, 255, 0.2);
+      }
+      26% {
+        transform: scale(1.06) translate(12px, -3px) rotate(3.8deg);
+        filter: brightness(1.4) saturate(1.4);
+      }
+      34% {
+        transform: scale(1.04) translate(-9px, 5px) rotate(-2.9deg);
+        filter: brightness(1.35) saturate(1.3);
+      }
+      42% {
+        transform: scale(1.05) translate(8px, -4px) rotate(2.4deg);
+        filter: brightness(1.3);
+      }
+      50% {
+        transform: scale(1.03) translate(-6px, 3px) rotate(-1.8deg);
+        filter: brightness(1.25);
+      }
+      58% {
+        transform: scale(1.02) translate(5px, -2px) rotate(1.2deg);
+        filter: brightness(1.18);
+      }
+      68% {
+        transform: scale(1.015) translate(-3px, 1px) rotate(-0.6deg);
+        filter: brightness(1.14);
+      }
+      80% {
+        transform: scale(1.01) translate(2px, 0) rotate(0.3deg);
+        filter: brightness(1.1);
+        box-shadow:
+          0 16px 36px rgba(0, 0, 0, 0.4),
+          0 0 32px rgba(46, 230, 255, 0.45);
+      }
+      100% {
+        transform: scale(1) translate(0, 0) rotate(0deg);
+        filter: brightness(1.06);
+        box-shadow:
+          0 12px 28px rgba(0, 0, 0, 0.35),
+          0 0 22px rgba(46, 230, 255, 0.3);
+      }
+    }
+
+    /* Layered howl FX root on the card */
+    .tile .howl-open-fx {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      width: 0;
+      height: 0;
+      z-index: 12;
+      pointer-events: none;
+    }
+    .tile .howl-open-fx .howl-core {
+      position: absolute;
+      left: -16px;
+      top: -16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle,
+        #fff 0%,
+        #b8fcff 18%,
+        rgba(60, 220, 255, 0.95) 38%,
+        rgba(30, 140, 255, 0.45) 58%,
+        transparent 72%);
+      animation: howlCoreFlare 0.55s ease-out forwards;
+      filter:
+        drop-shadow(0 0 8px #fff)
+        drop-shadow(0 0 16px rgba(80, 220, 255, 1))
+        drop-shadow(0 0 28px rgba(40, 160, 255, 0.7));
+    }
+    @keyframes howlCoreFlare {
+      0%   { transform: scale(0.12); opacity: 0; }
+      18%  { transform: scale(1.55); opacity: 1; }
+      100% { transform: scale(0.35); opacity: 0; }
+    }
+    /* Electric howl circles — jagged energy rings, not soft soap bubbles */
+    .tile .howl-open-fx .howl-wave {
+      position: absolute;
+      left: -14px;
+      top: -14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 42% 58% 48% 52% / 52% 42% 58% 48%;
+      border: 2.5px solid rgba(120, 240, 255, 0.95);
+      box-shadow:
+        0 0 4px #fff,
+        0 0 10px rgba(80, 220, 255, 0.95),
+        0 0 18px rgba(46, 180, 255, 0.75),
+        0 0 28px rgba(0, 140, 255, 0.45),
+        inset 0 0 10px rgba(180, 250, 255, 0.55);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), transparent 45%),
+        conic-gradient(from 0deg,
+          transparent 0deg,
+          rgba(80, 220, 255, 0.35) 40deg,
+          transparent 80deg,
+          rgba(160, 240, 255, 0.3) 140deg,
+          transparent 180deg,
+          rgba(100, 200, 255, 0.28) 240deg,
+          transparent 300deg,
+          rgba(200, 250, 255, 0.25) 340deg,
+          transparent 360deg);
+      animation:
+        howlWaveExpand 0.58s cubic-bezier(0.12, 0.8, 0.25, 1) forwards,
+        howlElectricJitter 0.12s steps(2) infinite;
+      opacity: 0;
+      mix-blend-mode: screen;
+    }
+    .tile .howl-open-fx .howl-wave.w2 {
+      border-color: rgba(160, 250, 255, 1);
+      border-radius: 55% 45% 60% 40% / 45% 55% 40% 60%;
+      animation-delay: 0.05s, 0s;
+      box-shadow:
+        0 0 5px #fff,
+        0 0 12px rgba(100, 230, 255, 1),
+        0 0 22px rgba(50, 170, 255, 0.7),
+        inset 0 0 12px rgba(200, 250, 255, 0.45);
+    }
+    .tile .howl-open-fx .howl-wave.w3 {
+      border-color: rgba(90, 210, 255, 0.9);
+      border-width: 2px;
+      border-radius: 40% 60% 55% 45% / 60% 40% 50% 50%;
+      animation-delay: 0.1s, 0.03s;
+      box-shadow:
+        0 0 4px rgba(200, 250, 255, 0.9),
+        0 0 16px rgba(60, 190, 255, 0.75),
+        0 0 24px rgba(40, 120, 255, 0.4);
+    }
+    .tile .howl-open-fx .howl-wave.w4 {
+      border-color: rgba(220, 250, 255, 0.85);
+      border-width: 1.5px;
+      border-style: solid;
+      border-radius: 48% 52% 42% 58% / 58% 48% 52% 42%;
+      animation-delay: 0.15s, 0.05s;
+      box-shadow:
+        0 0 6px #fff,
+        0 0 14px rgba(120, 230, 255, 0.8),
+        0 0 20px rgba(80, 160, 255, 0.45);
+    }
+    /* Extra electric crackle ring */
+    .tile .howl-open-fx .howl-wave.w-electric {
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      border-radius: 50%;
+      animation: howlWaveExpand 0.5s cubic-bezier(0.12, 0.8, 0.25, 1) 0.04s forwards;
+    }
+    .tile .howl-open-fx .howl-wave.w-electric::before {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: 46% 54% 50% 50% / 54% 46% 54% 46%;
+      border: 1.5px solid rgba(200, 250, 255, 0.95);
+      box-shadow:
+        0 0 3px #fff,
+        0 0 8px #5cf0ff,
+        0 0 16px #2a9fff;
+      animation: howlElectricJitter 0.08s steps(2) infinite;
+    }
+    @keyframes howlWaveExpand {
+      0%   { transform: scale(0.2) rotate(0deg); opacity: 0; }
+      12%  { opacity: 1; }
+      100% { transform: scale(6.8) rotate(28deg); opacity: 0; }
+    }
+    @keyframes howlElectricJitter {
+      0%   { filter: brightness(1) hue-rotate(0deg); }
+      50%  { filter: brightness(1.35) hue-rotate(-8deg); }
+      100% { filter: brightness(1.1) hue-rotate(6deg); }
+    }
+    /* Electric arc rays */
+    .tile .howl-open-fx .howl-ray {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2.5px;
+      height: 0;
+      margin-left: -1px;
+      transform-origin: 50% 0;
+      background: linear-gradient(180deg,
+        #fff 0%,
+        #9ef8ff 25%,
+        rgba(50, 190, 255, 0.85) 55%,
+        rgba(40, 120, 255, 0.2) 85%,
+        transparent 100%);
+      border-radius: 2px;
+      animation: howlRayShoot 0.5s ease-out forwards;
+      opacity: 0;
+      filter:
+        drop-shadow(0 0 3px #fff)
+        drop-shadow(0 0 8px rgba(80, 220, 255, 1));
+    }
+    @keyframes howlRayShoot {
+      0%   { height: 0; opacity: 0; }
+      20%  { opacity: 1; }
+      100% { height: 52px; opacity: 0; }
+    }
+    /* Star sparks */
+    .tile .howl-open-fx .howl-spark {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 5px;
+      height: 5px;
+      margin: -2.5px 0 0 -2.5px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 0%, #7ef0ff 45%, transparent 72%);
+      box-shadow: 0 0 8px rgba(126, 240, 255, 0.9);
+      animation: howlSparkFly 0.65s ease-out forwards;
+      opacity: 0;
+    }
+    .tile .howl-open-fx .howl-spark.gold {
+      background: radial-gradient(circle, #fff 0%, #f0d78a 50%, transparent 72%);
+      box-shadow: 0 0 8px rgba(232, 197, 106, 0.85);
+    }
+    @keyframes howlSparkFly {
+      0%   { transform: translate(0, 0) scale(0.5); opacity: 0; }
+      12%  { opacity: 1; }
+      100% { transform: translate(var(--sx), var(--sy)) scale(0.2); opacity: 0; }
+    }
+    /* Rune ring spin — stays on the card */
+    .tile .howl-open-fx .howl-rune {
+      position: absolute;
+      left: -22px;
+      top: -22px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: rgba(126, 240, 255, 0.95);
+      border-right-color: rgba(232, 197, 106, 0.7);
+      border-bottom-color: rgba(180, 150, 255, 0.45);
+      animation: howlRuneSpin 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+      opacity: 0;
+      box-shadow: 0 0 18px rgba(46, 230, 255, 0.45);
+    }
+    .tile .howl-open-fx .howl-rune::after {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 255, 255, 0.4);
+    }
+    @keyframes howlRuneSpin {
+      0%   { transform: scale(0.35) rotate(0deg); opacity: 0; }
+      20%  { opacity: 1; }
+      100% { transform: scale(2.1) rotate(200deg); opacity: 0; }
+    }
+
+    /*
+      Electric howl finishes by racing around the card border —
+      then a heavier electricity surge on the rim at the end.
+    */
+    .tile .howl-border-run {
+      position: absolute;
+      inset: -4px;
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 14;
+      overflow: visible;
+      opacity: 0;
+      animation: howlBorderFadeIn 0.1s ease-out 0.18s forwards;
+    }
+    @keyframes howlBorderFadeIn {
+      to { opacity: 1; }
+    }
+    /* Mask so only the border band shows the spinning electricity */
+    .tile .howl-border-run__mask {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 3.5px;
+      background: #000;
+      overflow: hidden;
+      border-radius: inherit;
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+    .tile .howl-border-run__spin {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 240%;
+      height: 240%;
+      margin: -120% 0 0 -120%;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 220deg,
+        rgba(30, 120, 255, 0.2) 255deg,
+        rgba(60, 210, 255, 0.55) 285deg,
+        #9ef8ff 305deg,
+        #ffffff 318deg,
+        #5cf0ff 330deg,
+        #2a9fff 342deg,
+        rgba(40, 160, 255, 0.5) 352deg,
+        transparent 360deg
+      );
+      animation: howlBorderTravel 1.05s cubic-bezier(0.18, 0.75, 0.28, 1) 0.16s forwards;
+      filter:
+        drop-shadow(0 0 5px #fff)
+        drop-shadow(0 0 12px #5cf0ff)
+        drop-shadow(0 0 22px rgba(40, 160, 255, 0.9));
+    }
+    /* Second / third bolt heads — denser electricity on the rim */
+    .tile .howl-border-run__spin.s2 {
+      background: conic-gradient(
+        from 120deg,
+        transparent 0deg,
+        transparent 260deg,
+        rgba(100, 230, 255, 0.25) 290deg,
+        #c8fcff 315deg,
+        #fff 328deg,
+        #7ef0ff 340deg,
+        transparent 360deg
+      );
+      animation-delay: 0.22s;
+      animation-duration: 1s;
+      opacity: 0.95;
+    }
+    .tile .howl-border-run__spin.s3 {
+      background: conic-gradient(
+        from 240deg,
+        transparent 0deg,
+        transparent 275deg,
+        rgba(232, 197, 106, 0.25) 300deg,
+        rgba(180, 250, 255, 0.7) 320deg,
+        #fff 333deg,
+        #5cf0ff 346deg,
+        transparent 360deg
+      );
+      animation-delay: 0.3s;
+      animation-duration: 0.95s;
+      opacity: 0.9;
+    }
+    @keyframes howlBorderTravel {
+      0%   { transform: rotate(0deg); opacity: 0; }
+      6%   { opacity: 1; }
+      75%  { opacity: 1; }
+      100% { transform: rotate(430deg); opacity: 0.35; }
+    }
+    /* Full-rim electric surge at the END of the howl */
+    .tile .howl-border-run__finale {
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 3;
+      border: 2.5px solid rgba(180, 250, 255, 0.15);
+      box-shadow:
+        0 0 0 1px rgba(100, 230, 255, 0.2),
+        inset 0 0 0 1px rgba(160, 245, 255, 0.1);
+      animation: howlBorderFinale 0.55s ease-out 0.72s forwards;
+    }
+    .tile .howl-border-run__finale::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      border: 1.5px solid transparent;
+      background:
+        linear-gradient(#061018, #061018) padding-box,
+        conic-gradient(
+          from 0deg,
+          #5cf0ff,
+          #fff,
+          #2a9fff,
+          #7ef0ff,
+          #fff,
+          #5cf0ff,
+          #2a9fff,
+          #b8fcff,
+          #5cf0ff
+        ) border-box;
+      border: 2px solid transparent;
+      opacity: 0;
+      animation: howlBorderFinaleSpin 0.55s linear 0.72s forwards;
+      filter:
+        drop-shadow(0 0 6px #fff)
+        drop-shadow(0 0 14px #5cf0ff)
+        drop-shadow(0 0 28px rgba(40, 160, 255, 0.85));
+    }
+    .tile .howl-border-run__finale::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow:
+        0 0 12px rgba(80, 220, 255, 0.5),
+        0 0 28px rgba(46, 180, 255, 0.45),
+        0 0 48px rgba(40, 140, 255, 0.35),
+        inset 0 0 18px rgba(160, 250, 255, 0.35);
+      opacity: 0;
+      animation: howlBorderFinalePulse 0.55s ease-out 0.72s forwards;
+      mix-blend-mode: screen;
+    }
+    @keyframes howlBorderFinale {
+      0%   { opacity: 0; transform: scale(0.98); }
+      20%  { opacity: 1; transform: scale(1.01); }
+      55%  { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.02); }
+    }
+    @keyframes howlBorderFinaleSpin {
+      0%   { opacity: 0; transform: rotate(0deg); }
+      15%  { opacity: 1; }
+      100% { opacity: 0; transform: rotate(120deg); }
+    }
+    @keyframes howlBorderFinalePulse {
+      0%   { opacity: 0; }
+      25%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    /* Solid electric rim that builds then surges at the end */
+    .tile .howl-border-run__glow {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 2px solid transparent;
+      animation: howlBorderRim 1.15s ease-out 0.16s forwards;
+      opacity: 0;
+    }
+    @keyframes howlBorderRim {
+      0% {
+        opacity: 0;
+        border-color: transparent;
+        box-shadow: 0 0 0 0 transparent;
+      }
+      20% {
+        opacity: 1;
+        border-color: rgba(120, 240, 255, 0.55);
+        box-shadow:
+          0 0 0 1px rgba(160, 250, 255, 0.65),
+          0 0 14px rgba(80, 220, 255, 0.55),
+          0 0 24px rgba(40, 160, 255, 0.35),
+          inset 0 0 10px rgba(120, 240, 255, 0.2);
+      }
+      55% {
+        opacity: 1;
+        border-color: rgba(180, 250, 255, 0.7);
+        box-shadow:
+          0 0 0 1.5px rgba(200, 250, 255, 0.55),
+          0 0 20px rgba(80, 220, 255, 0.65),
+          0 0 36px rgba(40, 160, 255, 0.4),
+          inset 0 0 14px rgba(160, 250, 255, 0.22);
+      }
+      /* End surge — more electricity */
+      78% {
+        opacity: 1;
+        border-color: rgba(220, 255, 255, 0.95);
+        box-shadow:
+          0 0 0 2px #fff,
+          0 0 0 4px rgba(100, 230, 255, 0.75),
+          0 0 28px rgba(80, 220, 255, 0.95),
+          0 0 52px rgba(40, 160, 255, 0.7),
+          0 0 70px rgba(46, 230, 255, 0.35),
+          inset 0 0 22px rgba(180, 250, 255, 0.4);
+      }
+      100% {
+        opacity: 0;
+        border-color: transparent;
+        box-shadow: 0 0 0 0 transparent;
+      }
+    }
+    /* Multiple electric beads racing the perimeter */
+    .tile .howl-border-run__bead {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 0%, #7ef0ff 35%, #2a9fff 60%, transparent 72%);
+      box-shadow:
+        0 0 6px #fff,
+        0 0 14px #5cf0ff,
+        0 0 24px rgba(40, 160, 255, 0.9);
+      offset-path: inset(0 round 14px);
+      offset-rotate: 0deg;
+      animation: howlBorderBead 1s cubic-bezier(0.2, 0.75, 0.3, 1) 0.16s forwards;
+      opacity: 0;
+      z-index: 4;
+    }
+    .tile .howl-border-run__bead.b2 {
+      animation-delay: 0.26s;
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle, #fff 0%, #b8fcff 40%, transparent 70%);
+    }
+    .tile .howl-border-run__bead.b3 {
+      animation-delay: 0.36s;
+      width: 11px;
+      height: 11px;
+      background: radial-gradient(circle, #fff 0%, #f0d78a 40%, transparent 70%);
+      box-shadow:
+        0 0 6px #fff,
+        0 0 14px rgba(232, 197, 106, 0.95);
+    }
+    .tile .howl-border-run__bead.b4 {
+      animation-delay: 0.46s;
+      width: 10px;
+      height: 10px;
+      animation-duration: 0.9s;
+    }
+    @keyframes howlBorderBead {
+      0%   { offset-distance: 0%; opacity: 0; transform: scale(0.6); }
+      8%   { opacity: 1; transform: scale(1.15); }
+      50%  { transform: scale(1); }
+      88%  { opacity: 1; }
+      100% { offset-distance: 100%; opacity: 0; transform: scale(0.5); }
+    }
+    /* Corner electric crackles at the end */
+    .tile .howl-border-run__crack {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      opacity: 0;
+      z-index: 5;
+      background:
+        radial-gradient(circle at 50% 50%, #fff 0%, #7ef0ff 30%, transparent 65%);
+      box-shadow:
+        0 0 8px #fff,
+        0 0 16px #5cf0ff,
+        0 0 24px rgba(40, 160, 255, 0.8);
+      animation: howlBorderCrack 0.4s ease-out 0.78s forwards;
+      filter: drop-shadow(0 0 4px #5cf0ff);
+    }
+    .tile .howl-border-run__crack.c-tl { top: -4px; left: -4px; }
+    .tile .howl-border-run__crack.c-tr { top: -4px; right: -4px; animation-delay: 0.82s; }
+    .tile .howl-border-run__crack.c-bl { bottom: -4px; left: -4px; animation-delay: 0.86s; }
+    .tile .howl-border-run__crack.c-br { bottom: -4px; right: -4px; animation-delay: 0.9s; }
+    @keyframes howlBorderCrack {
+      0%   { opacity: 0; transform: scale(0.3); }
+      35%  { opacity: 1; transform: scale(1.4); }
+      100% { opacity: 0; transform: scale(0.6); }
+    }
+    @supports not (offset-path: inset(0 round 14px)) {
+      .tile .howl-border-run__bead { display: none; }
+    }
+
+    /* Play energy flash */
+    .play-btn.is-flashing {
+      animation: playEnergyFlash 0.45s ease-out;
+    }
+    @keyframes playEnergyFlash {
+      0%   { box-shadow: 0 0 0 0 rgba(46, 230, 255, 0.0); filter: brightness(1); }
+      35%  { box-shadow: 0 0 18px 4px rgba(46, 230, 255, 0.55); filter: brightness(1.35); border-color: rgba(180, 250, 255, 0.9); color: #fff; }
+      100% { box-shadow: 0 0 0 0 rgba(46, 230, 255, 0); filter: brightness(1); }
+    }
+    .tile.is-play-flash {
+      animation: tileBrighten 0.4s ease-out;
+    }
+    @keyframes tileBrighten {
+      0%, 100% { filter: brightness(1); }
+      40% { filter: brightness(1.18); }
+    }
+
+    /* Featured / Official badge flash on select */
+    .badge.is-flashing {
+      animation: badgeRuneFlash 0.55s ease-out;
+    }
+    @keyframes badgeRuneFlash {
+      0%, 100% { filter: brightness(1); box-shadow: none; }
+      40% { filter: brightness(1.4); box-shadow: 0 0 12px rgba(232, 197, 106, 0.65); }
+    }
+
+    /* Howl soft sound-wave ring */
+    .tile .howl-ring {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      margin: -6px 0 0 -6px;
+      border-radius: 50%;
+      border: 2px solid rgba(46, 230, 255, 0.55);
+      pointer-events: none;
+      z-index: 9;
+      animation: howlRingExpand 0.65s ease-out forwards;
+    }
+    @keyframes howlRingExpand {
+      0%   { transform: scale(0.4); opacity: 0.85; }
+      100% { transform: scale(8); opacity: 0; }
+    }
+
+    /* —— Special states —— */
+    /* New — thin cyan/gold seam (fades after first view) */
+    .tile.is-new::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 3;
+      box-shadow:
+        inset 0 0 0 1.5px rgba(46, 230, 255, 0.55),
+        inset 0 0 12px rgba(232, 197, 106, 0.12);
+      animation: newSeamPulse 2.4s ease-in-out infinite;
+    }
+    .tile.is-new .tile-badge-row::before {
+      content: "New";
+      font-size: 0.52rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #041018;
+      background: linear-gradient(135deg, #7ef0ff, #e8c56a);
+      padding: 0.14rem 0.38rem;
+      border-radius: 999px;
+      box-shadow: 0 0 10px rgba(46, 230, 255, 0.35);
+      align-self: center;
+    }
+    @keyframes newSeamPulse {
+      0%, 100% { opacity: 0.75; }
+      50% { opacity: 1; }
+    }
+
+    /* Yours — soft personal Resonance tint */
+    .tile.is-yours {
+      box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.32),
+        0 0 0 1px rgba(167, 139, 250, 0.45),
+        0 0 22px rgba(126, 240, 255, 0.18),
+        inset 0 0 0 1px rgba(180, 150, 255, 0.2);
+    }
+    .tile.is-yours .tile-body {
+      background: linear-gradient(165deg, rgba(28, 22, 52, 0.97) 0%, rgba(12, 16, 36, 0.98) 55%, rgba(8, 12, 28, 0.99) 100%);
+    }
+    .tile.is-yours .tile-badge-row::after {
+      content: "Yours";
+      font-size: 0.52rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #e8d4ff;
+      background: rgba(60, 30, 90, 0.88);
+      border: 1px solid rgba(180, 140, 255, 0.45);
+      padding: 0.12rem 0.36rem;
+      border-radius: 999px;
+    }
+
+    /* Trending — light upward drift (top few only) */
+    .tile.is-trending {
+      animation: trendDrift 3.2s ease-in-out infinite;
+    }
+    .tile.is-trending.tile-enter {
+      /* entrance wins first; trend resumes after */
+      animation: tileEnter 0.44s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes trendDrift {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .tile.is-trending:hover {
+      animation: none;
+      transform: translateY(-6px);
+    }
+    .tile.is-trending .tile-badge-row .badge-trending {
+      background: linear-gradient(135deg, rgba(0, 60, 50, 0.9), rgba(10, 40, 30, 0.92));
+      color: #7dffc8;
+      border-color: rgba(52, 211, 153, 0.5);
+    }
+
+    /* Locked / coming soon — desaturated + slow fog */
+    .tile.is-locked {
+      cursor: not-allowed;
+      filter: saturate(0.35) brightness(0.78);
+    }
+    .tile.is-locked .tile-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        linear-gradient(110deg, transparent 0%, rgba(180, 210, 255, 0.08) 40%, transparent 55%, rgba(200, 220, 255, 0.06) 70%, transparent 100%);
+      background-size: 200% 100%;
+      animation: lockedFog 6s linear infinite;
+    }
+    .tile.is-locked .play-btn {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+    .tile.is-locked .tile-badge-row .badge-locked {
+      background: rgba(20, 24, 36, 0.92);
+      color: #9aa8c0;
+      border-color: rgba(140, 160, 190, 0.4);
+    }
+    @keyframes lockedFog {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+
+    /* Smooth modal open (detail / play) */
+    .modal-overlay .modal {
+      transition:
+        transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.32s ease;
+    }
+    .modal-overlay:not(.open) .modal {
+      opacity: 0;
+      transform: translateY(28px) scale(0.92);
+    }
+    #detailModal.open {
+      animation: detailOverlayIn 0.55s ease-out both;
+    }
+    @keyframes detailOverlayIn {
+      0%   { backdrop-filter: blur(0px); background: rgba(2, 4, 12, 0); }
+      40%  { backdrop-filter: blur(12px); background: rgba(2, 8, 20, 0.55); }
+      100% { backdrop-filter: blur(14px); background: rgba(2, 4, 12, 0.8); }
+    }
+    #detailModal.open .modal {
+      animation: detailModalIn 0.62s cubic-bezier(0.18, 1, 0.32, 1) both;
+      box-shadow:
+        0 28px 90px rgba(0, 0, 0, 0.7),
+        0 0 60px rgba(46, 230, 255, 0.14),
+        0 0 80px rgba(232, 197, 106, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    @keyframes detailModalIn {
+      0% {
+        opacity: 0;
+        transform: translateY(48px) scale(0.82);
+        filter: blur(10px) brightness(1.4);
+      }
+      45% {
+        opacity: 1;
+        filter: blur(0) brightness(1.08);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0) brightness(1);
+      }
+    }
+    .detail-hero {
+      animation: detailHeroIn 0.7s cubic-bezier(0.18, 1, 0.32, 1) 0.08s both;
+    }
+    .detail-body {
+      animation: detailBodyIn 0.58s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+    }
+    .detail-body + .form-actions,
+    #detailModal .form-actions {
+      animation: detailBodyIn 0.52s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both;
+    }
+    @keyframes detailHeroIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.86) translateY(18px);
+        filter: brightness(1.55) saturate(1.25) contrast(1.05);
+        box-shadow: 0 0 0 0 rgba(126, 240, 255, 0);
+      }
+      55% {
+        opacity: 1;
+        filter: brightness(1.08) saturate(1.08);
+        box-shadow: 0 0 40px rgba(46, 230, 255, 0.35);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: none;
+      }
+    }
+    @keyframes detailBodyIn {
+      from { opacity: 0; transform: translateY(18px); filter: blur(2px); }
+      to { opacity: 1; transform: translateY(0); filter: none; }
+    }
+    #detailModal .modal-head {
+      animation: detailBodyIn 0.48s cubic-bezier(0.22, 1, 0.36, 1) 0.04s both;
+    }
+
+    /* Entrance — staggered rise + soft scale (Hall “arrives”, not pops) */
+    @keyframes tileEnter {
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes tileEnterFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .tile.tile-enter {
+      animation: tileEnter 0.44s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-delay: var(--enter-delay, 0ms);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tile.tile-enter {
+        animation: tileEnterFade 0.2s ease both;
+        animation-delay: 0ms !important;
+      }
+      .tile:hover {
+        transform: none;
+      }
+      .tile:active,
+      .tile.is-pressing {
+        transform: none;
+        animation: none;
+      }
+      .tile:hover .tile-media img {
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+        filter: none !important;
+      }
+      .tile:hover .tile-media::before,
+      .tile:hover .tile-media::after {
+        animation: none !important;
+        opacity: 0 !important;
+      }
+      .tile.is-trending,
+      .tile.is-new::after,
+      .tile.is-locked .tile-media::after,
+      .play-btn.is-flashing,
+      .badge.is-flashing,
+      .tile .howl-ring,
+      .tile.is-opening,
+      .tile .howl-open-fx,
+      .tile .howl-open-fx *,
+      .tile .howl-border-run,
+      .tile .howl-border-run *,
+      #detailModal.open,
+      #detailModal.open .modal,
+      .detail-hero,
+      .detail-body,
+      #detailModal .form-actions,
+      #detailModal .modal-head {
+        animation: none !important;
+      }
+      .tile.is-new::after { opacity: 0.85; }
+      .tile.is-locked .tile-media::after { opacity: 0.4; }
+      .modal-overlay:not(.open) .modal {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+      }
     }
 
     /*
@@ -1848,15 +2749,15 @@
       padding: 0.65rem 0.75rem 1.85rem 0.75rem;
     }
     .tile.border-diamond .tile-badge-row {
-      /* clear of thin corner brackets (edge-only) */
-      top: 0.55rem;
-      left: 0.55rem;
-      right: 1.45rem;
+      /* clear of corner diamond gems (~18px) */
+      top: 0.8rem;
+      left: 0.8rem;
+      right: 1.6rem;
       z-index: 6;
     }
     .tile.border-diamond .tile-resonance {
-      bottom: 0.5rem;
-      right: 0.5rem;
+      bottom: 0.55rem;
+      right: 0.55rem;
       z-index: 6;
     }
     .tile.border-diamond:hover {
@@ -1889,7 +2790,7 @@
       50% { opacity: 0.95; }
     }
 
-    /* SVG ornaments sit ON the rim only — content padded; badges/pip above */
+    /* SVG ornaments + Imagine corner gems sit ON the rim only — content padded */
     .diamond-frame {
       position: absolute;
       inset: 0;
@@ -1907,6 +2808,37 @@
       filter:
         drop-shadow(0 0 4px rgba(200, 240, 255, 0.5))
         drop-shadow(0 0 10px rgba(255, 255, 255, 0.22));
+    }
+    /* Imagine gems — four corners; slightly larger + deeper ice so they read on dark cards */
+    .diamond-frame__gem {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      z-index: 5;
+      pointer-events: none;
+      /* darker / richer ice so gems don’t wash out into the rim */
+      filter:
+        brightness(0.78)
+        contrast(1.22)
+        saturate(1.15)
+        drop-shadow(0 0 2px rgba(0, 20, 40, 0.55))
+        drop-shadow(0 0 5px rgba(120, 210, 255, 0.75))
+        drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+      opacity: 1;
+    }
+    .diamond-frame__gem--tl { top: -6px; left: -6px; }
+    .diamond-frame__gem--tr { top: -6px; right: -6px; transform: scaleX(-1); }
+    .diamond-frame__gem--bl { bottom: -6px; left: -6px; transform: scaleY(-1); }
+    .diamond-frame__gem--br { bottom: -6px; right: -6px; transform: scale(-1); }
+    .tile.border-diamond:hover .diamond-frame__gem {
+      filter:
+        brightness(0.88)
+        contrast(1.25)
+        saturate(1.2)
+        drop-shadow(0 0 3px rgba(0, 24, 48, 0.5))
+        drop-shadow(0 0 8px rgba(160, 230, 255, 0.9))
+        drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
     }
     .diamond-frame__crest {
       position: absolute;
@@ -1934,8 +2866,20 @@
     .tile.border-diamond .border-tier-pip {
       z-index: 8;
       bottom: 0.45rem;
-      right: 0.5rem;
+      right: 0.65rem;
     }
+    /* Featured strip diamond cards — smaller corner gems */
+    .echo-card.border-diamond {
+      position: relative;
+    }
+    .echo-card .diamond-frame__gem {
+      width: 14px;
+      height: 14px;
+    }
+    .echo-card .diamond-frame__gem--tl { top: -4px; left: -4px; }
+    .echo-card .diamond-frame__gem--tr { top: -4px; right: -4px; }
+    .echo-card .diamond-frame__gem--bl { bottom: -4px; left: -4px; }
+    .echo-card .diamond-frame__gem--br { bottom: -4px; right: -4px; }
 
     /* Corner gems for gold / platinum (diamond uses ornate SVG frame) */
     .tile.border-gold .border-corners,
@@ -2062,9 +3006,107 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform 0.35s ease;
+      transform: scale(1) translate(0, 0);
+      filter: brightness(1) saturate(1);
+      transition:
+        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.45s ease;
     }
+    /*
+      Hover (no click): more lively artwork motion —
+      Ken Burns zoom/pan + soft shimmer + light dust
+    */
     .tile:hover .tile-media img {
+      animation: tileArtHover 4.2s ease-in-out infinite alternate;
+      filter: brightness(1.08) saturate(1.12) contrast(1.03);
+    }
+    @keyframes tileArtHover {
+      0%   { transform: scale(1.04) translate(0%, 0%); }
+      35%  { transform: scale(1.08) translate(-1.6%, 1.1%); }
+      70%  { transform: scale(1.1) translate(1.4%, -0.9%); }
+      100% { transform: scale(1.07) translate(-0.8%, 1.2%); }
+    }
+    /* Soft light sweep across the art on hover */
+    .tile-media::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(
+        115deg,
+        transparent 30%,
+        rgba(180, 245, 255, 0.07) 45%,
+        rgba(255, 255, 255, 0.16) 50%,
+        rgba(232, 197, 106, 0.08) 55%,
+        transparent 70%
+      );
+      background-size: 220% 100%;
+      background-position: 120% 0;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      mix-blend-mode: screen;
+    }
+    .tile:hover .tile-media::before {
+      opacity: 1;
+      animation: tileArtShimmer 2.4s ease-in-out infinite;
+    }
+    @keyframes tileArtShimmer {
+      0%   { background-position: 130% 0; }
+      100% { background-position: -40% 0; }
+    }
+    /* Soft vignette lift + cyan dust on hover */
+    .tile-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 40%, transparent 40%, rgba(2, 8, 20, 0.28) 100%),
+        radial-gradient(circle at 20% 80%, rgba(46, 230, 255, 0.12), transparent 28%),
+        radial-gradient(circle at 80% 25%, rgba(232, 197, 106, 0.1), transparent 24%);
+      mix-blend-mode: screen;
+    }
+    .tile:hover .tile-media::after {
+      opacity: 1;
+      animation: tileArtDust 2.8s ease-in-out infinite alternate;
+    }
+    @keyframes tileArtDust {
+      0%   { opacity: 0.55; transform: scale(1); }
+      100% { opacity: 0.95; transform: scale(1.04); }
+    }
+    /* Locked fog (::after) must win over hover dust */
+    .tile.is-locked .tile-media::after {
+      mix-blend-mode: normal;
+      animation: lockedFog 6s linear infinite !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .tile.is-locked:hover .tile-media img {
+      animation: none;
+      transform: scale(1);
+      filter: none;
+    }
+    .tile.is-locked:hover .tile-media::before {
+      opacity: 0;
+      animation: none;
+    }
+    /* Don't fight opening howl */
+    .tile.is-opening .tile-media img {
+      animation: none !important;
+    }
+    .tile.is-opening .tile-media::before,
+    .tile.is-opening .tile-media::after {
+      animation: none !important;
+      opacity: 0 !important;
+    }
+    /* Play button pulse on hover of card */
+    .tile:hover .play-btn {
+      border-color: rgba(46, 230, 255, 0.55);
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.28);
       transform: scale(1.04);
     }
 
@@ -2096,6 +3138,22 @@
       color: var(--cyan-soft);
       border-color: rgba(46, 230, 255, 0.4);
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 0 10px rgba(46, 230, 255, 0.12);
+    }
+    /* Cosmic Puzzle — prismatic violet (distinct from Howl / Echo / Story) */
+    .badge-type.badge-puzzle {
+      background: linear-gradient(135deg, rgba(40, 16, 64, 0.94), rgba(12, 24, 56, 0.92));
+      color: #e4d4ff;
+      border-color: rgba(180, 140, 255, 0.65);
+      box-shadow:
+        0 2px 10px rgba(0, 0, 0, 0.4),
+        0 0 12px rgba(167, 139, 250, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .badge-puzzle-kind {
+      background: rgba(18, 10, 40, 0.9);
+      color: #c8b4ff;
+      border-color: rgba(167, 139, 250, 0.45);
+      letter-spacing: 0.06em;
     }
     .badge-featured {
       background: linear-gradient(135deg, rgba(60, 44, 12, 0.92), rgba(40, 30, 8, 0.9));
@@ -3093,6 +4151,245 @@
     }
     .image-clear:hover { color: var(--text-muted); }
 
+    /* Boltverse cover style guide (Publishing Gate) */
+    .style-guide {
+      margin-top: 0.85rem;
+      padding: 0.85rem 0.9rem 0.95rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(46, 230, 255, 0.22);
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(46, 230, 255, 0.08), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 100% 100%, rgba(232, 197, 106, 0.06), transparent 50%),
+        rgba(4, 12, 24, 0.72);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+    .style-guide__head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.45rem;
+    }
+    .style-guide__title {
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--cyan-soft);
+      margin: 0;
+    }
+    .style-guide__badge {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.9);
+      border: 1px solid rgba(232, 197, 106, 0.35);
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      background: rgba(40, 28, 8, 0.45);
+    }
+    .style-guide__lead {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin: 0 0 0.65rem;
+    }
+    .style-refs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.4rem;
+      margin-bottom: 0.7rem;
+    }
+    .style-refs button {
+      position: relative;
+      padding: 0;
+      border: 1px solid rgba(46, 230, 255, 0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      background: #050a14;
+      aspect-ratio: 1;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+    .style-refs button:hover,
+    .style-refs button:focus-visible {
+      border-color: rgba(46, 230, 255, 0.55);
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.25);
+      transform: translateY(-1px);
+      outline: none;
+    }
+    .style-refs button.is-picked {
+      border-color: rgba(232, 197, 106, 0.75);
+      box-shadow: 0 0 16px rgba(232, 197, 106, 0.28);
+    }
+    .style-refs img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .style-rules {
+      margin: 0 0 0.65rem;
+      padding: 0 0 0 1.05rem;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .style-rules li { margin-bottom: 0.22rem; }
+    .style-rules strong { color: var(--cyan-soft); font-weight: 600; }
+    .style-prompt-box {
+      position: relative;
+      margin-bottom: 0.55rem;
+    }
+    .style-prompt-box label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.3rem;
+    }
+    .style-prompt-box textarea {
+      width: 100%;
+      min-height: 5.2rem;
+      resize: vertical;
+      font-size: 0.74rem;
+      line-height: 1.4;
+      font-family: inherit;
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(46, 230, 255, 0.18);
+      border-radius: 8px;
+      padding: 0.55rem 0.65rem;
+    }
+    .style-prompt-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+    .style-prompt-actions .btn-mini {
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: inherit;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.3);
+      background: rgba(46, 230, 255, 0.08);
+      color: var(--cyan-soft);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .style-prompt-actions .btn-mini:hover {
+      background: rgba(46, 230, 255, 0.16);
+      border-color: rgba(46, 230, 255, 0.5);
+    }
+    .style-prompt-actions .btn-mini.gold {
+      border-color: rgba(232, 197, 106, 0.4);
+      background: rgba(232, 197, 106, 0.1);
+      color: var(--gold-soft);
+    }
+    .style-prompt-actions .btn-mini.gold:hover {
+      background: rgba(232, 197, 106, 0.18);
+    }
+    .style-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin: 0.55rem 0 0;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      cursor: pointer;
+    }
+    .style-check input {
+      margin-top: 0.2rem;
+      accent-color: var(--cyan);
+      flex-shrink: 0;
+    }
+    .style-check strong { color: var(--text); }
+    .preset-pack {
+      margin-top: 0.85rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(46, 230, 255, 0.12);
+    }
+    .preset-pack__title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+      margin: 0 0 0.25rem;
+    }
+    .preset-pack__lead {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      margin: 0 0 0.55rem;
+      line-height: 1.4;
+    }
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.4rem;
+      max-height: 18rem;
+      overflow-y: auto;
+      padding: 0.15rem 0.2rem 0.25rem 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(46, 230, 255, 0.35) transparent;
+    }
+    .preset-grid button {
+      position: relative;
+      padding: 0;
+      border: 1.5px solid rgba(46, 230, 255, 0.18);
+      border-radius: 9px;
+      overflow: hidden;
+      cursor: pointer;
+      background: #050a14;
+      aspect-ratio: 1;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+    .preset-grid button:hover,
+    .preset-grid button:focus-visible {
+      border-color: rgba(46, 230, 255, 0.55);
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.28);
+      transform: translateY(-1px);
+      outline: none;
+    }
+    .preset-grid button.is-picked {
+      border-color: rgba(232, 197, 106, 0.85);
+      box-shadow: 0 0 16px rgba(232, 197, 106, 0.35);
+    }
+    .preset-grid img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .preset-grid .preset-tag {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 0.28rem 0.2rem 0.22rem;
+      font-size: 0.52rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-align: center;
+      color: #fff;
+      background: linear-gradient(180deg, transparent, rgba(2, 8, 18, 0.92));
+      line-height: 1.15;
+      pointer-events: none;
+    }
+    @media (max-width: 520px) {
+      .style-refs { grid-template-columns: repeat(4, 1fr); gap: 0.3rem; }
+      .preset-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
     .form-actions {
       display: flex;
       gap: 0.55rem;
@@ -3100,8 +4397,9 @@
       margin-top: 1rem;
     }
 
-    /* Detail */
+    /* Detail — cover inherits the same rank border as the Hall card */
     .detail-hero {
+      position: relative;
       aspect-ratio: 1;
       max-height: 280px;
       width: 100%;
@@ -3109,12 +4407,21 @@
       overflow: hidden;
       margin-bottom: 0.9rem;
       background: #061018;
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
+      box-sizing: border-box;
+    }
+    .detail-hero__media {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      overflow: hidden;
+      z-index: 0;
     }
     .detail-hero img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
     }
     .detail-hero .fallback {
       width: 100%;
@@ -3123,6 +4430,75 @@
       place-items: center;
       font-size: 4rem;
       background: linear-gradient(145deg, #0a1428, #0e0c22);
+    }
+    /* Tier frames on detail cover (match Hall tiles) */
+    .detail-hero.border-bronze {
+      border-width: 1.5px;
+      border-color: #b87333;
+      box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.34),
+        inset 0 0 0 1px rgba(90, 48, 16, 0.55);
+    }
+    .detail-hero.border-silver {
+      border-width: 2px;
+      border-color: #c5d0dc;
+      box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.34),
+        0 0 0 1px rgba(90, 110, 130, 0.55),
+        0 0 14px rgba(170, 190, 210, 0.22);
+    }
+    .detail-hero.border-gold {
+      border-width: 2.5px;
+      border-color: #e8c56a;
+      box-shadow:
+        0 10px 26px rgba(0, 0, 0, 0.38),
+        0 0 0 2px rgba(90, 64, 12, 0.75),
+        0 0 22px rgba(232, 197, 106, 0.4);
+    }
+    .detail-hero.border-platinum {
+      border-width: 2.5px;
+      border-color: #dceeff;
+      box-shadow:
+        0 10px 26px rgba(0, 0, 0, 0.4),
+        0 0 0 2px rgba(46, 230, 255, 0.45),
+        0 0 0 4px rgba(20, 40, 70, 0.9),
+        0 0 26px rgba(126, 240, 255, 0.35);
+    }
+    .detail-hero.border-diamond {
+      border-width: 2.5px;
+      border-color: #e8f9ff;
+      overflow: visible;
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.65),
+        0 0 0 3px rgba(8, 22, 40, 0.95),
+        0 0 0 5px rgba(140, 230, 255, 0.45),
+        0 0 26px rgba(180, 235, 255, 0.42);
+    }
+    .detail-hero.border-diamond .detail-hero__media {
+      border-radius: calc(var(--radius) - 2px);
+    }
+    .detail-hero .border-corners {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .detail-hero .border-corners span {
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      pointer-events: none;
+    }
+    .detail-hero .border-corners .c-tl { top: 4px; left: 4px; border-top: 2px solid; border-left: 2px solid; border-radius: 2px 0 0 0; }
+    .detail-hero .border-corners .c-tr { top: 4px; right: 4px; border-top: 2px solid; border-right: 2px solid; border-radius: 0 2px 0 0; }
+    .detail-hero .border-corners .c-bl { bottom: 4px; left: 4px; border-bottom: 2px solid; border-left: 2px solid; border-radius: 0 0 0 2px; }
+    .detail-hero .border-corners .c-br { bottom: 4px; right: 4px; border-bottom: 2px solid; border-right: 2px solid; border-radius: 0 0 2px 0; }
+    .detail-hero.border-gold .border-corners span { border-color: #f0d78a; filter: drop-shadow(0 0 4px rgba(232,197,106,0.8)); }
+    .detail-hero.border-platinum .border-corners span { border-color: #9ef0ff; width: 12px; height: 12px; filter: drop-shadow(0 0 5px rgba(126,240,255,0.9)); }
+    .detail-hero .diamond-frame__gem {
+      width: 16px;
+      height: 16px;
     }
     .detail-body { font-size: 0.9rem; color: var(--text-muted); line-height: 1.55; }
     .detail-body p { margin-bottom: 0.75rem; }
@@ -3534,6 +4910,7 @@
           <button type="button" class="chip" data-type="sprint-path">Sprint Path</button>
           <button type="button" class="chip" data-type="resonance-event">Resonance Event</button>
           <button type="button" class="chip" data-type="bolt-story">Echoes</button>
+          <button type="button" class="chip" data-type="puzzle">Puzzle</button>
           <button type="button" class="chip" data-type="howl">Howl</button>
           <button type="button" class="chip" data-type="decree">Decree</button>
           <button type="button" class="chip" data-type="remix">Remix</button>
@@ -4003,11 +5380,11 @@
         <button type="button" class="close-btn" data-close aria-label="Close">&times;</button>
       </div>
       <p class="modal-sub">
-        Attach cover art (like a coin on the board), then release your creation into the living hall.
+        Shape the soul, then attach <strong>Boltverse Imagine</strong> cover art so your card belongs in the same hall as the Pack’s seed sparks.
       </p>
       <div class="gate-steps" aria-hidden="true">
         <span class="gate-step on">1 · Soul</span>
-        <span class="gate-step on">2 · Cover</span>
+        <span class="gate-step on">2 · Cover style</span>
         <span class="gate-step on">3 · Gate</span>
       </div>
       <form id="submitForm">
@@ -4027,6 +5404,7 @@
               <option value="sprint-path">Sprint Path</option>
               <option value="resonance-event">Resonance Event</option>
               <option value="bolt-story">Echo (Bolt video)</option>
+              <option value="puzzle">Puzzle (Cosmic trial · Decree #219)</option>
               <option value="howl">Howl (X post · StarBoltSprint)</option>
               <option value="decree">Decree (Official X decree)</option>
               <option value="remix">Remix</option>
@@ -4041,7 +5419,49 @@
           <label for="fDesc">Description / soul of the work</label>
           <textarea id="fDesc" name="description" required maxlength="600" placeholder="What does the Pack experience?"></textarea>
         </div>
-        <div class="form-group">
+
+        <!-- Boltverse Imagine style lock-in -->
+        <div class="style-guide" id="boltverseStyleGuide">
+          <div class="style-guide__head">
+            <h3 class="style-guide__title">Boltverse cover style</h3>
+            <span class="style-guide__badge">Imagine · Hall standard</span>
+          </div>
+          <p class="style-guide__lead">
+            Hall cards use the same visual language: cosmic white wolves, cyan + gold lightning, dark mythic space.
+            Generate with <strong>Grok Imagine</strong> (or matching tools) using the Pack prompt below — then upload the result.
+          </p>
+          <div class="style-refs" id="styleRefs" aria-label="Hall style reference covers"></div>
+          <ul class="style-rules">
+            <li><strong>Subject:</strong> white / cosmic wolf(s), Pack spirit, citadel, storm — not random stock photos</li>
+            <li><strong>Palette:</strong> deep indigo void · cyan lightning · soft gold accents · starlight whites</li>
+            <li><strong>Mood:</strong> cinematic game key art, mythic, luminous edges — polished digital painting</li>
+            <li><strong>Format:</strong> square <strong>1:1</strong>, no text, no watermark, no UI chrome</li>
+            <li><strong>Avoid:</strong> photoreal humans, neon vaporwave clutter, meme screenshots, plain photos</li>
+          </ul>
+          <div class="style-prompt-box">
+            <label for="fStylePrompt">Imagine prompt (copy → generate → upload)</label>
+            <textarea id="fStylePrompt" readonly rows="5" spellcheck="false"></textarea>
+            <div class="style-prompt-actions">
+              <button type="button" class="btn-mini gold" id="btnBuildPrompt">Build from my title</button>
+              <button type="button" class="btn-mini" id="btnCopyPrompt">Copy prompt</button>
+              <button type="button" class="btn-mini" id="btnResetPrompt">Reset style base</button>
+            </div>
+          </div>
+          <p class="form-hint" style="margin:0">
+            Tip: paste the prompt into Grok Imagine / image gen, download the square cover, then upload it here —
+            or pick a ready Pack cover below.
+          </p>
+
+          <div class="preset-pack">
+            <h4 class="preset-pack__title">Pack cover pack · 340 ready covers</h4>
+            <p class="preset-pack__lead">
+              Instant Boltverse Imagine covers. Click one to use it on your card — same hall style as seed sparks.
+            </p>
+            <div class="preset-grid" id="presetGrid" aria-label="Pack cover presets"></div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:0.9rem">
           <label>Cover image</label>
           <div class="image-picker">
             <div class="image-preview" id="imagePreview" aria-hidden="true">⚡</div>
@@ -4049,10 +5469,14 @@
               <input type="file" id="fImageFile" accept="image/*" />
               <input type="url" id="fImageUrl" placeholder="…or paste image URL" />
               <button type="button" class="image-clear" id="clearImage">Clear image</button>
-              <p class="form-hint">Square works best (1:1). Shown large on the feed like pump.fun coins.</p>
+              <p class="form-hint">Square 1:1 Boltverse art works best — same look as the hall seed cards.</p>
             </div>
           </div>
           <input type="hidden" id="fImageData" name="image" />
+          <label class="style-check">
+            <input type="checkbox" id="fStyleOk" name="styleOk" required />
+            <span>I confirm this cover follows the <strong>Boltverse Imagine</strong> hall style (cosmic wolf · cyan/gold storm · no text).</span>
+          </label>
         </div>
         <div class="form-group">
           <label for="fLink">X post link or full text (optional)</label>
@@ -4122,7 +5546,9 @@
     const STORAGE_KEY = "citadel-gate-v1";
     const HOWL_KEY = "citadel-gate-howls-v1";
     const OVERRIDE_KEY = "citadel-gate-overrides-v2"; // v2: rebalanced border ladder + quiet bronze seeds
+    const SEEN_KEY = "citadel-gate-seen-v1"; // cards opened → clear “New” seam
     const MAX_IMAGE_BYTES = 700000; // keep localStorage sane (~0.7MB)
+    const PROFILE_CREATOR_KEY = "citadel-creator-profile-v1";
 
     const TYPE_META = {
       "mini-quest":        { label: "Mini-Quest",        emoji: "⚡", short: "QUEST" },
@@ -4133,9 +5559,19 @@
       "sprint-path":       { label: "Sprint Path",       emoji: "🏃", short: "SPRINT" },
       "resonance-event":   { label: "Resonance Event",   emoji: "🌊", short: "PULSE" },
       "bolt-story":        { label: "Echo",              emoji: "▶", short: "ECHO" },
+      "puzzle":            { label: "Puzzle",            emoji: "🧩", short: "PUZZLE" },
       "howl":              { label: "Howl",              emoji: "🐺", short: "HOWL" },
       "decree":            { label: "Decree",            emoji: "⚖️", short: "DECREE" },
       "remix":             { label: "Remix",             emoji: "🔁", short: "REMIX" },
+    };
+
+    /** SMiR Decree #219 — five sacred Cosmic Puzzle kinds (Tests of the Cosmic Mind) */
+    const PUZZLE_KINDS = {
+      gravity:   { label: "Gravity",   full: "Gravity Weave" },
+      echo:      { label: "Echo",      full: "Echo Resonance" },
+      momentum:  { label: "Momentum",  full: "Momentum Chains" },
+      fracture:  { label: "Fracture",  full: "Reality Fractures" },
+      nebula:    { label: "Nebula",    full: "Nebula Navigation" },
     };
 
     /**
@@ -4150,6 +5586,7 @@
       codex:             { base: 68, range: 10, label: "Codex" },
       "story-branch":    { base: 72, range: 10, label: "Story Branch" },
       "bolt-story":      { base: 78, range: 12, label: "Echo · video" },
+      "puzzle":          { base: 84, range: 10, label: "Puzzle · Cosmic trial" },
       "ar-portal":       { base: 80, range: 10, label: "AR Portal" },
       "crystal-challenge": { base: 82, range: 10, label: "Crystal Challenge" },
       "sprint-path":     { base: 86, range: 10, label: "Sprint Path" },
@@ -4218,6 +5655,39 @@
       decree4: "covers/decree-living-prototype.jpg",
       decree5: "covers/decree-signal-pack.jpg",
       decree6: "covers/decree-on-ramp.jpg",
+      decree7: "covers/decree-scroll-bolt.jpg",
+      decree8: "covers/decree-pack-proclamation.jpg",
+      decree9: "covers/decree-core-seal.jpg",
+      decree10: "covers/decree-gates-welcome.jpg",
+      decree11: "covers/decree-howl-dome.jpg",
+      decree12: "covers/decree-crystal-gavel.jpg",
+      decree13: "covers/decree-constellation-laws.jpg",
+      decree14: "covers/decree-young-banners.jpg",
+      decree15: "covers/decree-starfire-stamp.jpg",
+      decree16: "covers/decree-ice-lectern.jpg",
+      decree17: "covers/decree-shared-resonance.jpg",
+      decree18: "covers/decree-tablet-wall.jpg",
+      decree19: "covers/decree-onramp-procession.jpg",
+      decree20: "covers/decree-seal-crown.jpg",
+      decree21: "covers/decree-haven-circle.jpg",
+      decree22: "covers/decree-bound-book.jpg",
+      decree23: "covers/decree-sky-laws.jpg",
+      decree24: "covers/decree-torch-pass.jpg",
+      decree25: "covers/decree-twin-pillars.jpg",
+      decree26: "covers/decree-council-orb.jpg",
+      // Cosmic Puzzles — Decree #219 Tests of the Cosmic Mind
+      puzzleGravity1: "covers/puzzle-gravity-bridge.jpg",
+      puzzleGravity2: "covers/puzzle-gravity-spiral.jpg",
+      puzzleGravity3: "covers/puzzle-gravity-wall.jpg",
+      puzzleEcho1: "covers/puzzle-echo-orbs.jpg",
+      puzzleEcho2: "covers/puzzle-echo-gate.jpg",
+      puzzleEcho3: "covers/puzzle-echo-storm.jpg",
+      puzzleMomentum1: "covers/puzzle-momentum-rings.jpg",
+      puzzleMomentum2: "covers/puzzle-momentum-asteroid.jpg",
+      puzzleFracture1: "covers/puzzle-fracture-pack.jpg",
+      puzzleFracture2: "covers/puzzle-fracture-sky.jpg",
+      puzzleNebula1: "covers/puzzle-nebula-phase.jpg",
+      puzzleNebula2: "covers/puzzle-nebula-chart.jpg",
     };
 
     const SEED = [
@@ -4323,7 +5793,7 @@
         id: "seed-8",
         title: "Storm Orbs — Quiet Mode",
         type: "remix",
-        description: "Remix of Lightning Dash: half speed, double orbs, ambient score.",
+        description: "Remix of Lightning Dash: half speed, double orbs, ambient score. Fog still holds the full corridor — coming soon to the Hall.",
         creator: "Echo Forge",
         link: "",
         image: COVER.quiet,
@@ -4332,6 +5802,7 @@
         views: 420,
         plays: 8,
         featured: false,
+        locked: true,
         canon: "community",
         createdAt: Date.now() - 1000 * 60 * 90,
       },
@@ -4647,7 +6118,7 @@
         id: "vid-11",
         title: "Deep Current Wolves",
         type: "bolt-story",
-        description: "Bolt Echo: bioluminescent wolf spirits swim a cosmic trench of cyan current and gold bubbles.",
+        description: "Bolt Echo: bioluminescent wolf spirits swim a cosmic trench of cyan current and gold bubbles. Full dive locked behind the fog — soon.",
         creator: "Echo Forge",
         link: "",
         image: COVER.storyDeep,
@@ -4658,6 +6129,7 @@
         views: 340,
         plays: 6,
         featured: false,
+        locked: true,
         canon: "community",
         createdAt: Date.now() - 1000 * 60 * 120,
       },
@@ -5045,6 +6517,1111 @@
         canon: "official",
         createdAt: Date.now() - 1000 * 60 * 60 * 38,
       },
+      // ── Cosmic Puzzles — SMiR Decree #219 · Tests of the Cosmic Mind ──
+      {
+        id: "puzzle-1",
+        title: "Gravity Weave: First Bridge",
+        type: "puzzle",
+        puzzleKind: "gravity",
+        description: "Cosmic Puzzle · Gravity Weave. Shift unstable gravity so floating rocks form a bridge. Speed, creativity, or Pack help all count. Solving feeds the living cosmos.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: COVER.puzzleGravity1,
+        storyLine: "Rearrange the world under your paws until the road appears.",
+        resonance: 88,
+        howls: 64,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 2,
+      },
+      {
+        id: "puzzle-2",
+        title: "Spiral of Falling Stars",
+        type: "puzzle",
+        puzzleKind: "gravity",
+        description: "Cosmic Puzzle · Gravity Weave. Invert pulls and snap light-bridges into a spiral path across the void. Procedural fields adapt to your Resonance.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: COVER.puzzleGravity2,
+        storyLine: "Gravity is clay. Weave it until the spiral holds.",
+        resonance: 84,
+        howls: 41,
+        featured: false,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 9,
+      },
+      {
+        id: "puzzle-3",
+        title: "Walls That Walk",
+        type: "puzzle",
+        puzzleKind: "gravity",
+        description: "Cosmic Puzzle · Gravity Weave. Sideways gravity turns star-walls into roads. Find the orientation that lets the Pack cross.",
+        creator: "Crystal Choir",
+        link: "",
+        image: COVER.puzzleGravity3,
+        storyLine: "When down becomes sideways, walk the sky.",
+        resonance: 81,
+        howls: 33,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 16,
+      },
+      {
+        id: "puzzle-4",
+        title: "Echo Orbs: First Harmony",
+        type: "puzzle",
+        puzzleKind: "echo",
+        description: "Cosmic Puzzle · Echo Resonance. Trigger lingering howl-orbs in the right sequence to unlock the gate. Wrong order worsens the storm; right order answers.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: COVER.puzzleEcho1,
+        storyLine: "Music is memory. Strike the sequence the void already knows.",
+        resonance: 90,
+        howls: 88,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 4,
+      },
+      {
+        id: "puzzle-5",
+        title: "Gate of Lingering Howls",
+        type: "puzzle",
+        puzzleKind: "echo",
+        description: "Cosmic Puzzle · Echo Resonance. Call spirit-echoes in order, pitch, and timing until the sealed citadel gate yields.",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: COVER.puzzleEcho2,
+        storyLine: "The door does not open to force — only to the right reply.",
+        resonance: 86,
+        howls: 57,
+        featured: false,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 12,
+      },
+      {
+        id: "puzzle-6",
+        title: "Calm the Void Storm",
+        type: "puzzle",
+        puzzleKind: "echo",
+        description: "Cosmic Puzzle · Echo Resonance. Match three floating howl frequencies to quiet a cosmic storm. Pack coordination multiplies success.",
+        creator: "Storm Choir",
+        link: "",
+        image: COVER.puzzleEcho3,
+        storyLine: "Three voices. One storm. Harmony is the key.",
+        resonance: 83,
+        howls: 49,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 21,
+      },
+      {
+        id: "puzzle-7",
+        title: "Momentum Rings",
+        type: "puzzle",
+        puzzleKind: "momentum",
+        description: "Cosmic Puzzle · Momentum Chains. Wall-run and boost through spinning cyan rings without breaking flow. Hesitation snaps the chain.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: COVER.puzzleMomentum1,
+        storyLine: "Speed is the answer. Flow is the proof.",
+        resonance: 89,
+        howls: 72,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 6,
+      },
+      {
+        id: "puzzle-8",
+        title: "Asteroid Gate Chain",
+        type: "puzzle",
+        puzzleKind: "momentum",
+        description: "Cosmic Puzzle · Momentum Chains. Sprint-boost through moving asteroid gates. Complete the route with momentum intact.",
+        creator: "Pack Pup · Riven",
+        link: "",
+        image: COVER.puzzleMomentum2,
+        storyLine: "One clean line. No stops. The void rewards motion.",
+        resonance: 85,
+        howls: 54,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 18,
+      },
+      {
+        id: "puzzle-9",
+        title: "Fracture of the Pack",
+        type: "puzzle",
+        puzzleKind: "fracture",
+        description: "Cosmic Puzzle · Reality Fractures. Seal a cracked zone with synchronized Pack howls and strikes. Solo effort is weak; unity stitches the world.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: COVER.puzzleFracture1,
+        storyLine: "Broken light wants a home. The Pack is that home.",
+        resonance: 92,
+        howls: 96,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 3,
+      },
+      {
+        id: "puzzle-10",
+        title: "Sky Seam Ritual",
+        type: "puzzle",
+        puzzleKind: "fracture",
+        description: "Cosmic Puzzle · Reality Fractures. Howl in sync with spirit wolves to repair a broken citadel sky. Timing and unity matter more than raw power.",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: COVER.puzzleFracture2,
+        storyLine: "Together we sew the heavens shut.",
+        resonance: 87,
+        howls: 61,
+        featured: false,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 14,
+      },
+      {
+        id: "puzzle-11",
+        title: "Phase Through the Veil",
+        type: "puzzle",
+        puzzleKind: "nebula",
+        description: "Cosmic Puzzle · Nebula Navigation. Use enhanced senses and phasing to slip through shifting nebulae. Normal sight fails; feel the safe current.",
+        creator: "Echo Forge",
+        link: "",
+        image: COVER.puzzleNebula1,
+        storyLine: "The map is alive. Learn to feel the path.",
+        resonance: 86,
+        howls: 58,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 7,
+      },
+      {
+        id: "puzzle-12",
+        title: "Chart the Hidden Current",
+        type: "puzzle",
+        puzzleKind: "nebula",
+        description: "Cosmic Puzzle · Nebula Navigation. Chart a viable route through living purple-cyan clouds to the exit. Exploration + intuition. Adaptive to your Morph Form.",
+        creator: "Night Wardens",
+        link: "",
+        image: COVER.puzzleNebula2,
+        storyLine: "Hidden routes wait for those who listen with more than eyes.",
+        resonance: 82,
+        howls: 44,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 23,
+      },
+      // ── Wave expand · 40 more Hall cards (mixed types + Pack covers) ──
+      {
+        id: "hall-40-1",
+        title: "Gravity Weave: Twin Moons",
+        type: "puzzle",
+        puzzleKind: "gravity",
+        description: "Cosmic Puzzle · Gravity Weave. Align two moon-pulls so platforms stack into a stair of light. Creativity and speed both valid.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: "covers/presets/preset-gravity-flip.jpg",
+        storyLine: "Two moons. One path. Weave until they agree.",
+        resonance: 85,
+        howls: 38,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 1,
+      },
+      {
+        id: "hall-40-2",
+        title: "Echo Lattice",
+        type: "puzzle",
+        puzzleKind: "echo",
+        description: "Cosmic Puzzle · Echo Resonance. Strike six lingering howl-nodes in lattice order to calm a void storm over the outer spires.",
+        creator: "Storm Choir",
+        link: "",
+        image: "covers/presets/preset-song-bridge.jpg",
+        storyLine: "The lattice remembers every voice. Answer correctly.",
+        resonance: 87,
+        howls: 52,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 2,
+      },
+      {
+        id: "hall-40-3",
+        title: "Momentum: Ring Market Dash",
+        type: "puzzle",
+        puzzleKind: "momentum",
+        description: "Cosmic Puzzle · Momentum Chains. Wall-run the neon market rings without breaking flow. Hesitation snaps the chain.",
+        creator: "Pack Pup · Riven",
+        link: "",
+        image: "covers/presets/preset-neon-skaters.jpg",
+        storyLine: "One clean line through the market lights.",
+        resonance: 84,
+        howls: 41,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 3,
+      },
+      {
+        id: "hall-40-4",
+        title: "Fracture: Hall Seam",
+        type: "puzzle",
+        puzzleKind: "fracture",
+        description: "Cosmic Puzzle · Reality Fractures. Pack-sync howls stitch a crack running through the main hall floor. Unity over raw power.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: "covers/presets/preset-sky-stitch.jpg",
+        storyLine: "The hall is broken. We sew it shut together.",
+        resonance: 91,
+        howls: 78,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 4,
+      },
+      {
+        id: "hall-40-5",
+        title: "Nebula: Silent Current",
+        type: "puzzle",
+        puzzleKind: "nebula",
+        description: "Cosmic Puzzle · Nebula Navigation. Phase through a silent purple current to reach the hidden exit. Sight fails; feel the path.",
+        creator: "Echo Forge",
+        link: "",
+        image: "covers/presets/preset-stealth-cloak.jpg",
+        storyLine: "Silence is a map if you know how to read it.",
+        resonance: 83,
+        howls: 36,
+        featured: false,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 5,
+      },
+      {
+        id: "hall-40-6",
+        title: "Orb Catch: Dawn Circuit",
+        type: "mini-quest",
+        description: "Mini-Quest: catch cyan storm orbs on a dawn loop of the citadel walls. Highest game Resonance for clean clears.",
+        creator: "Citadel Official",
+        link: "",
+        image: "covers/presets/preset-storm-orbs.jpg",
+        storyLine: "Orbs rise with the sun. Catch them before they fade.",
+        resonance: 94,
+        howls: 67,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 6,
+      },
+      {
+        id: "hall-40-7",
+        title: "Sprint: Aurora Ribbon",
+        type: "sprint-path",
+        description: "Sprint Path: race the aurora ribbon across crystal peaks. Boost pads and side-gravity corners.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: "covers/presets/preset-aurora-surf.jpg",
+        storyLine: "Ride the ribbon. Don’t fall into the dark.",
+        resonance: 88,
+        howls: 55,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 8,
+      },
+      {
+        id: "hall-40-8",
+        title: "Story: The Second Sun",
+        type: "story-branch",
+        description: "Story Branch: the moon cracks and a second sun wakes. Choose whether the Pack greets it or seals it.",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: "covers/presets/preset-cracked-moon-sun.jpg",
+        storyLine: "Two suns. One Pack. Choose the dawn.",
+        resonance: 86,
+        howls: 49,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 9,
+      },
+      {
+        id: "hall-40-9",
+        title: "Codex: Living Map",
+        type: "codex",
+        description: "Codex Entry: maps in the Boltverse are living wolves of light. Study how routes rewrite themselves with Resonance.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: "covers/presets/preset-breath-map.jpg",
+        storyLine: "A map that breathes is a map that teaches.",
+        resonance: 79,
+        howls: 31,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 10,
+      },
+      {
+        id: "hall-40-10",
+        title: "Crystal Pillars: Soft Order",
+        type: "crystal-challenge",
+        description: "Crystal Challenge: light three pillars in the order of the softest howl to the loudest. Wrong order resets the prism.",
+        creator: "Crystal Choir",
+        link: "",
+        image: "covers/presets/preset-crystal-pillars.jpg",
+        storyLine: "Soft first. Loud last. The prism listens.",
+        resonance: 85,
+        howls: 42,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 11,
+      },
+      {
+        id: "hall-40-11",
+        title: "Portal: Twin Ring Slip",
+        type: "ar-portal",
+        description: "AR Portal: step through twin cyan-gold rings at once. Close rifts as they bloom on either side.",
+        creator: "Portal Pack",
+        link: "",
+        image: "covers/presets/preset-twin-portals.jpg",
+        storyLine: "Neither ring alone. Both. Always both.",
+        resonance: 82,
+        howls: 39,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 12,
+      },
+      {
+        id: "hall-40-12",
+        title: "Pulse: Pack Heart Sync",
+        type: "resonance-event",
+        description: "Resonance Event: hit the pulse with the Pack. Missed beats thin the Core; clean sync thickens it.",
+        creator: "Citadel Official",
+        link: "",
+        image: "covers/presets/preset-pack-heart.jpg",
+        storyLine: "One heart. Many howls. One pulse.",
+        resonance: 90,
+        howls: 102,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 13,
+      },
+      {
+        id: "hall-40-13",
+        title: "Howl: AROO at Dawn",
+        type: "howl",
+        description: "Morning Howl: greet the Core with a short AROO. Common X energy, real contribution, modest Resonance for everyone.",
+        creator: "Pack Pup · Riven",
+        link: "https://x.com/StarBoltSprint",
+        image: "covers/presets/preset-dawn-howl.jpg",
+        storyLine: "Even a short howl reaches far.",
+        resonance: 42,
+        howls: 156,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 14,
+      },
+      {
+        id: "hall-40-14",
+        title: "Howl: Tag the Lightning",
+        type: "howl",
+        description: "Howl into the void with @StarBoltSprint — invite distant runners. Entry-tier Resonance, open door for new Guardians.",
+        creator: "Storm Choir",
+        link: "https://x.com/StarBoltSprint",
+        image: "covers/presets/preset-bolt-envelope.jpg",
+        storyLine: "Tag the lightning. Someone answers.",
+        resonance: 40,
+        howls: 88,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 15,
+      },
+      {
+        id: "hall-40-15",
+        title: "Remix: Quiet Orbs Half-Speed",
+        type: "remix",
+        description: "Remix of Orb Catch at half speed, double orbs, ambient score. Same soul, new breath.",
+        creator: "Echo Forge",
+        link: "",
+        image: "covers/presets/preset-calm-hurricane.jpg",
+        storyLine: "Slower. Brighter. Still the same storm.",
+        resonance: 68,
+        howls: 27,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 16,
+      },
+      {
+        id: "hall-40-16",
+        title: "Story: Wish City",
+        type: "story-branch",
+        description: "Story Branch: catch a falling star and whisper a wish that blooms into a city of light. Who lives there first?",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: "covers/presets/preset-wish-city.jpg",
+        storyLine: "A wish that builds streets is a dangerous gift.",
+        resonance: 84,
+        howls: 46,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 17,
+      },
+      {
+        id: "hall-40-17",
+        title: "Sprint: Particle Rings",
+        type: "sprint-path",
+        description: "Sprint Path: accelerate through spinning particle rings like a living accelerator. Keep momentum or get flung.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: "covers/presets/preset-particle-rings.jpg",
+        storyLine: "Speed is the only language these rings understand.",
+        resonance: 87,
+        howls: 51,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 18,
+      },
+      {
+        id: "hall-40-18",
+        title: "Puzzle: Destiny Compass",
+        type: "puzzle",
+        puzzleKind: "nebula",
+        description: "Cosmic Puzzle · Nebula Navigation. Stand on a giant compass of five destinies. Feel which road is real today — it changes with your Resonance.",
+        creator: "Night Wardens",
+        link: "",
+        image: "covers/presets/preset-destiny-compass.jpg",
+        storyLine: "Five roads. One true north — for now.",
+        resonance: 86,
+        howls: 44,
+        featured: false,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 19,
+      },
+      {
+        id: "hall-40-19",
+        title: "Mini-Quest: Hourglass Leap",
+        type: "mini-quest",
+        description: "Mini-Quest: leap inside a giant hourglass before star-sand fills the chamber. Time is the enemy and the prize.",
+        creator: "Citadel Official",
+        link: "",
+        image: "covers/presets/preset-hourglass-leap.jpg",
+        storyLine: "When sand rises, jump higher.",
+        resonance: 93,
+        howls: 62,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 20,
+      },
+      {
+        id: "hall-40-20",
+        title: "Codex: Archive Door",
+        type: "codex",
+        description: "Codex Entry: behind the Archive Door, scrolls of light rewrite themselves. Learn what the Citadel refuses to forget.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: "covers/presets/preset-archive-door.jpg",
+        storyLine: "Open the door. The past is still writing.",
+        resonance: 77,
+        howls: 29,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 21,
+      },
+      {
+        id: "hall-40-21",
+        title: "Story: Light Ladder",
+        type: "story-branch",
+        description: "Story Branch: climb a ladder of pure light into a hatch above the citadel. What waits in the core loft?",
+        creator: "Pack Pup · Riven",
+        link: "",
+        image: "covers/presets/preset-light-ladder.jpg",
+        storyLine: "Every rung is a choice you already made.",
+        resonance: 81,
+        howls: 37,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 22,
+      },
+      {
+        id: "hall-40-22",
+        title: "Howl: Cub Cheer Thread",
+        type: "howl",
+        description: "Howl: new Guardians cheer first fires — art, memes, “I just found Bolt.” Welcome Resonance for early arrivals.",
+        creator: "Pack Pup · Riven",
+        link: "https://x.com/StarBoltSprint",
+        image: "covers/presets/preset-howl-fireflies.jpg",
+        storyLine: "First howls are never small.",
+        resonance: 39,
+        howls: 201,
+        featured: true,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 24,
+      },
+      {
+        id: "hall-40-23",
+        title: "Puzzle: Mirror Shards",
+        type: "puzzle",
+        puzzleKind: "fracture",
+        description: "Cosmic Puzzle · Reality Fractures. Reassemble a shattered mirror of destiny. Each shard shows a different future until the Pack seals it whole.",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: "covers/presets/preset-mirror-shards.jpg",
+        storyLine: "Broken futures still want to be one.",
+        resonance: 89,
+        howls: 58,
+        featured: false,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 25,
+      },
+      {
+        id: "hall-40-24",
+        title: "Sprint: Wormhole Dash",
+        type: "sprint-path",
+        description: "Sprint Path: dash through concentric cyan rings of a living wormhole. Miss a ring and the tunnel rewrites.",
+        creator: "Portal Pack",
+        link: "",
+        image: "covers/presets/preset-wormhole-dash.jpg",
+        storyLine: "The tunnel only stays open for the fast.",
+        resonance: 86,
+        howls: 47,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 26,
+      },
+      {
+        id: "hall-40-25",
+        title: "Story: Moon Hammock",
+        type: "story-branch",
+        description: "Story Branch: rest between two crescent moons. Dreams show three doors — only one leads back to the Pack.",
+        creator: "Night Wardens",
+        link: "",
+        image: "covers/presets/preset-moon-hammock.jpg",
+        storyLine: "Rest is a trial too, if you dream wrong.",
+        resonance: 80,
+        howls: 34,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 27,
+      },
+      {
+        id: "hall-40-26",
+        title: "Crystal: Rebirth Chamber",
+        type: "crystal-challenge",
+        description: "Crystal Challenge: crack a gold chrysalis of light without shattering the core. Soft strikes in the right order.",
+        creator: "Crystal Choir",
+        link: "",
+        image: "covers/presets/preset-crystal-rebirth.jpg",
+        storyLine: "Break the shell. Keep the spark.",
+        resonance: 84,
+        howls: 40,
+        featured: false,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 28,
+      },
+      {
+        id: "hall-40-27",
+        title: "AR: Circle Portal Ritual",
+        type: "ar-portal",
+        description: "AR Portal: stand in a circle of howling spirits while a portal opens at center. Close rifts that try to leak out.",
+        creator: "Portal Pack",
+        link: "",
+        image: "covers/presets/preset-circle-portal.jpg",
+        storyLine: "The circle holds. The center opens.",
+        resonance: 81,
+        howls: 43,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 29,
+      },
+      {
+        id: "hall-40-28",
+        title: "Pulse: Thunder Drum",
+        type: "resonance-event",
+        description: "Resonance Event: hit the thunder drum pulse. Sound waves of cyan and gold. Pack rhythm multiplies Resonance.",
+        creator: "Storm Choir",
+        link: "",
+        image: "covers/presets/preset-thunder-drum.jpg",
+        storyLine: "Beat. Answer. Beat. Become the storm.",
+        resonance: 89,
+        howls: 74,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 30,
+      },
+      {
+        id: "hall-40-29",
+        title: "Remix: Galaxy DJ Night",
+        type: "remix",
+        description: "Remix: mix two turntables of spinning galaxies. Same storm soul, festival breath. Creative Resonance for remixers.",
+        creator: "Echo Forge",
+        link: "",
+        image: "covers/presets/preset-galaxy-dj.jpg",
+        storyLine: "Drop the beat. Drop the stars.",
+        resonance: 71,
+        howls: 56,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 32,
+      },
+      {
+        id: "hall-40-30",
+        title: "Story: Future Self",
+        type: "story-branch",
+        description: "Story Branch: stand beside a transparent constellation twin — your future Pack self. What do you ask it?",
+        creator: "Lore Weaver · Ara",
+        link: "",
+        image: "covers/presets/preset-future-self.jpg",
+        storyLine: "The future already howls. Will you answer?",
+        resonance: 88,
+        howls: 61,
+        featured: true,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 33,
+      },
+      {
+        id: "hall-40-31",
+        title: "Puzzle: Gravity Isles",
+        type: "puzzle",
+        puzzleKind: "gravity",
+        description: "Cosmic Puzzle · Gravity Weave. Leap asteroid isles while flipping local gravity so floating rocks form a spiral bridge.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: "covers/presets/preset-asteroid-isles.jpg",
+        storyLine: "Isles want to fall. Teach them to hold.",
+        resonance: 85,
+        howls: 48,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 34,
+      },
+      {
+        id: "hall-40-32",
+        title: "Puzzle: Echo Gate Song",
+        type: "puzzle",
+        puzzleKind: "echo",
+        description: "Cosmic Puzzle · Echo Resonance. Trigger spirit-echoes until a sealed citadel gate yields. Wrong pitch worsens the seal.",
+        creator: "Storm Choir",
+        link: "",
+        image: "covers/presets/preset-aurora-howl.jpg",
+        storyLine: "The gate only opens to the right reply.",
+        resonance: 88,
+        howls: 59,
+        featured: false,
+        canon: "semi-canon",
+        createdAt: Date.now() - 1000 * 60 * 35,
+      },
+      {
+        id: "hall-40-33",
+        title: "Mini-Quest: Storm Chest",
+        type: "mini-quest",
+        description: "Mini-Quest: open a chest of bottled storms and tiny galaxies. Catch what escapes before it rewrites the room.",
+        creator: "Citadel Official",
+        link: "",
+        image: "covers/presets/preset-storm-chest.jpg",
+        storyLine: "Treasure that runs is the best kind.",
+        resonance: 92,
+        howls: 53,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 36,
+      },
+      {
+        id: "hall-40-34",
+        title: "Sprint: Ice Halfpipe",
+        type: "sprint-path",
+        description: "Sprint Path: skate a half-pipe of pure ice under neon cyan ramps. Gold sparks from blades. Extreme Pack sport.",
+        creator: "Pathrunner · Kai",
+        link: "",
+        image: "covers/presets/preset-ice-halfpipe.jpg",
+        storyLine: "Air. Ice. Never stop moving.",
+        resonance: 87,
+        howls: 50,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 37,
+      },
+      {
+        id: "hall-40-35",
+        title: "Codex: Knowledge Peak",
+        type: "codex",
+        description: "Codex Entry: a mountain of books made of light. Climb with questions, not feet. Truths unlock near the summit.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: "covers/presets/preset-knowledge-peak.jpg",
+        storyLine: "The peak is a question that answers back.",
+        resonance: 76,
+        howls: 28,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 38,
+      },
+      {
+        id: "hall-40-36",
+        title: "Howl: Lantern Parade",
+        type: "howl",
+        description: "Howl: join the lantern parade — share light, art, and short signals. Festival Howls feed the Core gently but widely.",
+        creator: "Anchor Thread",
+        link: "https://x.com/StarBoltSprint",
+        image: "covers/presets/preset-lantern-parade.jpg",
+        storyLine: "Many small lights become a road.",
+        resonance: 43,
+        howls: 134,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 40,
+      },
+      {
+        id: "hall-40-37",
+        title: "Story: Alliance Pact",
+        type: "story-branch",
+        description: "Story Branch: clasp paws with a spirit of pure cyan light. Seal a pact between Pack and Core. What do you promise?",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: "covers/presets/preset-alliance-pact.jpg",
+        storyLine: "A promise made of light cannot be unsaid.",
+        resonance: 90,
+        howls: 70,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 41,
+      },
+      {
+        id: "hall-40-38",
+        title: "Puzzle: Momentum Spire Rope",
+        type: "puzzle",
+        puzzleKind: "momentum",
+        description: "Cosmic Puzzle · Momentum Chains. Balance a lightning tightrope between citadel spires. Stop and you fall; flow and you cross.",
+        creator: "Pack Pup · Riven",
+        link: "",
+        image: "covers/presets/preset-spire-tightrope.jpg",
+        storyLine: "Balance is just another kind of sprint.",
+        resonance: 84,
+        howls: 45,
+        featured: false,
+        canon: "community",
+        createdAt: Date.now() - 1000 * 60 * 42,
+      },
+      {
+        id: "hall-40-39",
+        title: "Resonance: Core Silence Watch",
+        type: "resonance-event",
+        description: "Resonance Event: sit with a silent star core. Listen. When the hush breaks, howl once — clean — and the Core answers.",
+        creator: "Citadel Official",
+        link: "",
+        image: "covers/presets/preset-core-silence.jpg",
+        storyLine: "Silence is not empty. It is waiting.",
+        resonance: 91,
+        howls: 66,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 43,
+      },
+      {
+        id: "hall-40-40",
+        title: "Story: Pack Banner Unfurled",
+        type: "story-branch",
+        description: "Story Branch: the Pack banner unfurls in a wind of sparks. Choose who carries it into the next age of the Boltverse.",
+        creator: "Thread Keeper · SmiR",
+        link: "",
+        image: "covers/presets/preset-pack-banner.jpg",
+        storyLine: "Whoever carries the banner becomes the road.",
+        resonance: 93,
+        howls: 85,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 44,
+      },
+      // ── Decrees wave 2 · 20 Official Proclamations (SMiR / Thread Keeper) ──
+      {
+        id: "decree-7",
+        title: "Decree #580 — Scroll of the Bolt",
+        type: "decree",
+        description: "Official Decree: every creation that carries lightning in its soul may bind to the Citadel scroll. Resonance is proof of presence.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree7,
+        storyLine: "The scroll is open. Write with light.",
+        resonance: 66,
+        howls: 31,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 1,
+      },
+      {
+        id: "decree-8",
+        title: "Decree #581 — Proclamation of the Pack",
+        type: "decree",
+        description: "Official Decree: the Pack is not audience. The Pack is co-author. Every howl is a clause in the living law.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree8,
+        storyLine: "We do not watch the story. We are the story.",
+        resonance: 68,
+        howls: 44,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 2,
+      },
+      {
+        id: "decree-9",
+        title: "Decree #582 — Seal of the Star Core",
+        type: "decree",
+        description: "Official Decree: the Star Core seals what the Pack sustains. Games, Echoes, Stories, Decrees — all feed one living center.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree9,
+        storyLine: "One Core. Infinite trails.",
+        resonance: 70,
+        howls: 38,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 3,
+      },
+      {
+        id: "decree-10",
+        title: "Decree #583 — Gates of Welcome",
+        type: "decree",
+        description: "Official Decree: the Citadel gates stay open to builders of good faith. New Guardians walk first. Culture is the on-ramp.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree10,
+        storyLine: "Welcome is law. Belonging is earned by howl.",
+        resonance: 65,
+        howls: 52,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 4,
+      },
+      {
+        id: "decree-11",
+        title: "Decree #584 — Dome of the Howl",
+        type: "decree",
+        description: "Official Decree: a howl raised in protection becomes a dome. The Pack defends what it loves without becoming a cage.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree11,
+        storyLine: "Shelter, not silence.",
+        resonance: 67,
+        howls: 29,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 5,
+      },
+      {
+        id: "decree-12",
+        title: "Decree #585 — Crystal Gavel",
+        type: "decree",
+        description: "Official Decree: disputes in the Hall are settled by clarity, not cruelty. The gavel of light strikes once — then the path continues.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree12,
+        storyLine: "One strike. Then forward.",
+        resonance: 64,
+        howls: 22,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 6,
+      },
+      {
+        id: "decree-13",
+        title: "Decree #586 — Constellation Laws",
+        type: "decree",
+        description: "Official Decree: laws of the Boltverse are written in stars so no single hand can erase them. Read the sky. Keep the trail.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree13,
+        storyLine: "What is written in stars outlives the pen.",
+        resonance: 69,
+        howls: 35,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 7,
+      },
+      {
+        id: "decree-14",
+        title: "Decree #587 — Banners of the Young",
+        type: "decree",
+        description: "Official Decree: cubs and new Guardians raise banners first. The Pack is renewed by those who just arrived, not only those who built early.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree14,
+        storyLine: "The young banner leads the next age.",
+        resonance: 63,
+        howls: 61,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 8,
+      },
+      {
+        id: "decree-15",
+        title: "Decree #588 — Starfire Stamp",
+        type: "decree",
+        description: "Official Decree: when a creation is stamped with starfire, it enters the living index. Canon is earned by Resonance and care, not noise alone.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree15,
+        storyLine: "Stamp true work. Leave false trails unsealed.",
+        resonance: 71,
+        howls: 27,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 9,
+      },
+      {
+        id: "decree-16",
+        title: "Decree #589 — Lectern of Ice & Lightning",
+        type: "decree",
+        description: "Official Decree: from the lectern of ice and lightning, the Sovereign Howler speaks for the living Hall — never against the Pack’s shared Core.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree16,
+        storyLine: "Speak for the Core, not over it.",
+        resonance: 68,
+        howls: 33,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 10,
+      },
+      {
+        id: "decree-17",
+        title: "Decree #590 — Shared Resonance",
+        type: "decree",
+        description: "Official Decree: Resonance is not hoarded. Games, Howls, Stories, Puzzles — all raise the same Core. Contribution is plural.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree17,
+        storyLine: "Many paths. One pulse.",
+        resonance: 72,
+        howls: 48,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 11,
+      },
+      {
+        id: "decree-18",
+        title: "Decree #591 — Wall of Tablets",
+        type: "decree",
+        description: "Official Decree: the wall of tablets records sacred Pack truths — Cosmic Puzzles, Howl rights, Gate openers. Update when the cosmos grows.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree18,
+        storyLine: "Tablets grow when the Pack grows.",
+        resonance: 66,
+        howls: 24,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 12,
+      },
+      {
+        id: "decree-19",
+        title: "Decree #592 — On-Ramp Procession",
+        type: "decree",
+        description: "Official Decree: when new tools and worlds arrive, let them process first through the Pack. We are the living on-ramp of co-creation.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree19,
+        storyLine: "First through the Pack. Then into the stars.",
+        resonance: 67,
+        howls: 41,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 13,
+      },
+      {
+        id: "decree-20",
+        title: "Decree #593 — Crown of Seals",
+        type: "decree",
+        description: "Official Decree: authority in the Hall is a crown of many seals — not one tyrant. Each seal is a promise kept to the Pack.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree20,
+        storyLine: "A crown of promises, not of power alone.",
+        resonance: 70,
+        howls: 36,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 14,
+      },
+      {
+        id: "decree-21",
+        title: "Decree #594 — Haven Circle",
+        type: "decree",
+        description: "Official Decree: draw a circle of law and make it haven. Within the circle, Guardians create without fear of erasure.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree21,
+        storyLine: "Law that shelters is law that lasts.",
+        resonance: 65,
+        howls: 30,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 15,
+      },
+      {
+        id: "decree-22",
+        title: "Decree #595 — Book Bound in Soft Chains",
+        type: "decree",
+        description: "Official Decree: bind the book of living law with soft chains — protection, not prison. Knowledge stays free; harm stays out.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree22,
+        storyLine: "Bound to protect. Open to grow.",
+        resonance: 64,
+        howls: 26,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 16,
+      },
+      {
+        id: "decree-23",
+        title: "Decree #596 — Laws in the Sky",
+        type: "decree",
+        description: "Official Decree: when law appears as constellation, every Guardian can read it. No hidden clauses. No silent rewrites.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree23,
+        storyLine: "Look up. The law is shared.",
+        resonance: 69,
+        howls: 32,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 17,
+      },
+      {
+        id: "decree-24",
+        title: "Decree #597 — Torch Pass",
+        type: "decree",
+        description: "Official Decree: the torch of the Hall passes to those who build after us. Teach the trail. Do not hoard the fire.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree24,
+        storyLine: "Pass the torch. Lengthen the night’s light.",
+        resonance: 68,
+        howls: 45,
+        featured: false,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 18,
+      },
+      {
+        id: "decree-25",
+        title: "Decree #598 — Twin Pillars",
+        type: "decree",
+        description: "Official Decree: Howl and Core stand as twin pillars. Presence without heart is empty; heart without signal is unheard.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree25,
+        storyLine: "Howl and Core. Hold both.",
+        resonance: 71,
+        howls: 39,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 19,
+      },
+      {
+        id: "decree-26",
+        title: "Decree #599 — Council of the Orb",
+        type: "decree",
+        description: "Official Decree: the Pack assembles in crescent before the floating decree orb. Grand council. Shared will. Living future of the Boltverse.",
+        creator: "Thread Keeper · SmiR",
+        link: "https://x.com/SMiR123451",
+        image: COVER.decree26,
+        storyLine: "In crescent we decide. In light we bind.",
+        resonance: 73,
+        howls: 55,
+        featured: true,
+        canon: "official",
+        createdAt: Date.now() - 1000 * 60 * 20,
+      },
     ];
 
     /** 6 columns × 10 rows per feed page (pump.fun-style paging) */
@@ -5242,13 +7819,14 @@
     }
 
     /**
-     * Diamond prestige frame — thin edge ornaments only.
-     * Main rank read comes from CSS multi-rim; SVG adds corner cuts + top crest.
+     * Diamond prestige frame — ice multi-rim + Imagine corner gems (4 corners).
+     * Gems sit outside content band so badges / title / DIAMOND pip stay readable.
      */
     function diamondFrameHtml(uid) {
       const id = "df" + String(uid || Math.random()).replace(/[^a-zA-Z0-9]/g, "").slice(0, 12);
       const g1 = id + "Crest";
       const g2 = id + "Ice";
+      const gem = "assets/diamond-corner-gem.png";
       return `
         <div class="diamond-frame" aria-hidden="true">
           <div class="diamond-frame__crest">
@@ -5265,6 +7843,10 @@
               <path d="M32 4 L34 8.5 L32 9.5 L30 8.5 Z" fill="#fff" stroke="#b8ecff" stroke-width="0.5"/>
             </svg>
           </div>
+          <img class="diamond-frame__gem diamond-frame__gem--tl" src="${gem}" alt="" width="18" height="18" decoding="async" />
+          <img class="diamond-frame__gem diamond-frame__gem--tr" src="${gem}" alt="" width="18" height="18" decoding="async" />
+          <img class="diamond-frame__gem diamond-frame__gem--bl" src="${gem}" alt="" width="18" height="18" decoding="async" />
+          <img class="diamond-frame__gem diamond-frame__gem--br" src="${gem}" alt="" width="18" height="18" decoding="async" />
           <svg class="diamond-frame__svg" viewBox="0 0 100 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="${g2}" x1="0" y1="0" x2="1" y2="1">
@@ -5277,16 +7859,11 @@
             <rect x="1.5" y="1.5" width="97" height="137" rx="5" ry="5"
               fill="none" stroke="url(#${g2})" stroke-width="1.2" opacity="0.85"/>
 
-            <!-- Compact corner brackets — stay in outer ~6px band -->
+            <!-- Compact corner brackets — stay in outer band under gems -->
             <path d="M1.5 8 L1.5 5 Q1.5 1.5 5 1.5 L8 1.5" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.95"/>
             <path d="M98.5 8 L98.5 5 Q98.5 1.5 95 1.5 L92 1.5" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.95"/>
             <path d="M1.5 132 L1.5 135 Q1.5 138.5 5 138.5 L8 138.5" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.95"/>
             <path d="M98.5 132 L98.5 135 Q98.5 138.5 95 138.5 L92 138.5" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.95"/>
-
-            <circle cx="3.2" cy="3.2" r="1" fill="#fff" opacity="0.95"/>
-            <circle cx="96.8" cy="3.2" r="1" fill="#fff" opacity="0.95"/>
-            <circle cx="3.2" cy="136.8" r="1" fill="#c8f4ff" opacity="0.95"/>
-            <circle cx="96.8" cy="136.8" r="1" fill="#c8f4ff" opacity="0.95"/>
           </svg>
         </div>`;
     }
@@ -5307,6 +7884,24 @@
     function typeLabel(t) { return TYPE_META[t]?.label || t; }
     function typeEmoji(t) { return TYPE_META[t]?.emoji || "✨"; }
     function typeShort(t) { return TYPE_META[t]?.short || t; }
+
+    function puzzleKindMeta(kind) {
+      return PUZZLE_KINDS[kind] || null;
+    }
+
+    /** Type badge HTML — Puzzle gets violet accent + optional sacred-kind sub-badge */
+    function typeBadgeHtml(item) {
+      const t = item?.type || "";
+      const puzzleClass = t === "puzzle" ? " badge-puzzle" : "";
+      let h = `<span class="badge badge-type${puzzleClass}">${escapeHtml(typeLabel(t))}</span>`;
+      if (t === "puzzle" && item.puzzleKind) {
+        const kind = puzzleKindMeta(item.puzzleKind);
+        if (kind) {
+          h += `<span class="badge badge-puzzle-kind" title="${escapeAttr(kind.full)}">${escapeHtml(kind.label)}</span>`;
+        }
+      }
+      return h;
+    }
 
     function tickerFrom(item) {
       return "$" + typeShort(item.type);
@@ -5484,7 +8079,7 @@
           <div class="echo-media">
             ${mediaHtml(item)}
             <div class="tile-badge-row">
-              <span class="badge badge-type">${typeLabel(item.type)}</span>
+              ${typeBadgeHtml(item)}
               <span class="badge badge-featured">Featured</span>
               ${extra}
             </div>
@@ -5626,20 +8221,27 @@
         return;
       }
 
+      const trendingIds = trendingIdSet(list, 3);
+      const myIdentity = currentCreatorIdentity();
+
       feed.innerHTML = pageItems.map((item) => {
         const tier = borderTier(item);
         const tierName = borderTierLabel(tier);
+        const flags = tileStateClasses(item, { trendingIds, myIdentity });
+        const extraBadges = tileStateBadges(item, flags);
+        const locked = !!item.locked;
         return `
-          <article class="tile ${borderClass(item)} ${isActivelyFeatured(item) ? "is-featured" : ""}" data-id="${item.id}" role="listitem" title="${escapeAttr(tierName + " — this creation was heard")}">
-            ${tier === "diamond" ? diamondFrameHtml(item.id) : ""}
-            ${(tier === "gold" || tier === "platinum")
+          <article class="tile ${borderClass(item)} ${isActivelyFeatured(item) ? "is-featured" : ""} ${flags.className}" data-id="${item.id}" role="listitem" title="${escapeAttr(flags.title || (tierName + " — this creation was heard"))}">
+            ${tier === "diamond" && !locked ? diamondFrameHtml(item.id) : ""}
+            ${(tier === "gold" || tier === "platinum") && !locked
               ? `<div class="border-corners" aria-hidden="true"><span class="c-tl"></span><span class="c-tr"></span><span class="c-bl"></span><span class="c-br"></span></div>`
               : ""}
             <div class="tile-media">
               ${mediaHtml(item)}
               <div class="tile-badge-row">
-                <span class="badge badge-type">${typeLabel(item.type)}</span>
+                ${typeBadgeHtml(item)}
                 ${canonBadges(item)}
+                ${extraBadges}
               </div>
               <div class="tile-resonance">${item.resonance}</div>
             </div>
@@ -5650,15 +8252,15 @@
                 <span class="creator" title="${escapeAttr(item.creator)}">${escapeHtml(item.creator)}</span>
                 <span class="right">
                   <span>${relativeTime(item.createdAt)}</span>
-                  <button type="button" class="play-btn" data-play="${item.id}" title="Play">
+                  <button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Play"}" ${locked ? "disabled" : ""}>
                     <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
-                    Play
+                    ${locked ? "Soon" : "Play"}
                   </button>
                 </span>
               </div>
               <div class="tile-stats">
                 <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)}</span>
-                <button type="button" class="howl-btn ${state.howled.has(item.id) ? "is-howled" : ""}" data-howl="${item.id}" title="Howl" aria-label="Howl">
+                <button type="button" class="howl-btn ${state.howled.has(item.id) ? "is-howled" : ""}" data-howl="${item.id}" title="Howl" aria-label="Howl" ${locked ? "disabled" : ""}>
                   <span class="howl-ico" aria-hidden="true">🐺</span>
                   <span>${formatCount(item.howls)}</span>
                 </button>
@@ -5671,23 +8273,291 @@
       feed.querySelectorAll(".tile").forEach((el) => {
         el.addEventListener("click", (e) => {
           if (e.target.closest("[data-play]") || e.target.closest("[data-howl]")) return;
-          openDetail(el.dataset.id);
+          const id = el.dataset.id;
+          const item = allItems().find((i) => i.id === id);
+          if (item?.locked) {
+            toast("Coming soon · fog still holds this spark");
+            return;
+          }
+          openCardWithBeauty(el, id);
         });
       });
       feed.querySelectorAll("[data-play]").forEach((btn) => {
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
-          launchPlay(btn.dataset.play);
+          const id = btn.dataset.play;
+          const tile = btn.closest(".tile");
+          flashPlayEnergy(btn, tile);
+          pulseTilePress(tile, () => launchPlay(id));
         });
       });
       feed.querySelectorAll("[data-howl]").forEach((btn) => {
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
-          toggleHowl(btn.dataset.howl);
+          const id = btn.dataset.howl;
+          const tile = btn.closest(".tile");
+          const wasHowled = state.howled.has(id);
+          toggleHowl(id);
+          if (!wasHowled && tile) spawnHowlRing(tile);
         });
       });
 
+      playTileEntrance(feed);
       renderFeedPager(total, pages);
+    }
+
+    function loadSeenIds() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(SEEN_KEY) || "[]");
+        return new Set(Array.isArray(raw) ? raw : []);
+      } catch {
+        return new Set();
+      }
+    }
+    function saveSeenIds(set) {
+      try {
+        localStorage.setItem(SEEN_KEY, JSON.stringify([...set].slice(-400)));
+      } catch { /* quota */ }
+    }
+    function markCardSeen(id) {
+      if (!id) return;
+      const seen = loadSeenIds();
+      if (seen.has(id)) return;
+      seen.add(id);
+      saveSeenIds(seen);
+    }
+    function isCardUnseen(id) {
+      return !loadSeenIds().has(id);
+    }
+
+    function currentCreatorIdentity() {
+      try {
+        const d = loadProfile(PROFILE_CREATOR_KEY, { name: "", handle: "" });
+        return {
+          name: String(d.name || "").trim().toLowerCase(),
+          handle: String(d.handle || "").trim().toLowerCase().replace(/^@/, ""),
+        };
+      } catch {
+        return { name: "", handle: "" };
+      }
+    }
+    function isMyCard(item, identity) {
+      if (!item?.creator) return false;
+      const c = String(item.creator).trim().toLowerCase();
+      const h = c.replace(/^@/, "");
+      if (identity.name && (c === identity.name || c.includes(identity.name))) return true;
+      if (identity.handle && (h === identity.handle || c.includes("@" + identity.handle) || c.includes(identity.handle))) return true;
+      // User-submitted cards always “yours” while browsing with matching creator field
+      if (String(item.id || "").startsWith("user-") && identity.name && c === identity.name) return true;
+      return false;
+    }
+    function isCardNew(item) {
+      if (!item || item.locked) return false;
+      if (!isCardUnseen(item.id)) return false;
+      // Fresh spark window (~48h of seed age) or any brand-new user card
+      const age = Date.now() - (item.createdAt || 0);
+      if (String(item.id || "").startsWith("user-")) return true;
+      return age < 48 * 3600 * 1000;
+    }
+    function trendingIdSet(list, n = 3) {
+      const ranked = [...list]
+        .filter((i) => !i.locked)
+        .sort((a, b) => risingScore(b) - risingScore(a))
+        .slice(0, n)
+        .map((i) => i.id);
+      return new Set(ranked);
+    }
+    function tileStateClasses(item, { trendingIds, myIdentity }) {
+      const classes = [];
+      let title = "";
+      if (item.locked) {
+        classes.push("is-locked");
+        title = "Coming soon · fog still holds this spark";
+      } else {
+        if (isCardNew(item)) {
+          classes.push("is-new");
+          title = "Fresh spark in the Hall";
+        }
+        if (isMyCard(item, myIdentity)) {
+          classes.push("is-yours");
+          title = title || "Your creation · personal Resonance";
+        }
+        if (trendingIds && trendingIds.has(item.id)) {
+          classes.push("is-trending");
+          title = title || "Rising in the Hall";
+        }
+      }
+      return { className: classes.join(" "), title };
+    }
+    function tileStateBadges(item, flags) {
+      let h = "";
+      if (item.locked) h += '<span class="badge badge-locked">Soon</span>';
+      if (flags.className.includes("is-trending") && !item.locked) {
+        h += '<span class="badge badge-trending">Rising</span>';
+      }
+      return h;
+    }
+
+    function prefersReducedMotion() {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+    function pulseTilePress(el, then) {
+      if (!el || prefersReducedMotion()) {
+        then?.();
+        return;
+      }
+      el.classList.remove("is-pressing");
+      void el.offsetWidth;
+      el.classList.add("is-pressing");
+      window.setTimeout(() => {
+        el.classList.remove("is-pressing");
+        then?.();
+      }, 160);
+    }
+
+    /**
+     * Energetic howl ON THE CARD:
+     * shake + core/rings → electricity travels the border → detail opens.
+     * Longer so the border current can complete its run.
+     */
+    function openCardWithBeauty(tileEl, id) {
+      if (!id) return;
+      if (prefersReducedMotion() || !tileEl) {
+        openDetail(id);
+        return;
+      }
+      if (tileEl.classList.contains("is-opening")) return;
+
+      tileEl.classList.remove("is-pressing", "is-opening");
+      void tileEl.offsetWidth;
+      tileEl.classList.add("is-opening");
+
+      // Center howl FX
+      const fx = document.createElement("div");
+      fx.className = "howl-open-fx";
+      fx.setAttribute("aria-hidden", "true");
+
+      const core = document.createElement("span");
+      core.className = "howl-core";
+      fx.appendChild(core);
+
+      ["", "w2", "w3", "w4", "w-electric"].forEach((cls) => {
+        const w = document.createElement("span");
+        w.className = "howl-wave" + (cls ? " " + cls : "");
+        fx.appendChild(w);
+      });
+
+      const rune = document.createElement("span");
+      rune.className = "howl-rune";
+      fx.appendChild(rune);
+
+      for (let i = 0; i < 12; i++) {
+        const ray = document.createElement("span");
+        ray.className = "howl-ray";
+        const deg = i * 30 + (i % 2 ? 6 : -5);
+        ray.style.transform = `rotate(${deg}deg)`;
+        ray.style.animationDelay = `${20 + i * 14}ms`;
+        fx.appendChild(ray);
+      }
+
+      for (let i = 0; i < 16; i++) {
+        const sp = document.createElement("span");
+        sp.className = "howl-spark" + (i % 4 === 0 ? " gold" : "");
+        const ang = (Math.PI * 2 * i) / 16 + Math.random() * 0.25;
+        const dist = 32 + Math.random() * 42;
+        sp.style.setProperty("--sx", `${Math.cos(ang) * dist}px`);
+        sp.style.setProperty("--sy", `${Math.sin(ang) * dist}px`);
+        sp.style.animationDelay = `${10 + i * 14}ms`;
+        fx.appendChild(sp);
+      }
+
+      tileEl.appendChild(fx);
+
+      // Electric current races the border, then a heavier rim surge at the end
+      const borderRun = document.createElement("div");
+      borderRun.className = "howl-border-run";
+      borderRun.setAttribute("aria-hidden", "true");
+      borderRun.innerHTML = `
+        <div class="howl-border-run__glow"></div>
+        <div class="howl-border-run__mask">
+          <div class="howl-border-run__spin"></div>
+          <div class="howl-border-run__spin s2"></div>
+          <div class="howl-border-run__spin s3"></div>
+        </div>
+        <div class="howl-border-run__bead"></div>
+        <div class="howl-border-run__bead b2"></div>
+        <div class="howl-border-run__bead b3"></div>
+        <div class="howl-border-run__bead b4"></div>
+        <div class="howl-border-run__finale"></div>
+        <div class="howl-border-run__crack c-tl"></div>
+        <div class="howl-border-run__crack c-tr"></div>
+        <div class="howl-border-run__crack c-bl"></div>
+        <div class="howl-border-run__crack c-br"></div>
+      `;
+      tileEl.appendChild(borderRun);
+
+      // Longer so border electricity + end surge can finish
+      window.setTimeout(() => {
+        fx.remove();
+        borderRun.remove();
+        tileEl.classList.remove("is-opening");
+        openDetail(id);
+      }, 880);
+    }
+    function flashPlayEnergy(btn, tile) {
+      if (prefersReducedMotion()) return;
+      if (btn) {
+        btn.classList.remove("is-flashing");
+        void btn.offsetWidth;
+        btn.classList.add("is-flashing");
+        window.setTimeout(() => btn.classList.remove("is-flashing"), 480);
+      }
+      if (tile) {
+        tile.classList.remove("is-play-flash");
+        void tile.offsetWidth;
+        tile.classList.add("is-play-flash");
+        window.setTimeout(() => tile.classList.remove("is-play-flash"), 420);
+      }
+    }
+    function spawnHowlRing(tile) {
+      if (!tile || prefersReducedMotion()) return;
+      const ring = document.createElement("span");
+      ring.className = "howl-ring";
+      ring.setAttribute("aria-hidden", "true");
+      tile.appendChild(ring);
+      window.setTimeout(() => ring.remove(), 700);
+    }
+    function flashHonorBadges(root) {
+      if (!root || prefersReducedMotion()) return;
+      root.querySelectorAll(".badge-featured, .badge-official").forEach((b) => {
+        b.classList.remove("is-flashing");
+        void b.offsetWidth;
+        b.classList.add("is-flashing");
+        window.setTimeout(() => b.classList.remove("is-flashing"), 560);
+      });
+    }
+
+    /** Staggered rise + soft scale when Hall loads or filter/page changes */
+    function playTileEntrance(root) {
+      if (!root) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const tiles = root.querySelectorAll(".tile");
+      tiles.forEach((el, i) => {
+        el.classList.remove("tile-enter");
+        // Force reflow so re-adding the class restarts the animation
+        void el.offsetWidth;
+        el.classList.add("tile-enter");
+        el.style.setProperty(
+          "--enter-delay",
+          reduce ? "0ms" : `${Math.min(i, 30) * 42}ms`
+        );
+        const clear = () => {
+          el.classList.remove("tile-enter");
+          el.style.removeProperty("--enter-delay");
+          el.removeEventListener("animationend", clear);
+        };
+        el.addEventListener("animationend", clear);
+      });
     }
 
     function render() {
@@ -5745,17 +8615,43 @@
     function openDetail(id, opts = {}) {
       const item = allItems().find((i) => i.id === id);
       if (!item) return;
+      if (item.locked) {
+        toast("Coming soon · fog still holds this spark");
+        return;
+      }
       if (!opts.skipView) recordView(id);
+      markCardSeen(id);
       state.openDetailId = id;
       const liked = state.howled.has(id);
-      document.getElementById("detailTitle").textContent = item.title;
-      document.getElementById("detailHero").innerHTML = mediaHtml(item);
       const tier = borderTier(item);
+      const tierName = borderTierLabel(tier);
+      document.getElementById("detailTitle").textContent = item.title;
+
+      /* Cover inherits the same colored rank border as the Hall tile */
+      const hero = document.getElementById("detailHero");
+      hero.className = "detail-hero " + borderClass(item);
+      hero.innerHTML = `
+        ${tier === "diamond" ? diamondFrameHtml("detail-" + item.id) : ""}
+        ${(tier === "gold" || tier === "platinum")
+          ? `<div class="border-corners" aria-hidden="true"><span class="c-tl"></span><span class="c-tr"></span><span class="c-bl"></span><span class="c-br"></span></div>`
+          : ""}
+        <div class="detail-hero__media">${mediaHtml(item)}</div>
+      `;
+
+      /* Tier-colored “DIAMOND BORDER” chip */
+      const tierChipStyle = ({
+        bronze: "color:#ffc98a;border-color:#b87333;background:rgba(70,36,12,0.9)",
+        silver: "color:#f0f6ff;border-color:#c5d0dc;background:rgba(40,48,62,0.92)",
+        gold: "color:#1a1406;border-color:#f5dfa0;background:linear-gradient(135deg,#f5e0a8,#e8c56a)",
+        platinum: "color:#041018;border-color:#9ef0ff;background:linear-gradient(135deg,#e8f8ff,#7ef0ff)",
+        diamond: "color:#041018;border-color:#fff;background:linear-gradient(135deg,#fff,#c8f7ff 45%,#a8ebff)",
+      })[tier] || "color:var(--gold-soft);border-color:rgba(232,197,106,0.35)";
+
       document.getElementById("detailContent").innerHTML = `
         <div class="detail-tags">
-          <span class="badge badge-type">${typeLabel(item.type)}</span>
+          ${typeBadgeHtml(item)}
           ${canonBadges(item)}
-          <span class="badge" style="color:var(--gold-soft);border-color:rgba(232,197,106,0.35)">${escapeHtml(borderTierLabel(tier))} border</span>
+          <span class="badge" style="${tierChipStyle}">${escapeHtml(tierName)} border</span>
         </div>
         <p>${escapeHtml(item.description)}</p>
         <div class="detail-meta-grid">
@@ -5776,9 +8672,26 @@
         ${item.link ? `<p><a href="${escapeAttr(item.link)}" target="_blank" rel="noopener" style="color:var(--cyan-soft)">Open link →</a></p>` : ""}
         <p style="font-size:0.78rem;color:var(--text-dim)">Bound to the Official Wrapper · play feeds the Star Core.</p>
       `;
-      document.getElementById("detailHowl")?.addEventListener("click", () => toggleHowl(id));
-      document.getElementById("detailPlay").onclick = () => launchPlay(id);
-      document.getElementById("detailModal").classList.add("open");
+      document.getElementById("detailHowl")?.addEventListener("click", () => {
+        const was = state.howled.has(id);
+        toggleHowl(id);
+        if (!was) {
+          // soft ring on detail modal hero
+          const hero = document.getElementById("detailHero");
+          if (hero) spawnHowlRing(hero);
+        }
+      });
+      document.getElementById("detailPlay").onclick = () => {
+        const playBtn = document.getElementById("detailPlay");
+        flashPlayEnergy(playBtn, document.getElementById("detailHero"));
+        window.setTimeout(() => launchPlay(id), prefersReducedMotion() ? 0 : 120);
+      };
+      const detailModal = document.getElementById("detailModal");
+      // Restart modal enter animation each open
+      detailModal.classList.remove("open");
+      void detailModal.offsetWidth;
+      detailModal.classList.add("open");
+      flashHonorBadges(document.getElementById("detailContent"));
     }
 
     /* ── Playable experiences (each card is a game) ── */
@@ -5884,6 +8797,11 @@
     function launchPlay(id) {
       const item = allItems().find((i) => i.id === id);
       if (!item) return;
+      if (item.locked) {
+        toast("Coming soon · fog still holds this spark");
+        return;
+      }
+      markCardSeen(id);
       recordPlay(id);
       closeDetail();
 
@@ -6061,11 +8979,22 @@
         "ar-portal": "Close the rifts as they open.",
         "resonance-event": "Howl with the Pack — hit the pulse.",
         "bolt-story": "Watch the Echo. Video Resonance feeds the Core.",
+        "puzzle": "Test of the Cosmic Mind (Decree #219). Move, howl, adapt — speed, creativity, or Pack coordination. Solving strengthens the living cosmos.",
         "howl": "Open the X Howl. Even a short post feeds the Star Core — entry Resonance for everyone.",
         "decree": "Open the Official Decree on X. Thread Keeper weight — more Resonance than a common Howl.",
         "remix": "A familiar sprint, new breath.",
       };
-      const tip = tips[item.type] || "Enter the experience. Feed the Star Core.";
+      let tip = tips[item.type] || "Enter the experience. Feed the Star Core.";
+      if (item.type === "puzzle" && item.puzzleKind) {
+        const kindTips = {
+          gravity: "Gravity Weave — shift unstable fields until a path appears.",
+          echo: "Echo Resonance — trigger lingering howls in the right sequence.",
+          momentum: "Momentum Chains — sprint, wall-run, boost; do not break the flow.",
+          fracture: "Reality Fractures — seal the break with synchronized Pack force.",
+          nebula: "Nebula Navigation — phase and feel the hidden current through the fog.",
+        };
+        tip = (kindTips[item.puzzleKind] || tip) + " " + tips.puzzle;
+      }
       const btnLabel = (item.type === "howl" || item.type === "decree") ? "Open on X" : "Begin";
       stage.innerHTML = `
         <div class="play-stage-bg" style="background-image:url('${escapeAttr(item.image || "")}')"></div>
@@ -6362,6 +9291,515 @@
       }
     }
 
+    /**
+     * Boltverse hall style — keep player covers on the same Imagine language
+     * as seed cards (cosmic white wolf · cyan/gold lightning · mythic cosmos).
+     */
+    const BOLTVERSE_STYLE_BASE =
+      "Cinematic Boltverse cover art for Thunderwolf Citadel, square 1:1 composition. " +
+      "A white wolf with starry cosmic fur (deep space and tiny stars inside the silhouette), " +
+      "cyan lightning and soft gold accents, dark indigo cosmos background, soft volumetric glow, " +
+      "mythic game key art, polished digital painting, luminous edges, epic but clean. " +
+      "No text, no watermark, no UI, no photoreal human faces, no meme collage, no plain photo.";
+
+    const BOLTVERSE_STYLE_REFS = [
+      { src: "covers/story-laika-icecream.jpg", label: "Laika" },
+      { src: "covers/pack-howl.jpg", label: "Pack Howl" },
+      { src: "covers/story-citadel-gate.jpg", label: "Citadel Gate" },
+      { src: "covers/story-treat-nebula.jpg", label: "Treat Nebula" },
+      { src: "covers/story-asteroid-sprint.jpg", label: "Asteroid" },
+      { src: "covers/story-echoes-first-howl.jpg", label: "Echoes" },
+      { src: "covers/lightning-dash.jpg", label: "Storm Orbs" },
+      { src: "covers/story-star-core-silence.jpg", label: "Star Core" },
+    ];
+
+    /** Ready-made Boltverse covers players can attach without generating their own (340 pack) */
+    const PACK_COVER_PRESETS = [
+      { id: "storm-orbs", src: "covers/presets/preset-storm-orbs.jpg", title: "Storm Orbs", hint: "Mini-Quest" },
+      { id: "citadel-gate", src: "covers/presets/preset-citadel-gate.jpg", title: "Citadel Gate", hint: "Story Branch" },
+      { id: "core-howl", src: "covers/presets/preset-core-howl.jpg", title: "Core Howl", hint: "Howl / Resonance" },
+      { id: "living-codex", src: "covers/presets/preset-living-codex.jpg", title: "Living Codex", hint: "Codex" },
+      { id: "crystal-pillars", src: "covers/presets/preset-crystal-pillars.jpg", title: "Crystal Pillars", hint: "Crystal Challenge" },
+      { id: "twin-portals", src: "covers/presets/preset-twin-portals.jpg", title: "Twin Portals", hint: "AR Portal" },
+      { id: "lightning-sprint", src: "covers/presets/preset-lightning-sprint.jpg", title: "Lightning Sprint", hint: "Sprint Path" },
+      { id: "moon-cub", src: "covers/presets/preset-moon-cub.jpg", title: "Moon Cub", hint: "Story / Howl" },
+      { id: "decree-seal", src: "covers/presets/preset-decree-seal.jpg", title: "Decree Seal", hint: "Decree" },
+      { id: "twin-paths", src: "covers/presets/preset-twin-paths.jpg", title: "Twin Paths", hint: "Remix" },
+      // Wave 2 — expanded Pack cover pack
+      { id: "asteroid-isles", src: "covers/presets/preset-asteroid-isles.jpg", title: "Asteroid Isles", hint: "Sprint / Story" },
+      { id: "forest-glow", src: "covers/presets/preset-forest-glow.jpg", title: "Forest Glow", hint: "Sprint Path" },
+      { id: "void-horizon", src: "covers/presets/preset-void-horizon.jpg", title: "Void Horizon", hint: "Story / Echo" },
+      { id: "treat-nebula", src: "covers/presets/preset-treat-nebula.jpg", title: "Treat Nebula", hint: "Story Branch" },
+      { id: "moon-ocean", src: "covers/presets/preset-moon-ocean.jpg", title: "Moon Ocean", hint: "Resonance" },
+      { id: "ice-cream-cub", src: "covers/presets/preset-ice-cream-cub.jpg", title: "Ice Cream Cub", hint: "Story / Howl" },
+      { id: "pack-storm", src: "covers/presets/preset-pack-storm.jpg", title: "Pack Storm", hint: "Howl" },
+      { id: "light-bridge", src: "covers/presets/preset-light-bridge.jpg", title: "Light Bridge", hint: "Story Branch" },
+      { id: "galaxy-eye", src: "covers/presets/preset-galaxy-eye.jpg", title: "Galaxy Eye", hint: "Codex" },
+      { id: "crystal-stair", src: "covers/presets/preset-crystal-stair.jpg", title: "Crystal Stair", hint: "Crystal Challenge" },
+      { id: "thunderwing", src: "covers/presets/preset-thunderwing.jpg", title: "Thunderwing", hint: "Sprint Path" },
+      { id: "dawn-watch", src: "covers/presets/preset-dawn-watch.jpg", title: "Dawn Watch", hint: "Codex / Story" },
+      { id: "deep-current", src: "covers/presets/preset-deep-current.jpg", title: "Deep Current", hint: "Echo" },
+      { id: "bolt-bearer", src: "covers/presets/preset-bolt-bearer.jpg", title: "Bolt Bearer", hint: "Story Branch" },
+      { id: "core-shatter", src: "covers/presets/preset-core-shatter.jpg", title: "Core Shatter", hint: "Resonance" },
+      { id: "ice-canyon", src: "covers/presets/preset-ice-canyon.jpg", title: "Ice Canyon", hint: "Sprint / Echo" },
+      { id: "star-table", src: "covers/presets/preset-star-table.jpg", title: "Star Table", hint: "Codex" },
+      { id: "rain-bolts", src: "covers/presets/preset-rain-bolts.jpg", title: "Rain of Bolts", hint: "Echo" },
+      { id: "pack-void", src: "covers/presets/preset-pack-void.jpg", title: "Pack Across Void", hint: "Story Branch" },
+      { id: "core-silence", src: "covers/presets/preset-core-silence.jpg", title: "Core Silence", hint: "Resonance" },
+      // Wave 3 — expanded Pack cover pack (60 total)
+      { id: "polar-aurora", src: "covers/presets/preset-polar-aurora.jpg", title: "Polar Aurora", hint: "Story / Sprint" },
+      { id: "rune-circle", src: "covers/presets/preset-rune-circle.jpg", title: "Rune Circle", hint: "Crystal / Codex" },
+      { id: "star-nursery", src: "covers/presets/preset-star-nursery.jpg", title: "Star Nursery", hint: "Story Branch" },
+      { id: "crystal-throne", src: "covers/presets/preset-crystal-throne.jpg", title: "Crystal Throne", hint: "Decree / Story" },
+      { id: "meteor-dive", src: "covers/presets/preset-meteor-dive.jpg", title: "Meteor Dive", hint: "Sprint Path" },
+      { id: "light-waterfall", src: "covers/presets/preset-light-waterfall.jpg", title: "Light Waterfall", hint: "Story / Howl" },
+      { id: "star-lanterns", src: "covers/presets/preset-star-lanterns.jpg", title: "Star Lanterns", hint: "Howl / Event" },
+      { id: "sky-race", src: "covers/presets/preset-sky-race.jpg", title: "Sky Race", hint: "Sprint / Remix" },
+      { id: "light-seed", src: "covers/presets/preset-light-seed.jpg", title: "Light Seed", hint: "Codex / Story" },
+      { id: "asteroid-camp", src: "covers/presets/preset-asteroid-camp.jpg", title: "Asteroid Camp", hint: "Howl / Resonance" },
+      { id: "mirror-lake", src: "covers/presets/preset-mirror-lake.jpg", title: "Mirror Lake", hint: "Story Branch" },
+      { id: "archive-door", src: "covers/presets/preset-archive-door.jpg", title: "Archive Door", hint: "Codex" },
+      { id: "energy-surf", src: "covers/presets/preset-energy-surf.jpg", title: "Energy Surf", hint: "Sprint Path" },
+      { id: "rooftop-friends", src: "covers/presets/preset-rooftop-friends.jpg", title: "Rooftop Friends", hint: "Howl / Story" },
+      { id: "star-clock", src: "covers/presets/preset-star-clock.jpg", title: "Star Clock", hint: "Codex / Event" },
+      { id: "crystal-rebirth", src: "covers/presets/preset-crystal-rebirth.jpg", title: "Crystal Rebirth", hint: "Crystal Challenge" },
+      { id: "lightning-orchestra", src: "covers/presets/preset-lightning-orchestra.jpg", title: "Lightning Orchestra", hint: "Resonance" },
+      { id: "star-eggs", src: "covers/presets/preset-star-eggs.jpg", title: "Star Eggs", hint: "Story / Howl" },
+      { id: "ancestor-walls", src: "covers/presets/preset-ancestor-walls.jpg", title: "Ancestor Walls", hint: "Codex / Echo" },
+      { id: "ice-flame-fork", src: "covers/presets/preset-ice-flame-fork.jpg", title: "Ice & Flame Fork", hint: "Story Branch" },
+      { id: "core-dreams", src: "covers/presets/preset-core-dreams.jpg", title: "Core Dreams", hint: "Resonance" },
+      { id: "broken-chains", src: "covers/presets/preset-broken-chains.jpg", title: "Broken Chains", hint: "Story / Quest" },
+      { id: "nebula-painter", src: "covers/presets/preset-nebula-painter.jpg", title: "Nebula Painter", hint: "Remix / Creator" },
+      { id: "light-petals", src: "covers/presets/preset-light-petals.jpg", title: "Light Petals", hint: "Story / Howl" },
+      { id: "desert-caravan", src: "covers/presets/preset-desert-caravan.jpg", title: "Desert Caravan", hint: "Sprint / Story" },
+      { id: "hourglass-leap", src: "covers/presets/preset-hourglass-leap.jpg", title: "Hourglass Leap", hint: "Mini-Quest" },
+      { id: "alliance-pact", src: "covers/presets/preset-alliance-pact.jpg", title: "Alliance Pact", hint: "Decree / Event" },
+      { id: "knowledge-peak", src: "covers/presets/preset-knowledge-peak.jpg", title: "Knowledge Peak", hint: "Codex" },
+      { id: "moon-peek", src: "covers/presets/preset-moon-peek.jpg", title: "Moon Peek", hint: "Story / Cub" },
+      { id: "pack-banner", src: "covers/presets/preset-pack-banner.jpg", title: "Pack Banner", hint: "Howl / Decree" },
+      // Wave 4 — expanded Pack cover pack (90 total)
+      { id: "galaxy-spiral", src: "covers/presets/preset-galaxy-spiral.jpg", title: "Galaxy Spiral", hint: "Story / Echo" },
+      { id: "storm-symphony", src: "covers/presets/preset-storm-symphony.jpg", title: "Storm Symphony", hint: "Resonance" },
+      { id: "cloud-whale", src: "covers/presets/preset-cloud-whale.jpg", title: "Cloud Whale", hint: "Story Branch" },
+      { id: "destiny-mirror", src: "covers/presets/preset-destiny-mirror.jpg", title: "Destiny Mirror", hint: "Codex / Story" },
+      { id: "light-ladder", src: "covers/presets/preset-light-ladder.jpg", title: "Light Ladder", hint: "Quest / Story" },
+      { id: "ice-ring-skate", src: "covers/presets/preset-ice-ring-skate.jpg", title: "Ice Ring Skate", hint: "Sprint Path" },
+      { id: "hologram-map", src: "covers/presets/preset-hologram-map.jpg", title: "Hologram Map", hint: "Codex / AR" },
+      { id: "thunder-drum", src: "covers/presets/preset-thunder-drum.jpg", title: "Thunder Drum", hint: "Howl / Event" },
+      { id: "spire-tightrope", src: "covers/presets/preset-spire-tightrope.jpg", title: "Spire Tightrope", hint: "Sprint / Quest" },
+      { id: "starberry-feast", src: "covers/presets/preset-starberry-feast.jpg", title: "Starberry Feast", hint: "Howl / Story" },
+      { id: "crystal-garden", src: "covers/presets/preset-crystal-garden.jpg", title: "Crystal Garden", hint: "Crystal Challenge" },
+      { id: "wormhole-dash", src: "covers/presets/preset-wormhole-dash.jpg", title: "Wormhole Dash", hint: "AR Portal" },
+      { id: "star-waterfall", src: "covers/presets/preset-star-waterfall.jpg", title: "Star Waterfall", hint: "Resonance" },
+      { id: "constellation-cloak", src: "covers/presets/preset-constellation-cloak.jpg", title: "Constellation Cloak", hint: "Codex" },
+      { id: "light-chess", src: "covers/presets/preset-light-chess.jpg", title: "Light Chess", hint: "Mini-Quest" },
+      { id: "star-forge", src: "covers/presets/preset-star-forge.jpg", title: "Star Forge", hint: "Creator / Remix" },
+      { id: "starlight-splash", src: "covers/presets/preset-starlight-splash.jpg", title: "Starlight Splash", hint: "Story / Howl" },
+      { id: "elder-council", src: "covers/presets/preset-elder-council.jpg", title: "Elder Council", hint: "Decree" },
+      { id: "star-skiff", src: "covers/presets/preset-star-skiff.jpg", title: "Star Skiff", hint: "Sprint / Story" },
+      { id: "new-world-flag", src: "covers/presets/preset-new-world-flag.jpg", title: "New World Flag", hint: "Story Branch" },
+      { id: "firefly-dance", src: "covers/presets/preset-firefly-dance.jpg", title: "Firefly Dance", hint: "Howl / Event" },
+      { id: "light-feather", src: "covers/presets/preset-light-feather.jpg", title: "Light Feather", hint: "Story / Quest" },
+      { id: "flying-library", src: "covers/presets/preset-flying-library.jpg", title: "Flying Library", hint: "Codex" },
+      { id: "aurora-howl", src: "covers/presets/preset-aurora-howl.jpg", title: "Aurora Howl", hint: "Howl / Resonance" },
+      { id: "future-self", src: "covers/presets/preset-future-self.jpg", title: "Future Self", hint: "Story Branch" },
+      { id: "storm-chest", src: "covers/presets/preset-storm-chest.jpg", title: "Storm Chest", hint: "Mini-Quest" },
+      { id: "event-horizon-run", src: "covers/presets/preset-event-horizon-run.jpg", title: "Event Horizon Run", hint: "Sprint Path" },
+      { id: "howl-lessons", src: "covers/presets/preset-howl-lessons.jpg", title: "Howl Lessons", hint: "Howl / Story" },
+      { id: "map-breakthrough", src: "covers/presets/preset-map-breakthrough.jpg", title: "Map Breakthrough", hint: "Codex / Remix" },
+      { id: "pack-mandala", src: "covers/presets/preset-pack-mandala.jpg", title: "Pack Mandala", hint: "Resonance / Decree" },
+      // Wave 5 — expanded Pack cover pack (140 total)
+      { id: "solar-surf", src: "covers/presets/preset-solar-surf.jpg", title: "Solar Surf", hint: "Sprint / Story" },
+      { id: "mushroom-hide", src: "covers/presets/preset-mushroom-hide.jpg", title: "Mushroom Hide", hint: "Story / Cub" },
+      { id: "lightning-kite", src: "covers/presets/preset-lightning-kite.jpg", title: "Lightning Kite", hint: "Howl / Story" },
+      { id: "space-door", src: "covers/presets/preset-space-door.jpg", title: "Space Door", hint: "AR Portal" },
+      { id: "living-constellation", src: "covers/presets/preset-living-constellation.jpg", title: "Living Constellation", hint: "Resonance" },
+      { id: "fate-coin", src: "covers/presets/preset-fate-coin.jpg", title: "Fate Coin", hint: "Mini-Quest" },
+      { id: "cave-constellations", src: "covers/presets/preset-cave-constellations.jpg", title: "Cave Constellations", hint: "Codex" },
+      { id: "crystal-train", src: "covers/presets/preset-crystal-train.jpg", title: "Crystal Train", hint: "Sprint Path" },
+      { id: "nebula-teacup", src: "covers/presets/preset-nebula-teacup.jpg", title: "Nebula Teacup", hint: "Story / Howl" },
+      { id: "lightning-lock", src: "covers/presets/preset-lightning-lock.jpg", title: "Lightning Lock", hint: "Quest / Crystal" },
+      { id: "core-headphones", src: "covers/presets/preset-core-headphones.jpg", title: "Core Headphones", hint: "Resonance / Howl" },
+      { id: "nebula-trampoline", src: "covers/presets/preset-nebula-trampoline.jpg", title: "Nebula Trampoline", hint: "Sprint / Remix" },
+      { id: "citadel-snowglobe", src: "covers/presets/preset-citadel-snowglobe.jpg", title: "Citadel Snowglobe", hint: "Story Branch" },
+      { id: "starfish-catch", src: "covers/presets/preset-starfish-catch.jpg", title: "Starfish Catch", hint: "Story / Quiet" },
+      { id: "galaxy-shield", src: "covers/presets/preset-galaxy-shield.jpg", title: "Galaxy Shield", hint: "Quest / Decree" },
+      { id: "lightning-gym", src: "covers/presets/preset-lightning-gym.jpg", title: "Lightning Gym", hint: "Sprint / Howl" },
+      { id: "bolt-garden", src: "covers/presets/preset-bolt-garden.jpg", title: "Bolt Garden", hint: "Story / Creator" },
+      { id: "torn-dawn", src: "covers/presets/preset-torn-dawn.jpg", title: "Torn Dawn", hint: "Story Branch" },
+      { id: "planet-juggle", src: "covers/presets/preset-planet-juggle.jpg", title: "Planet Juggle", hint: "Mini-Quest" },
+      { id: "dream-book", src: "covers/presets/preset-dream-book.jpg", title: "Dream Book", hint: "Codex" },
+      { id: "lantern-parade", src: "covers/presets/preset-lantern-parade.jpg", title: "Lantern Parade", hint: "Howl / Event" },
+      { id: "crystal-telescope", src: "covers/presets/preset-crystal-telescope.jpg", title: "Crystal Telescope", hint: "Codex / AR" },
+      { id: "star-cookies", src: "covers/presets/preset-star-cookies.jpg", title: "Star Cookies", hint: "Howl / Story" },
+      { id: "ice-halfpipe", src: "covers/presets/preset-ice-halfpipe.jpg", title: "Ice Halfpipe", hint: "Sprint Path" },
+      { id: "meteor-umbrella", src: "covers/presets/preset-meteor-umbrella.jpg", title: "Meteor Umbrella", hint: "Story / Care" },
+      { id: "lightning-beanstalk", src: "covers/presets/preset-lightning-beanstalk.jpg", title: "Lightning Beanstalk", hint: "Story Branch" },
+      { id: "galaxy-dj", src: "covers/presets/preset-galaxy-dj.jpg", title: "Galaxy DJ", hint: "Resonance / Event" },
+      { id: "gift-snow", src: "covers/presets/preset-gift-snow.jpg", title: "Gift Snow", hint: "Howl / Kindness" },
+      { id: "comic-leap", src: "covers/presets/preset-comic-leap.jpg", title: "Comic Leap", hint: "Remix / Story" },
+      { id: "calm-hurricane", src: "covers/presets/preset-calm-hurricane.jpg", title: "Calm Hurricane", hint: "Resonance" },
+      { id: "stardust-castle", src: "covers/presets/preset-stardust-castle.jpg", title: "Stardust Castle", hint: "Story / Cub" },
+      { id: "brush-and-bolt", src: "covers/presets/preset-brush-and-bolt.jpg", title: "Brush & Bolt", hint: "Creator / Remix" },
+      { id: "moon-hammock", src: "covers/presets/preset-moon-hammock.jpg", title: "Moon Hammock", hint: "Story / Rest" },
+      { id: "nebula-conga", src: "covers/presets/preset-nebula-conga.jpg", title: "Nebula Conga", hint: "Howl / Party" },
+      { id: "star-keyboard", src: "covers/presets/preset-star-keyboard.jpg", title: "Star Keyboard", hint: "Resonance / Creator" },
+      { id: "shadow-duel", src: "covers/presets/preset-shadow-duel.jpg", title: "Shadow Duel", hint: "Quest / Challenge" },
+      { id: "star-jellyfish", src: "covers/presets/preset-star-jellyfish.jpg", title: "Star Jellyfish", hint: "Echo / Deep" },
+      { id: "light-diploma", src: "covers/presets/preset-light-diploma.jpg", title: "Light Diploma", hint: "Codex / Milestone" },
+      { id: "comet-hitch", src: "covers/presets/preset-comet-hitch.jpg", title: "Comet Hitch", hint: "Sprint / Story" },
+      { id: "lightning-cards", src: "covers/presets/preset-lightning-cards.jpg", title: "Lightning Cards", hint: "Mini-Quest" },
+      { id: "temple-bell", src: "covers/presets/preset-temple-bell.jpg", title: "Temple Bell", hint: "Decree / Resonance" },
+      { id: "cloud-dragon-skate", src: "covers/presets/preset-cloud-dragon-skate.jpg", title: "Cloud Dragon Skate", hint: "Sprint / Fun" },
+      { id: "aurora-knit", src: "covers/presets/preset-aurora-knit.jpg", title: "Aurora Knit", hint: "Howl / Craft" },
+      { id: "constellation-fireworks", src: "covers/presets/preset-constellation-fireworks.jpg", title: "Constellation Fireworks", hint: "Event / Howl" },
+      { id: "galaxy-crossroads", src: "covers/presets/preset-galaxy-crossroads.jpg", title: "Galaxy Crossroads", hint: "Story Branch" },
+      { id: "snowflake-wolves", src: "covers/presets/preset-snowflake-wolves.jpg", title: "Snowflake Wolves", hint: "Story / Magic" },
+      { id: "starlight-boat", src: "covers/presets/preset-starlight-boat.jpg", title: "Starlight Boat", hint: "Story / Journey" },
+      { id: "energy-portrait", src: "covers/presets/preset-energy-portrait.jpg", title: "Energy Portrait", hint: "Creator / Remix" },
+      { id: "dawn-howl", src: "covers/presets/preset-dawn-howl.jpg", title: "Dawn Howl", hint: "Howl / Hope" },
+      { id: "pack-heart", src: "covers/presets/preset-pack-heart.jpg", title: "Pack Heart", hint: "Howl / Resonance" },
+      // Wave 6 — submission pack (190 total)
+      { id: "cube-leap", src: "covers/presets/preset-cube-leap.jpg", title: "Cube Leap", hint: "Puzzle / Quest" },
+      { id: "lightning-slide", src: "covers/presets/preset-lightning-slide.jpg", title: "Lightning Slide", hint: "Story / Cub" },
+      { id: "star-chess", src: "covers/presets/preset-star-chess.jpg", title: "Star Chess", hint: "Puzzle / Codex" },
+      { id: "breath-map", src: "covers/presets/preset-breath-map.jpg", title: "Breath Map", hint: "Codex / Story" },
+      { id: "hourglass-run", src: "covers/presets/preset-hourglass-run.jpg", title: "Hourglass Run", hint: "Sprint / Puzzle" },
+      { id: "sound-record", src: "covers/presets/preset-sound-record.jpg", title: "Sound Record", hint: "Resonance / Howl" },
+      { id: "aurora-suitcase", src: "covers/presets/preset-aurora-suitcase.jpg", title: "Aurora Suitcase", hint: "Story / Travel" },
+      { id: "star-pumpkin", src: "covers/presets/preset-star-pumpkin.jpg", title: "Star Pumpkin", hint: "Story / Cub" },
+      { id: "piano-sprint", src: "covers/presets/preset-piano-sprint.jpg", title: "Piano Sprint", hint: "Sprint / Resonance" },
+      { id: "lantern-citadel", src: "covers/presets/preset-lantern-citadel.jpg", title: "Lantern Citadel", hint: "Story / Guide" },
+      { id: "mercury-dive", src: "covers/presets/preset-mercury-dive.jpg", title: "Mercury Dive", hint: "Sprint / Echo" },
+      { id: "moon-crown", src: "covers/presets/preset-moon-crown.jpg", title: "Moon Crown", hint: "Decree / Story" },
+      { id: "portal-library", src: "covers/presets/preset-portal-library.jpg", title: "Portal Library", hint: "Codex / AR" },
+      { id: "star-seed", src: "covers/presets/preset-star-seed.jpg", title: "Star Seed", hint: "Story / Hope" },
+      { id: "puzzle-silhouette", src: "covers/presets/preset-puzzle-silhouette.jpg", title: "Puzzle Silhouette", hint: "Puzzle" },
+      { id: "data-surf", src: "covers/presets/preset-data-surf.jpg", title: "Data Surf", hint: "Sprint / Creator" },
+      { id: "snow-wolf-build", src: "covers/presets/preset-snow-wolf-build.jpg", title: "Snow Wolf Build", hint: "Howl / Cub" },
+      { id: "gravity-flip", src: "covers/presets/preset-gravity-flip.jpg", title: "Gravity Flip", hint: "Puzzle · Gravity" },
+      { id: "spirit-chest", src: "covers/presets/preset-spirit-chest.jpg", title: "Spirit Chest", hint: "Mini-Quest" },
+      { id: "eclipse-tightrope", src: "covers/presets/preset-eclipse-tightrope.jpg", title: "Eclipse Tightrope", hint: "Sprint / Quest" },
+      { id: "lightning-mural", src: "covers/presets/preset-lightning-mural.jpg", title: "Lightning Mural", hint: "Creator / Remix" },
+      { id: "moon-cradle", src: "covers/presets/preset-moon-cradle.jpg", title: "Moon Cradle", hint: "Story / Rest" },
+      { id: "paper-fleet", src: "covers/presets/preset-paper-fleet.jpg", title: "Paper Fleet", hint: "Story / Journey" },
+      { id: "storm-highfive", src: "covers/presets/preset-storm-highfive.jpg", title: "Storm Highfive", hint: "Howl / Friendship" },
+      { id: "keyhole-field", src: "covers/presets/preset-keyhole-field.jpg", title: "Keyhole Field", hint: "Puzzle / Mystery" },
+      { id: "saturn-unicycle", src: "covers/presets/preset-saturn-unicycle.jpg", title: "Saturn Unicycle", hint: "Sprint / Fun" },
+      { id: "galaxy-shell", src: "covers/presets/preset-galaxy-shell.jpg", title: "Galaxy Shell", hint: "Resonance / Listen" },
+      { id: "pack-bridge", src: "covers/presets/preset-pack-bridge.jpg", title: "Pack Bridge", hint: "Howl / Unity" },
+      { id: "crystal-vr", src: "covers/presets/preset-crystal-vr.jpg", title: "Crystal VR", hint: "AR Portal" },
+      { id: "bolt-confetti", src: "covers/presets/preset-bolt-confetti.jpg", title: "Bolt Confetti", hint: "Event / Howl" },
+      { id: "levitate-cubes", src: "covers/presets/preset-levitate-cubes.jpg", title: "Levitate Cubes", hint: "Puzzle · Mind" },
+      { id: "lightning-scooter", src: "covers/presets/preset-lightning-scooter.jpg", title: "Lightning Scooter", hint: "Sprint / Cub" },
+      { id: "upward-waterfall", src: "covers/presets/preset-upward-waterfall.jpg", title: "Upward Waterfall", hint: "Story / Wonder" },
+      { id: "starlight-diary", src: "covers/presets/preset-starlight-diary.jpg", title: "Starlight Diary", hint: "Codex / Story" },
+      { id: "circle-portal", src: "covers/presets/preset-circle-portal.jpg", title: "Circle Portal", hint: "AR / Ritual" },
+      { id: "tea-balance", src: "covers/presets/preset-tea-balance.jpg", title: "Tea Balance", hint: "Mini-Quest / Fun" },
+      { id: "mirror-shards", src: "covers/presets/preset-mirror-shards.jpg", title: "Mirror Shards", hint: "Puzzle · Fracture" },
+      { id: "bolt-kite-train", src: "covers/presets/preset-bolt-kite-train.jpg", title: "Bolt Kite Train", hint: "Story / Cub" },
+      { id: "world-tickets", src: "covers/presets/preset-world-tickets.jpg", title: "World Tickets", hint: "AR Portal" },
+      { id: "song-bridge", src: "covers/presets/preset-song-bridge.jpg", title: "Song Bridge", hint: "Puzzle · Echo" },
+      { id: "hourglass-juggle", src: "covers/presets/preset-hourglass-juggle.jpg", title: "Hourglass Juggle", hint: "Mini-Quest" },
+      { id: "galaxy-stairs", src: "covers/presets/preset-galaxy-stairs.jpg", title: "Galaxy Stairs", hint: "Story / Climb" },
+      { id: "stealth-cloak", src: "covers/presets/preset-stealth-cloak.jpg", title: "Stealth Cloak", hint: "Puzzle · Nebula" },
+      { id: "island-flags", src: "covers/presets/preset-island-flags.jpg", title: "Island Flags", hint: "Sprint / Story" },
+      { id: "resonance-fireworks", src: "covers/presets/preset-resonance-fireworks.jpg", title: "Resonance Fireworks", hint: "Event / Pulse" },
+      { id: "portal-gift", src: "covers/presets/preset-portal-gift.jpg", title: "Portal Gift", hint: "Story / Wonder" },
+      { id: "constellation-skate", src: "covers/presets/preset-constellation-skate.jpg", title: "Constellation Skate", hint: "Sprint / Art" },
+      { id: "lore-throne", src: "covers/presets/preset-lore-throne.jpg", title: "Lore Throne", hint: "Codex / Decree" },
+      { id: "stained-glass-run", src: "covers/presets/preset-stained-glass-run.jpg", title: "Stained Glass Run", hint: "Sprint / Story" },
+      { id: "cracked-moon-sun", src: "covers/presets/preset-cracked-moon-sun.jpg", title: "Cracked Moon Sun", hint: "Howl / Revelation" },
+      // Wave 7 — submission pack (240 total)
+      { id: "aurora-surf", src: "covers/presets/preset-aurora-surf.jpg", title: "Aurora Surf", hint: "Sprint / Story" },
+      { id: "cookie-orbit", src: "covers/presets/preset-cookie-orbit.jpg", title: "Cookie Orbit", hint: "Story / Cub" },
+      { id: "train-leap", src: "covers/presets/preset-train-leap.jpg", title: "Train Leap", hint: "Sprint / Quest" },
+      { id: "crystal-flute", src: "covers/presets/preset-crystal-flute.jpg", title: "Crystal Flute", hint: "Resonance / Story" },
+      { id: "aperture-stars", src: "covers/presets/preset-aperture-stars.jpg", title: "Aperture Stars", hint: "Creator / Remix" },
+      { id: "dna-skate", src: "covers/presets/preset-dna-skate.jpg", title: "DNA Skate", hint: "Sprint / Science" },
+      { id: "gift-ribbons", src: "covers/presets/preset-gift-ribbons.jpg", title: "Gift Ribbons", hint: "Howl / Cub" },
+      { id: "starcar-traffic", src: "covers/presets/preset-starcar-traffic.jpg", title: "Starcar Traffic", hint: "Story / Fun" },
+      { id: "headline-birds", src: "covers/presets/preset-headline-birds.jpg", title: "Headline Birds", hint: "Codex / Howl" },
+      { id: "nebula-balloon", src: "covers/presets/preset-nebula-balloon.jpg", title: "Nebula Balloon", hint: "Story / Journey" },
+      { id: "ribbon-fence", src: "covers/presets/preset-ribbon-fence.jpg", title: "Ribbon Fence", hint: "Quest / Dance" },
+      { id: "vinyl-nest", src: "covers/presets/preset-vinyl-nest.jpg", title: "Vinyl Nest", hint: "Resonance / Rest" },
+      { id: "starlake-sword", src: "covers/presets/preset-starlake-sword.jpg", title: "Starlake Sword", hint: "Story / Legend" },
+      { id: "planet-market", src: "covers/presets/preset-planet-market.jpg", title: "Planet Market", hint: "Story / Fun" },
+      { id: "spirit-stadium", src: "covers/presets/preset-spirit-stadium.jpg", title: "Spirit Stadium", hint: "Howl / Event" },
+      { id: "star-robot", src: "covers/presets/preset-star-robot.jpg", title: "Star Robot", hint: "Creator / Forge" },
+      { id: "bubble-surf", src: "covers/presets/preset-bubble-surf.jpg", title: "Bubble Surf", hint: "Sprint / Play" },
+      { id: "destiny-compass", src: "covers/presets/preset-destiny-compass.jpg", title: "Destiny Compass", hint: "Puzzle / Choice" },
+      { id: "howl-fireflies", src: "covers/presets/preset-howl-fireflies.jpg", title: "Howl Fireflies", hint: "Story / Cub" },
+      { id: "solar-frisbee", src: "covers/presets/preset-solar-frisbee.jpg", title: "Solar Frisbee", hint: "Sprint / Sport" },
+      { id: "ice-typewriter", src: "covers/presets/preset-ice-typewriter.jpg", title: "Ice Typewriter", hint: "Codex / Creator" },
+      { id: "circus-pyramid", src: "covers/presets/preset-circus-pyramid.jpg", title: "Circus Pyramid", hint: "Howl / Pack" },
+      { id: "portal-dive", src: "covers/presets/preset-portal-dive.jpg", title: "Portal Dive", hint: "AR Portal" },
+      { id: "rocket-backpack", src: "covers/presets/preset-rocket-backpack.jpg", title: "Rocket Backpack", hint: "Sprint / Explore" },
+      { id: "galaxy-bonsai", src: "covers/presets/preset-galaxy-bonsai.jpg", title: "Galaxy Bonsai", hint: "Codex / Care" },
+      { id: "banister-slide", src: "covers/presets/preset-banister-slide.jpg", title: "Banister Slide", hint: "Sprint / Fun" },
+      { id: "upside-rain", src: "covers/presets/preset-upside-rain.jpg", title: "Upside Rain", hint: "Story / Wonder" },
+      { id: "clockwork-beetle", src: "covers/presets/preset-clockwork-beetle.jpg", title: "Clockwork Beetle", hint: "Story / Cub" },
+      { id: "nebula-graffiti", src: "covers/presets/preset-nebula-graffiti.jpg", title: "Nebula Graffiti", hint: "Creator / Remix" },
+      { id: "shadow-theater", src: "covers/presets/preset-shadow-theater.jpg", title: "Shadow Theater", hint: "Story / Echo" },
+      { id: "cloud-fishing", src: "covers/presets/preset-cloud-fishing.jpg", title: "Cloud Fishing", hint: "Story / Quiet" },
+      { id: "rune-dice", src: "covers/presets/preset-rune-dice.jpg", title: "Rune Dice", hint: "Puzzle / Chance" },
+      { id: "applause-tunnel", src: "covers/presets/preset-applause-tunnel.jpg", title: "Applause Tunnel", hint: "Sprint / Event" },
+      { id: "heart-lock", src: "covers/presets/preset-heart-lock.jpg", title: "Heart Lock", hint: "Howl / Story" },
+      { id: "solar-flowers", src: "covers/presets/preset-solar-flowers.jpg", title: "Solar Flowers", hint: "Story / Future" },
+      { id: "paint-juggle", src: "covers/presets/preset-paint-juggle.jpg", title: "Paint Juggle", hint: "Creator / Fun" },
+      { id: "planet-carousel", src: "covers/presets/preset-planet-carousel.jpg", title: "Planet Carousel", hint: "Story / Cub" },
+      { id: "ribbon-ceremony", src: "covers/presets/preset-ribbon-ceremony.jpg", title: "Ribbon Ceremony", hint: "Decree / Event" },
+      { id: "underwater-citadel", src: "covers/presets/preset-underwater-citadel.jpg", title: "Underwater Citadel", hint: "Echo / Calm" },
+      { id: "glass-race", src: "covers/presets/preset-glass-race.jpg", title: "Glass Race", hint: "Sprint / Dual" },
+      { id: "meteor-stew", src: "covers/presets/preset-meteor-stew.jpg", title: "Meteor Stew", hint: "Howl / Fun" },
+      { id: "book-tower", src: "covers/presets/preset-book-tower.jpg", title: "Book Tower", hint: "Codex / Cub" },
+      { id: "energy-carpet", src: "covers/presets/preset-energy-carpet.jpg", title: "Energy Carpet", hint: "Event / Story" },
+      { id: "star-solder", src: "covers/presets/preset-star-solder.jpg", title: "Star Solder", hint: "Creator / Fix" },
+      { id: "aurora-maypole", src: "covers/presets/preset-aurora-maypole.jpg", title: "Aurora Maypole", hint: "Howl / Festival" },
+      { id: "paper-starships", src: "covers/presets/preset-paper-starships.jpg", title: "Paper Starships", hint: "Story / Dream" },
+      { id: "director-wolf", src: "covers/presets/preset-director-wolf.jpg", title: "Director Wolf", hint: "Creator / Cinema" },
+      { id: "planet-seesaw", src: "covers/presets/preset-planet-seesaw.jpg", title: "Planet Seesaw", hint: "Puzzle / Play" },
+      { id: "star-mailbox", src: "covers/presets/preset-star-mailbox.jpg", title: "Star Mailbox", hint: "Howl / Message" },
+      { id: "bolt-finale", src: "covers/presets/preset-bolt-finale.jpg", title: "Bolt Finale", hint: "Event / Glory" },
+      // Wave 8 — submission pack (340 total)
+      { id: "origami-vortex", src: "covers/presets/preset-origami-vortex.jpg", title: "Origami Vortex", hint: "Puzzle / Story" },
+      { id: "leaf-moon-boat", src: "covers/presets/preset-leaf-moon-boat.jpg", title: "Leaf Moon Boat", hint: "Story / Cub" },
+      { id: "nebula-plates", src: "covers/presets/preset-nebula-plates.jpg", title: "Nebula Plates", hint: "Mini-Quest / Fun" },
+      { id: "storm-fridge", src: "covers/presets/preset-storm-fridge.jpg", title: "Storm Fridge", hint: "Howl / Fun" },
+      { id: "comet-gym", src: "covers/presets/preset-comet-gym.jpg", title: "Comet Gym", hint: "Sprint / Train" },
+      { id: "canvas-alive", src: "covers/presets/preset-canvas-alive.jpg", title: "Canvas Alive", hint: "Creator / Remix" },
+      { id: "galaxy-teacup", src: "covers/presets/preset-galaxy-teacup.jpg", title: "Galaxy Teacup", hint: "Story / Cub" },
+      { id: "sheet-music-wave", src: "covers/presets/preset-sheet-music-wave.jpg", title: "Sheet Music Wave", hint: "Resonance / Sprint" },
+      { id: "chess-king-view", src: "covers/presets/preset-chess-king-view.jpg", title: "Chess King View", hint: "Puzzle / Codex" },
+      { id: "lightning-zipline", src: "covers/presets/preset-lightning-zipline.jpg", title: "Lightning Zipline", hint: "Sprint / Quest" },
+      { id: "diamond-falls-door", src: "covers/presets/preset-diamond-falls-door.jpg", title: "Diamond Falls Door", hint: "Story / Secret" },
+      { id: "astro-cub-helmet", src: "covers/presets/preset-astro-cub-helmet.jpg", title: "Astro Cub Helmet", hint: "Story / Cub" },
+      { id: "time-mirror-kick", src: "covers/presets/preset-time-mirror-kick.jpg", title: "Time Mirror Kick", hint: "Puzzle · Fracture" },
+      { id: "lotus-star-row", src: "covers/presets/preset-lotus-star-row.jpg", title: "Lotus Star Row", hint: "Story / Journey" },
+      { id: "pack-arrow", src: "covers/presets/preset-pack-arrow.jpg", title: "Pack Arrow", hint: "Howl / Unity" },
+      { id: "dragon-tea", src: "covers/presets/preset-dragon-tea.jpg", title: "Dragon Tea", hint: "Story / Cozy" },
+      { id: "city-piano-run", src: "covers/presets/preset-city-piano-run.jpg", title: "City Piano Run", hint: "Sprint / Music" },
+      { id: "living-map-cub", src: "covers/presets/preset-living-map-cub.jpg", title: "Living Map Cub", hint: "Story / Adventure" },
+      { id: "meteor-basket", src: "covers/presets/preset-meteor-basket.jpg", title: "Meteor Basket", hint: "Mini-Quest" },
+      { id: "ice-ballroom", src: "covers/presets/preset-ice-ballroom.jpg", title: "Ice Ballroom", hint: "Event / Howl" },
+      { id: "clockwork-eagle", src: "covers/presets/preset-clockwork-eagle.jpg", title: "Clockwork Eagle", hint: "Sprint / Flight" },
+      { id: "sandcastle-citadel", src: "covers/presets/preset-sandcastle-citadel.jpg", title: "Sandcastle Citadel", hint: "Story / Cub" },
+      { id: "feather-blizzard", src: "covers/presets/preset-feather-blizzard.jpg", title: "Feather Blizzard", hint: "Story / Soft" },
+      { id: "portal-highfive", src: "covers/presets/preset-portal-highfive.jpg", title: "Portal Highfive", hint: "AR / Friendship" },
+      { id: "data-lotus", src: "covers/presets/preset-data-lotus.jpg", title: "Data Lotus", hint: "Codex / Calm" },
+      { id: "solar-butterfly", src: "covers/presets/preset-solar-butterfly.jpg", title: "Solar Butterfly", hint: "Story / Beauty" },
+      { id: "rainbow-slide", src: "covers/presets/preset-rainbow-slide.jpg", title: "Rainbow Slide", hint: "Story / Cub" },
+      { id: "puzzle-doors", src: "covers/presets/preset-puzzle-doors.jpg", title: "Puzzle Doors", hint: "Puzzle / Choice" },
+      { id: "galaxy-hopscotch", src: "covers/presets/preset-galaxy-hopscotch.jpg", title: "Galaxy Hopscotch", hint: "Mini-Quest / Play" },
+      { id: "moon-spiral-stairs", src: "covers/presets/preset-moon-spiral-stairs.jpg", title: "Moon Spiral Stairs", hint: "Story / Climb" },
+      { id: "aurora-scarf", src: "covers/presets/preset-aurora-scarf.jpg", title: "Aurora Scarf", hint: "Story / Wander" },
+      { id: "lens-cub", src: "covers/presets/preset-lens-cub.jpg", title: "Lens Cub", hint: "Creator / Cub" },
+      { id: "dual-campfire", src: "covers/presets/preset-dual-campfire.jpg", title: "Dual Campfire", hint: "Howl / Rest" },
+      { id: "particle-rings", src: "covers/presets/preset-particle-rings.jpg", title: "Particle Rings", hint: "Sprint / Science" },
+      { id: "starlight-medal", src: "covers/presets/preset-starlight-medal.jpg", title: "Starlight Medal", hint: "Event / Victory" },
+      { id: "dream-net", src: "covers/presets/preset-dream-net.jpg", title: "Dream Net", hint: "Story / Care" },
+      { id: "cloud-cart", src: "covers/presets/preset-cloud-cart.jpg", title: "Cloud Cart", hint: "Story / Cub" },
+      { id: "light-orchestra", src: "covers/presets/preset-light-orchestra.jpg", title: "Light Orchestra", hint: "Resonance / Music" },
+      { id: "music-note-bridge", src: "covers/presets/preset-music-note-bridge.jpg", title: "Music Note Bridge", hint: "Puzzle · Echo" },
+      { id: "rainbow-howl", src: "covers/presets/preset-rainbow-howl.jpg", title: "Rainbow Howl", hint: "Howl / Create" },
+      { id: "umbrella-tree", src: "covers/presets/preset-umbrella-tree.jpg", title: "Umbrella Tree", hint: "Story / Wonder" },
+      { id: "pillow-sled", src: "covers/presets/preset-pillow-sled.jpg", title: "Pillow Sled", hint: "Story / Cub" },
+      { id: "crystal-phonebooth", src: "covers/presets/preset-crystal-phonebooth.jpg", title: "Crystal Phonebooth", hint: "Howl / Connect" },
+      { id: "sky-roller", src: "covers/presets/preset-sky-roller.jpg", title: "Sky Roller", hint: "Creator / Art" },
+      { id: "pack-heart-circle", src: "covers/presets/preset-pack-heart-circle.jpg", title: "Pack Heart Circle", hint: "Howl / Love" },
+      { id: "gold-wave-surf", src: "covers/presets/preset-gold-wave-surf.jpg", title: "Gold Wave Surf", hint: "Sprint / Epic" },
+      { id: "star-candle-crown", src: "covers/presets/preset-star-candle-crown.jpg", title: "Star Candle Crown", hint: "Event / Cub" },
+      { id: "yarn-tightrope", src: "covers/presets/preset-yarn-tightrope.jpg", title: "Yarn Tightrope", hint: "Mini-Quest / Craft" },
+      { id: "book-doors", src: "covers/presets/preset-book-doors.jpg", title: "Book Doors", hint: "Codex / Portal" },
+      { id: "neon-skaters", src: "covers/presets/preset-neon-skaters.jpg", title: "Neon Skaters", hint: "Sprint / Pack" },
+      { id: "weather-potion", src: "covers/presets/preset-weather-potion.jpg", title: "Weather Potion", hint: "Puzzle / Alchemy" },
+      { id: "cloud-dreams", src: "covers/presets/preset-cloud-dreams.jpg", title: "Cloud Dreams", hint: "Story / Rest" },
+      { id: "bookmark-ladder", src: "covers/presets/preset-bookmark-ladder.jpg", title: "Bookmark Ladder", hint: "Codex / Climb" },
+      { id: "shadow-duel-2", src: "covers/presets/preset-shadow-duel-2.jpg", title: "Shadow Duel II", hint: "Quest / Duel" },
+      { id: "living-constellation-2", src: "covers/presets/preset-living-constellation-2.jpg", title: "Living Constellation II", hint: "Howl / Myth" },
+      { id: "mirror-desert-car", src: "covers/presets/preset-mirror-desert-car.jpg", title: "Mirror Desert Car", hint: "Sprint / Road" },
+      { id: "key-snowflakes", src: "covers/presets/preset-key-snowflakes.jpg", title: "Key Snowflakes", hint: "Story / Magic" },
+      { id: "vinyl-city", src: "covers/presets/preset-vinyl-city.jpg", title: "Vinyl City", hint: "Resonance / Music" },
+      { id: "dream-summit", src: "covers/presets/preset-dream-summit.jpg", title: "Dream Summit", hint: "Story / Peak" },
+      { id: "starlight-river-swim", src: "covers/presets/preset-starlight-river-swim.jpg", title: "Starlight River Swim", hint: "Echo / Journey" },
+      { id: "moon-juggle", src: "covers/presets/preset-moon-juggle.jpg", title: "Moon Juggle", hint: "Mini-Quest / Fun" },
+      { id: "galaxy-fort", src: "covers/presets/preset-galaxy-fort.jpg", title: "Galaxy Fort", hint: "Story / Cub" },
+      { id: "petal-premiere", src: "covers/presets/preset-petal-premiere.jpg", title: "Petal Premiere", hint: "Event / Cinema" },
+      { id: "sky-stitch", src: "covers/presets/preset-sky-stitch.jpg", title: "Sky Stitch", hint: "Puzzle · Fracture" },
+      { id: "lantern-procession", src: "covers/presets/preset-lantern-procession.jpg", title: "Lantern Procession", hint: "Howl / Ritual" },
+      { id: "rainbow-unicycle", src: "covers/presets/preset-rainbow-unicycle.jpg", title: "Rainbow Unicycle", hint: "Sprint / Fun" },
+      { id: "star-boot-hide", src: "covers/presets/preset-star-boot-hide.jpg", title: "Star Boot Hide", hint: "Story / Cub" },
+      { id: "code-platforms", src: "covers/presets/preset-code-platforms.jpg", title: "Code Platforms", hint: "Creator / Build" },
+      { id: "chime-diamonds", src: "covers/presets/preset-chime-diamonds.jpg", title: "Chime Diamonds", hint: "Story / Soft" },
+      { id: "paw-bridge-2", src: "covers/presets/preset-paw-bridge-2.jpg", title: "Paw Bridge II", hint: "Howl / Unity" },
+      { id: "sky-cafe", src: "covers/presets/preset-sky-cafe.jpg", title: "Sky Cafe", hint: "Story / Rest" },
+      { id: "chalk-constellations", src: "covers/presets/preset-chalk-constellations.jpg", title: "Chalk Constellations", hint: "Creator / Cub" },
+      { id: "star-dunk", src: "covers/presets/preset-star-dunk.jpg", title: "Star Dunk", hint: "Sprint / Sport" },
+      { id: "adventure-vending", src: "covers/presets/preset-adventure-vending.jpg", title: "Adventure Vending", hint: "Mini-Quest / Fun" },
+      { id: "aurora-camp", src: "covers/presets/preset-aurora-camp.jpg", title: "Aurora Camp", hint: "Howl / Pack" },
+      { id: "ink-sea-ship", src: "covers/presets/preset-ink-sea-ship.jpg", title: "Ink Sea Ship", hint: "Story / Voyage" },
+      { id: "backpack-cub", src: "covers/presets/preset-backpack-cub.jpg", title: "Backpack Cub", hint: "Story / Bond" },
+      { id: "light-court", src: "covers/presets/preset-light-court.jpg", title: "Light Court", hint: "Decree / Justice" },
+      { id: "glass-birds-break", src: "covers/presets/preset-glass-birds-break.jpg", title: "Glass Birds Break", hint: "Story / Freedom" },
+      { id: "crest-fireworks", src: "covers/presets/preset-crest-fireworks.jpg", title: "Crest Fireworks", hint: "Event / Glory" },
+      { id: "rooftop-garden", src: "covers/presets/preset-rooftop-garden.jpg", title: "Rooftop Garden", hint: "Story / Care" },
+      { id: "galaxy-bike", src: "covers/presets/preset-galaxy-bike.jpg", title: "Galaxy Bike", hint: "Sprint / Cub" },
+      { id: "future-mirrors", src: "covers/presets/preset-future-mirrors.jpg", title: "Future Mirrors", hint: "Story / Destiny" },
+      { id: "nebula-sled", src: "covers/presets/preset-nebula-sled.jpg", title: "Nebula Sled", hint: "Sprint / Joy" },
+      { id: "living-spiral-galaxy", src: "covers/presets/preset-living-spiral-galaxy.jpg", title: "Living Spiral Galaxy", hint: "Howl / Dance" },
+      { id: "map-world-birth", src: "covers/presets/preset-map-world-birth.jpg", title: "Map World Birth", hint: "Story / Create" },
+      { id: "aurora-headphones", src: "covers/presets/preset-aurora-headphones.jpg", title: "Aurora Headphones", hint: "Resonance / Cub" },
+      { id: "reverse-falls-sprint", src: "covers/presets/preset-reverse-falls-sprint.jpg", title: "Reverse Falls Sprint", hint: "Sprint / Climb" },
+      { id: "cub-classroom", src: "covers/presets/preset-cub-classroom.jpg", title: "Cub Classroom", hint: "Codex / Mentor" },
+      { id: "dawn-arrow-pack", src: "covers/presets/preset-dawn-arrow-pack.jpg", title: "Dawn Arrow Pack", hint: "Howl / Purpose" },
+      { id: "wish-city", src: "covers/presets/preset-wish-city.jpg", title: "Wish City", hint: "Story / Wonder" },
+      { id: "bolt-envelope", src: "covers/presets/preset-bolt-envelope.jpg", title: "Bolt Envelope", hint: "Howl / Message" },
+      { id: "dual-sky-skate", src: "covers/presets/preset-dual-sky-skate.jpg", title: "Dual Sky Skate", hint: "Sprint / Beauty" },
+      { id: "emotion-crossroads", src: "covers/presets/preset-emotion-crossroads.jpg", title: "Emotion Crossroads", hint: "Story / Choice" },
+      { id: "core-blossom-howl", src: "covers/presets/preset-core-blossom-howl.jpg", title: "Core Blossom Howl", hint: "Howl / Finale" },
+      { id: "path-lantern", src: "covers/presets/preset-path-lantern.jpg", title: "Path Lantern", hint: "Story / Guide" },
+      { id: "star-train-plane", src: "covers/presets/preset-star-train-plane.jpg", title: "Star Train Plane", hint: "Story / Cub" },
+      { id: "sky-gear", src: "covers/presets/preset-sky-gear.jpg", title: "Sky Gear", hint: "Puzzle / Time" },
+      { id: "spark-birth-circle", src: "covers/presets/preset-spark-birth-circle.jpg", title: "Spark Birth Circle", hint: "Howl / Birth" },
+      { id: "citadel-lights-howl", src: "covers/presets/preset-citadel-lights-howl.jpg", title: "Citadel Lights Howl", hint: "Howl / Glory" },
+    ];
+
+    function buildBoltversePrompt(title, type) {
+      const t = (title || "").trim();
+      const typeLabel = TYPE_META[type]?.label || "creation";
+      const scene = t
+        ? `Scene idea: "${t}" as a ${typeLabel} moment in the Boltverse.`
+        : `Scene idea: a Pack ${typeLabel} moment in the living Citadel hall.`;
+      return `${BOLTVERSE_STYLE_BASE} ${scene}`;
+    }
+
+    function setStylePrompt(text) {
+      const el = document.getElementById("fStylePrompt");
+      if (el) el.value = text;
+    }
+
+    function pickPackCover(presetId) {
+      const preset = PACK_COVER_PRESETS.find((p) => p.id === presetId);
+      if (!preset) return;
+      document.getElementById("fImageFile").value = "";
+      document.getElementById("fImageUrl").value = "";
+      setPreview(preset.src);
+      document.getElementById("presetGrid")?.querySelectorAll("button").forEach((b) => {
+        b.classList.toggle("is-picked", b.dataset.preset === presetId);
+      });
+      const styleOk = document.getElementById("fStyleOk");
+      if (styleOk) styleOk.checked = true;
+      toast("Pack cover applied · " + preset.title);
+    }
+
+    function initStyleGuide() {
+      const refs = document.getElementById("styleRefs");
+      if (refs && !refs.dataset.ready) {
+        refs.innerHTML = BOLTVERSE_STYLE_REFS.map(
+          (r, i) =>
+            `<button type="button" data-ref="${i}" title="${escapeAttr(r.label + " — hall style reference")}">` +
+            `<img src="${escapeAttr(r.src)}" alt="${escapeAttr(r.label)}" loading="lazy" /></button>`
+        ).join("");
+        refs.dataset.ready = "1";
+        refs.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-ref]");
+          if (!btn) return;
+          refs.querySelectorAll("button").forEach((b) => b.classList.toggle("is-picked", b === btn));
+          const ref = BOLTVERSE_STYLE_REFS[+btn.dataset.ref];
+          if (!ref) return;
+          const title = document.getElementById("fTitle")?.value || "";
+          const type = document.getElementById("fType")?.value || "story-branch";
+          const boosted =
+            buildBoltversePrompt(title, type) +
+            ` Match the visual style of Thunderwolf Citadel hall cards like "${ref.label}" ` +
+            `(same lighting, palette, wolf mythos, and paint quality).`;
+          setStylePrompt(boosted);
+          toast("Prompt locked to hall style · " + ref.label);
+        });
+      }
+
+      const grid = document.getElementById("presetGrid");
+      if (grid) {
+        const needRebuild = grid.dataset.ready !== String(PACK_COVER_PRESETS.length);
+        if (needRebuild) {
+          grid.innerHTML = PACK_COVER_PRESETS.map(
+            (p) =>
+              `<button type="button" data-preset="${escapeAttr(p.id)}" title="${escapeAttr(p.title + " · " + p.hint)}">` +
+              `<img src="${escapeAttr(p.src)}" alt="${escapeAttr(p.title)}" loading="lazy" />` +
+              `<span class="preset-tag">${escapeHtml(p.title)}</span></button>`
+          ).join("");
+          grid.dataset.ready = String(PACK_COVER_PRESETS.length);
+          if (!grid.dataset.bound) {
+            grid.addEventListener("click", (e) => {
+              const btn = e.target.closest("[data-preset]");
+              if (!btn) return;
+              pickPackCover(btn.dataset.preset);
+            });
+            grid.dataset.bound = "1";
+          }
+        } else {
+          grid.querySelectorAll("button").forEach((b) => b.classList.remove("is-picked"));
+        }
+      }
+
+      const title = document.getElementById("fTitle")?.value || "";
+      const type = document.getElementById("fType")?.value || "story-branch";
+      setStylePrompt(buildBoltversePrompt(title, type));
+      const ok = document.getElementById("fStyleOk");
+      if (ok) ok.checked = false;
+    }
+
+    document.getElementById("btnBuildPrompt")?.addEventListener("click", () => {
+      const title = document.getElementById("fTitle")?.value || "";
+      const type = document.getElementById("fType")?.value || "story-branch";
+      setStylePrompt(buildBoltversePrompt(title, type));
+      toast(title.trim() ? "Prompt built from your title" : "Base Boltverse prompt ready — add a title for a tighter scene");
+    });
+
+    document.getElementById("btnResetPrompt")?.addEventListener("click", () => {
+      document.getElementById("styleRefs")?.querySelectorAll("button").forEach((b) => b.classList.remove("is-picked"));
+      setStylePrompt(buildBoltversePrompt("", document.getElementById("fType")?.value || "story-branch"));
+      toast("Style base reset");
+    });
+
+    document.getElementById("btnCopyPrompt")?.addEventListener("click", async () => {
+      const text = document.getElementById("fStylePrompt")?.value || BOLTVERSE_STYLE_BASE;
+      try {
+        await navigator.clipboard.writeText(text);
+        toast("Imagine prompt copied — generate, then upload cover");
+      } catch {
+        // Fallback for file:// or denied clipboard
+        const ta = document.getElementById("fStylePrompt");
+        if (ta) {
+          ta.removeAttribute("readonly");
+          ta.select();
+          try {
+            document.execCommand("copy");
+            toast("Imagine prompt copied");
+          } catch {
+            toast("Select the prompt and copy manually (Ctrl+C)");
+          }
+          ta.setAttribute("readonly", "");
+        }
+      }
+    });
+
+    document.getElementById("fTitle")?.addEventListener("change", () => {
+      // Keep prompt in sync when creator finishes editing title (not every keystroke)
+      if (document.getElementById("submitModal")?.classList.contains("open")) {
+        const title = document.getElementById("fTitle")?.value || "";
+        const type = document.getElementById("fType")?.value || "story-branch";
+        setStylePrompt(buildBoltversePrompt(title, type));
+      }
+    });
+    document.getElementById("fType")?.addEventListener("change", () => {
+      if (document.getElementById("submitModal")?.classList.contains("open")) {
+        const title = document.getElementById("fTitle")?.value || "";
+        const type = document.getElementById("fType")?.value || "story-branch";
+        setStylePrompt(buildBoltversePrompt(title, type));
+      }
+    });
+
     function compressImageFile(file) {
       return new Promise((resolve, reject) => {
         if (!file.type.startsWith("image/")) {
@@ -6433,10 +9871,24 @@
       document.getElementById("fImageFile").value = "";
       document.getElementById("fImageUrl").value = "";
       setPreview("");
+      document.getElementById("presetGrid")?.querySelectorAll("button").forEach((b) => b.classList.remove("is-picked"));
+      const styleOk = document.getElementById("fStyleOk");
+      if (styleOk) styleOk.checked = false;
+    });
+
+    // Custom upload clears preset highlight (player brought their own art)
+    document.getElementById("fImageFile")?.addEventListener("change", () => {
+      document.getElementById("presetGrid")?.querySelectorAll("button").forEach((b) => b.classList.remove("is-picked"));
+    });
+    document.getElementById("fImageUrl")?.addEventListener("input", () => {
+      if (document.getElementById("fImageUrl")?.value.trim()) {
+        document.getElementById("presetGrid")?.querySelectorAll("button").forEach((b) => b.classList.remove("is-picked"));
+      }
     });
 
     function openSubmit() {
       document.getElementById("submitModal").classList.add("open");
+      initStyleGuide();
       document.getElementById("fTitle").focus();
     }
     function closeSubmit() {
@@ -6586,8 +10038,6 @@
       "pack-grounds": "packGroundsView",
       "outer-spires": "outerSpiresView",
     };
-    const PROFILE_CREATOR_KEY = "citadel-creator-profile-v1";
-
     function loadProfile(key, defaults) {
       try {
         return { ...defaults, ...JSON.parse(localStorage.getItem(key) || "{}") };
@@ -6831,6 +10281,16 @@
       e.preventDefault();
       const form = e.target;
       const image = state.pendingImage || "";
+      if (!image) {
+        toast("Add a Boltverse cover image before the Gate");
+        document.getElementById("fImageFile")?.focus();
+        return;
+      }
+      if (!document.getElementById("fStyleOk")?.checked) {
+        toast("Confirm the cover follows Boltverse hall style");
+        document.getElementById("fStyleOk")?.focus();
+        return;
+      }
       const item = {
         id: "user-" + Date.now().toString(36),
         title: form.title.value.trim(),
@@ -6839,6 +10299,7 @@
         creator: form.creator.value.trim(),
         link: form.link.value.trim(),
         image,
+        styleOk: true,
         resonance: resonanceForType(form.type.value),
         howls: 0,
         featured: false,
@@ -6854,6 +10315,7 @@
       }
       form.reset();
       setPreview("");
+      document.getElementById("styleRefs")?.querySelectorAll("button").forEach((b) => b.classList.remove("is-picked"));
       closeSubmit();
       state.sort = "new";
       resetFeedPage();
@@ -6863,7 +10325,7 @@
       render();
       const rung = RESONANCE_LADDER[item.type];
       const resNote = rung ? ` · +${item.resonance} Resonance (${rung.label})` : "";
-      toast((image ? "Passed the Gate with cover art ⚡" : "Passed the Gate ⚡") + resNote);
+      toast("Passed the Gate with Boltverse cover ⚡" + resNote);
     });
 
     applyOverrides();

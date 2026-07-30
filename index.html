@@ -477,7 +477,9 @@
     body.view-forges .view-panel-forges .forge-tip,
     body.view-create .view-panel-create .panel-hero,
     body.view-create .view-panel-create .create-panel,
-    body.view-create .view-panel-create .create-side-card {
+    body.view-create .view-panel-create .create-side-card,
+    body.view-create .view-panel-create .create-mode-btn,
+    body.view-create .view-panel-create .create-grok-banner {
       background:
         radial-gradient(ellipse 70% 50% at 20% 0%, rgba(46, 230, 255, 0.1), transparent 55%),
         rgba(6, 12, 24, 0.78);
@@ -486,22 +488,35 @@
       border-color: rgba(46, 230, 255, 0.2);
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
     }
+    body.view-create .view-panel-create .create-mode-btn.is-active {
+      border-color: rgba(126, 240, 255, 0.55);
+      background: linear-gradient(145deg, rgba(46, 230, 255, 0.16), rgba(8, 16, 32, 0.9));
+    }
 
     /* Create page (Spark + Deep + Publish) */
     .view-panel-create { display: none; }
     .shell[data-view="create"] .view-panel-create { display: block; }
     .create-page {
-      max-width: 1100px;
+      max-width: 1080px;
       margin: 0 auto 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      width: 100%;
+      box-sizing: border-box;
     }
     .create-page .panel-hero {
-      margin-bottom: 0.85rem;
+      margin: 0;
+      width: 100%;
+      box-sizing: border-box;
     }
     .create-mode-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.65rem;
-      margin-bottom: 0.9rem;
+      gap: 0.85rem;
+      margin: 0;
+      width: 100%;
+      align-items: stretch;
     }
     @media (max-width: 640px) {
       .create-mode-row { grid-template-columns: 1fr; }
@@ -510,8 +525,10 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      justify-content: center;
       gap: 0.3rem;
-      padding: 1rem 1rem;
+      padding: 1.1rem 1.15rem;
+      min-height: 5.5rem;
       border-radius: 16px;
       border: 1px solid rgba(46, 230, 255, 0.18);
       background: rgba(6, 12, 24, 0.82);
@@ -520,6 +537,8 @@
       text-align: left;
       cursor: pointer;
       transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+      width: 100%;
+      box-sizing: border-box;
     }
     .create-mode-btn:hover {
       border-color: rgba(46, 230, 255, 0.4);
@@ -581,67 +600,159 @@
 
     .create-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(200px, 260px);
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
       gap: 0.85rem;
-      align-items: start;
+      align-items: stretch;
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 34rem;
     }
     @media (max-width: 860px) {
-      .create-layout { grid-template-columns: 1fr; }
+      .create-layout {
+        grid-template-columns: 1fr;
+        min-height: 0;
+      }
+      .create-side {
+        position: static !important;
+        height: auto !important;
+      }
+      #createFlowSpark:not([hidden]) .create-grok-banner,
+      #createFlowSpark:not([hidden]) .create-panel[data-create-panel="1"] {
+        flex: 1 1 auto;
+        min-height: 14rem;
+      }
+    }
+    .create-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      min-width: 0;
+      width: 100%;
+      min-height: 100%;
+      height: 100%;
+    }
+    .create-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      width: 100%;
+      min-width: 0;
+      flex: 1 1 auto;
+      min-height: 100%;
+      height: 100%;
+    }
+    /* Spark: banner + Describe share height equally; bottoms align with side stack (Drafts) */
+    #createFlowSpark:not([hidden]) {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      flex: 1 1 auto;
+      min-height: 100%;
+      height: 100%;
+    }
+    #createFlowSpark:not([hidden]) .create-grok-banner,
+    #createFlowSpark:not([hidden]) .create-panel[data-create-panel="1"] {
+      flex: 1 1 0;
+      min-height: 0;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    #createFlowSpark:not([hidden]) .create-panel[data-create-panel="1"] .create-nav-row {
+      margin-top: auto;
+    }
+    #createFlowDeep:not([hidden]) {
+      display: flex;
+      flex: 1 1 auto;
+      min-height: 100%;
+      height: 100%;
+    }
+    #createFlowDeep:not([hidden]) .deep-forge-hero {
+      flex: 1 1 auto;
+      min-height: 100%;
+      width: 100%;
     }
     .create-panel {
-      padding: 1.1rem 1.15rem 1.2rem;
+      padding: 1.45rem 1.4rem 1.5rem;
       border-radius: 18px;
       border: 1px solid rgba(46, 230, 255, 0.16);
+      min-height: 16rem;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0;
+    }
+    .create-panel[data-create-panel="1"] {
+      min-height: 18rem;
+      padding: 1.65rem 1.55rem 1.7rem;
     }
     .create-panel h3 {
-      margin: 0 0 0.35rem;
+      margin: 0 0 0.45rem;
       font-family: var(--font-display);
-      font-size: 1.05rem;
+      font-size: 1.25rem;
       font-weight: 800;
     }
     .create-panel .create-lead {
-      margin: 0 0 0.85rem;
-      font-size: 0.8rem;
+      margin: 0 0 1.05rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
-      line-height: 1.45;
+      line-height: 1.55;
+      max-width: 46rem;
     }
     .create-grok-banner {
       display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 0.75rem 1rem;
-      margin: 0 0 0.85rem;
-      padding: 0.85rem 1rem;
-      border-radius: 14px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+      margin: 0;
+      padding: 1.15rem 1.2rem 1.2rem;
+      border-radius: 18px;
       border: 1px solid rgba(126, 240, 255, 0.28);
       background:
         radial-gradient(ellipse 70% 80% at 0% 0%, rgba(46, 230, 255, 0.12), transparent 55%),
         rgba(6, 14, 28, 0.88);
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 16rem;
     }
     .create-grok-banner[hidden] { display: none !important; }
     .create-grok-banner__text {
-      flex: 1 1 14rem;
+      flex: 1 1 auto;
+      width: 100%;
       min-width: 0;
     }
-    .create-grok-banner__text strong {
+    .create-grok-banner__text .create-grok-banner__title {
       display: block;
-      font-size: 0.84rem;
+      font-size: 0.95rem;
       font-weight: 800;
       color: var(--cyan-soft);
-      margin-bottom: 0.25rem;
+      margin: 0 0 0.5rem;
+      line-height: 1.3;
     }
     .create-grok-banner__text p {
       margin: 0;
-      font-size: 0.78rem;
+      font-size: 0.86rem;
       color: var(--text-muted);
-      line-height: 1.45;
+      line-height: 1.55;
+    }
+    .create-grok-banner__text p strong {
+      display: inline;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .create-grok-banner__text p strong.gold {
+      color: var(--gold-soft);
+    }
+    .create-grok-banner__text p strong.cyan {
+      color: var(--cyan-soft);
     }
     .create-grok-banner__actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem;
+      gap: 0.45rem;
       align-items: center;
+      margin-top: auto;
+      padding-top: 0.65rem;
+      border-top: 1px solid rgba(46, 230, 255, 0.12);
     }
     .create-grok-banner__actions a.btn {
       text-decoration: none;
@@ -652,25 +763,28 @@
     .create-templates {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-bottom: 0.75rem;
+      gap: 0.55rem;
+      margin-bottom: 1rem;
     }
     .create-template-chip {
       font-family: inherit;
-      font-size: 0.72rem;
-      font-weight: 750;
-      padding: 0.35rem 0.65rem;
+      font-size: 0.88rem;
+      font-weight: 780;
+      padding: 0.6rem 1.05rem;
+      min-height: 2.55rem;
       border-radius: 999px;
-      border: 1px solid rgba(46, 230, 255, 0.22);
-      background: rgba(46, 230, 255, 0.08);
+      border: 1px solid rgba(46, 230, 255, 0.28);
+      background: rgba(46, 230, 255, 0.1);
       color: var(--cyan-soft);
       cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.12s;
     }
     .create-template-chip.is-active,
     .create-template-chip:hover {
-      border-color: rgba(126, 240, 255, 0.5);
-      background: rgba(46, 230, 255, 0.16);
+      border-color: rgba(126, 240, 255, 0.55);
+      background: rgba(46, 230, 255, 0.2);
       color: var(--text);
+      transform: translateY(-1px);
     }
     .create-panel label {
       display: block;
@@ -720,6 +834,132 @@
       color: var(--gold-soft);
       cursor: pointer;
     }
+    .create-prompt-label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: 0.75rem 0 0.45rem;
+    }
+    .create-prompt-label span {
+      color: var(--cyan-soft);
+      font-weight: 800;
+    }
+    .create-prompt-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+      margin-bottom: 0.35rem;
+    }
+    @media (max-width: 640px) {
+      .create-prompt-grid { grid-template-columns: 1fr; }
+    }
+    .create-prompt-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.4rem;
+      padding: 0.85rem 0.9rem;
+      border-radius: 14px;
+      border: 1px solid rgba(46, 230, 255, 0.18);
+      background: rgba(0, 0, 0, 0.32);
+      text-align: left;
+      font-family: inherit;
+      color: inherit;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+      min-height: 11rem;
+      max-height: 16rem;
+      overflow: auto;
+    }
+    .create-prompt-card:hover {
+      border-color: rgba(126, 240, 255, 0.4);
+      transform: translateY(-1px);
+    }
+    .create-prompt-card.is-selected {
+      border-color: rgba(232, 197, 106, 0.55);
+      box-shadow: 0 0 18px rgba(232, 197, 106, 0.18);
+      background: linear-gradient(145deg, rgba(232, 197, 106, 0.1), rgba(0, 0, 0, 0.35));
+    }
+    .create-prompt-card__tag {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+    }
+    .create-prompt-card__title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.25;
+    }
+    .create-prompt-card__body {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      flex: 1;
+    }
+    .create-prompt-card__hint {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--cyan-soft);
+      margin-top: auto;
+    }
+    .create-prompt-card.is-selected .create-prompt-card__hint {
+      color: var(--gold-soft);
+    }
+    .create-selected-prompt {
+      margin: 1rem 0 0.35rem;
+      padding: 0.85rem 0.95rem;
+      border-radius: 14px;
+      border: 1px solid rgba(232, 197, 106, 0.4);
+      background: linear-gradient(145deg, rgba(232, 197, 106, 0.1), rgba(0, 0, 0, 0.32));
+      text-align: left;
+    }
+    .create-selected-prompt[hidden] { display: none !important; }
+    .create-selected-prompt__tag {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+      margin-bottom: 0.3rem;
+    }
+    .create-selected-prompt strong {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+    .create-selected-prompt p {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      max-height: 6.5rem;
+      overflow: auto;
+    }
+    #createPromptsModal .modal {
+      width: min(720px, 100%);
+      max-height: min(90vh, 820px);
+    }
+    #createPromptsModal .modal-body {
+      overflow: auto;
+      max-height: min(70vh, 640px);
+      padding: 0.25rem 0.1rem 0.5rem;
+    }
+    #createPromptsModal .create-prompt-grid {
+      margin-top: 0.35rem;
+    }
+    #createPromptsModal .create-prompt-card {
+      max-height: none;
+      min-height: 12rem;
+    }
     .create-refine-chips {
       display: flex;
       flex-wrap: wrap;
@@ -765,46 +1005,135 @@
     .create-nav-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1rem;
+      gap: 0.55rem;
+      margin-top: 1.35rem;
       justify-content: space-between;
+      align-items: center;
     }
     .create-nav-row .create-nav-right {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.45rem;
+      gap: 0.5rem;
       margin-left: auto;
+    }
+    .create-panel .create-nav-row .btn {
+      min-height: 2.85rem;
+      padding: 0.75rem 1.35rem;
+      font-size: 0.95rem;
+      font-weight: 750;
     }
     .create-side {
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      gap: 0.85rem;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      position: static;
+      align-self: stretch;
+      height: 100%;
+      min-height: 100%;
+      justify-content: stretch;
+      overflow: hidden;
+      box-sizing: border-box;
     }
     .create-side-card {
-      padding: 0.85rem 0.9rem;
-      border-radius: 14px;
+      padding: 0.9rem 0.95rem;
+      border-radius: 16px;
       border: 1px solid rgba(46, 230, 255, 0.14);
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      margin: 0;
+      /* Equal-size cards fill the column — keep text clipped inside */
+      flex: 1 1 0;
+      min-height: 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+      contain: layout;
+    }
+    .create-side-card[hidden] {
+      display: none !important;
+      flex: none !important;
+    }
+    .create-side-card:last-child {
+      margin-top: 0;
     }
     .create-side-card h4 {
+      flex-shrink: 0;
       margin: 0 0 0.4rem;
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       font-weight: 800;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       color: var(--gold-soft);
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .create-side-card > p,
+    .create-side-card > ul {
+      flex: 1 1 auto;
+      min-height: 0;
+      min-width: 0;
+      max-width: 100%;
+      overflow: auto;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
     .create-side-card p,
     .create-side-card li {
       margin: 0;
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       color: var(--text-dim);
       line-height: 1.4;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .create-side-card a {
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
     .create-side-card ul {
       margin: 0;
       padding-left: 1rem;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .create-side-card li { margin-bottom: 0.25rem; }
+    .create-side-card .btn {
+      max-width: 100%;
+      box-sizing: border-box;
+      white-space: normal;
+      height: auto;
+      min-height: 2rem;
+      margin-top: 0.35rem;
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+    .create-side-steps {
+      margin: 0 0 0.35rem;
+      padding-left: 1.1rem;
+      max-width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow: auto;
+    }
+    .create-side-steps li {
+      margin-bottom: 0.3rem;
+    }
+    .create-side-steps a {
+      color: var(--cyan-soft);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .create-side-steps strong.gold { color: var(--gold-soft); }
+    .create-side-steps strong.cyan { color: var(--cyan-soft); }
     .create-publish-summary {
       display: grid;
       gap: 0.45rem;
@@ -842,6 +1171,122 @@
     .create-panel[hidden],
     .create-flow[hidden] { display: none !important; }
 
+    /* Deep Forges — Grok CLI / terminal callout (Pack language) */
+    .deep-forge-hero {
+      text-align: center;
+      padding: 2.5rem 1.75rem 2.25rem;
+      min-height: 22rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .deep-forge-hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid rgba(232, 197, 106, 0.4);
+      background: rgba(232, 197, 106, 0.1);
+      color: var(--gold-soft);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      margin-bottom: 1.15rem;
+    }
+    .deep-forge-hero__badge em {
+      font-style: normal;
+      color: #ff8a3d;
+      font-weight: 900;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .deep-forge-hero h3 {
+      font-family: var(--font-display);
+      font-size: clamp(1.55rem, 3.2vw, 2.15rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin: 0 0 0.75rem;
+      color: var(--text);
+      max-width: 22rem;
+    }
+    .deep-forge-hero h3 span {
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+    .deep-forge-hero__lead {
+      margin: 0 auto 1.35rem;
+      max-width: 32rem;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+    .deep-forge-cli {
+      width: min(100%, 420px);
+      margin: 0 auto 1.25rem;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(46, 230, 255, 0.18);
+      background: rgba(0, 0, 0, 0.4);
+      text-align: left;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      color: var(--cyan-soft);
+      line-height: 1.45;
+      word-break: break-all;
+    }
+    .deep-forge-cli .deep-forge-cli__tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.55rem;
+      font-family: inherit;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+    .deep-forge-cli code {
+      display: block;
+      color: #c8eef7;
+      font-family: inherit;
+      font-size: 0.8rem;
+    }
+    .deep-forge-cli code span { color: var(--gold-soft); }
+    .deep-forge-hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      justify-content: center;
+      margin-bottom: 0.85rem;
+    }
+    .deep-forge-hero__actions .btn {
+      min-height: 2.85rem;
+      padding: 0.75rem 1.4rem;
+      font-size: 0.95rem;
+      font-weight: 750;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .deep-forge-hero__note {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+      max-width: 28rem;
+    }
+    .deep-forge-hero__note a {
+      color: var(--cyan-soft);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .deep-forge-hero__note a:hover {
+      text-decoration: underline;
+    }
+
     /* Creator Forges Hub */
     .forge-hub {
       max-width: 1100px;
@@ -850,22 +1295,65 @@
     .forge-hub .panel-hero {
       text-align: center;
       max-width: none;
+      padding: 2.75rem 2rem 2.5rem;
+      margin-bottom: 1.35rem;
+      min-height: 12rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .forge-hub .panel-hero h2 {
+      font-size: clamp(1.85rem, 3.6vw, 2.45rem);
+      margin-bottom: 0.7rem;
     }
     .forge-hub .panel-hero p {
-      margin: 0 auto 1rem;
-      max-width: 34rem;
+      margin: 0 auto 1.55rem;
+      max-width: 40rem;
+      font-size: 1.05rem;
+      line-height: 1.65;
     }
     .forge-hero-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.55rem;
+      gap: 0.85rem;
       justify-content: center;
     }
+    .forge-hub .forge-hero-actions .btn {
+      min-height: 3.25rem;
+      padding: 0.9rem 1.75rem;
+      font-size: 1.05rem;
+      font-weight: 780;
+      border-radius: 999px;
+      min-width: 10.5rem;
+    }
     .forge-hub-section {
-      margin: 0 0 0.9rem;
-      padding: 1rem 1.1rem 1.1rem;
+      margin: 0 0 1.1rem;
+      padding: 1.45rem 1.4rem 1.5rem;
       border-radius: var(--radius);
       border: 1px solid rgba(46, 230, 255, 0.14);
+    }
+    .forge-hub #forgeStatusTitle {
+      font-size: 1.2rem;
+      margin-bottom: 0.9rem;
+    }
+    .forge-hub .forge-status {
+      gap: 0.75rem;
+    }
+    .forge-hub .forge-status__cell {
+      padding: 1.15rem 0.85rem;
+      min-height: 5.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .forge-hub .forge-status__cell b {
+      font-size: 0.68rem;
+      margin-bottom: 0.4rem;
+    }
+    .forge-hub .forge-status__cell span {
+      font-size: 1.55rem;
     }
     .forge-hub-section h3 {
       margin: 0 0 0.65rem;
@@ -1604,6 +2092,11 @@
       display: none;
     }
     .shell:not([data-view="home"]) .view-panel-home { display: none; }
+    /* Hall-only chrome: search/stats strip, Citadel vision box + white wolf crest */
+    .shell:not([data-view="home"]) .intro-strip,
+    .shell:not([data-view="home"]) footer.about {
+      display: none !important;
+    }
     .shell[data-view="forges"] .view-panel-forges,
     .shell[data-view="create"] .view-panel-create,
     .shell[data-view="videos"] .view-panel-videos,
@@ -1680,9 +2173,9 @@
 
     /* ── Resonance Chambers (personal progression page) ── */
     .rc-page {
-      max-width: 920px;
+      max-width: 1080px;
       margin: 0 auto 2.5rem;
-      padding: 0 0.25rem 1rem;
+      padding: 0 0.35rem 1.25rem;
     }
     .rc-hero-panel {
       position: relative;
@@ -1699,7 +2192,8 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
       text-align: center;
     }
-    .rc-rank-info-btn {
+    .rc-rank-info-btn,
+    .rc-section-info-btn {
       position: absolute;
       top: 0.75rem;
       left: 0.75rem;
@@ -1720,15 +2214,127 @@
       box-shadow: 0 0 14px rgba(46, 230, 255, 0.2);
       transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.12s;
     }
-    .rc-rank-info-btn:hover {
+    .rc-rank-info-btn:hover,
+    .rc-section-info-btn:hover {
       background: rgba(46, 230, 255, 0.18);
       border-color: rgba(126, 240, 255, 0.65);
       color: #fff;
       transform: scale(1.06);
     }
-    .rc-rank-info-btn:focus-visible {
+    .rc-rank-info-btn:focus-visible,
+    .rc-section-info-btn:focus-visible {
       outline: 2px solid var(--cyan-soft);
       outline-offset: 2px;
+    }
+    #milestonesModal .modal {
+      width: min(520px, 100%);
+      max-height: min(90vh, 760px);
+      display: flex;
+      flex-direction: column;
+    }
+    #milestonesModal .modal-body {
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+      padding: 0.15rem 0.1rem 0.35rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .rc-milestones-modal-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex: 1;
+      min-height: 18rem;
+    }
+    .rc-milestones-modal-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.55rem 0.7rem;
+      border-radius: 12px;
+      border: 1px solid rgba(46, 230, 255, 0.12);
+      background: rgba(0, 0, 0, 0.28);
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+    .rc-milestones-modal-list li::before {
+      content: "✦";
+      color: var(--gold-soft);
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+      font-size: 0.75rem;
+    }
+    .rc-milestones-modal-list li.is-done {
+      color: var(--text);
+      border-color: rgba(232, 197, 106, 0.28);
+      background: linear-gradient(135deg, rgba(232, 197, 106, 0.1), rgba(0, 0, 0, 0.28));
+    }
+    .rc-milestones-modal-list li.is-locked {
+      opacity: 0.5;
+    }
+    .rc-milestones-modal-list li.is-locked::before {
+      content: "·";
+      color: var(--text-dim);
+    }
+    .rc-milestones-pager {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid rgba(46, 230, 255, 0.12);
+    }
+    .rc-milestones-pager .pg-btn {
+      min-width: 2.1rem;
+      height: 2.1rem;
+      padding: 0 0.55rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.28);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .rc-milestones-pager .pg-btn:hover:not(:disabled):not(.is-active) {
+      border-color: rgba(46, 230, 255, 0.35);
+      color: var(--text);
+      background: rgba(46, 230, 255, 0.1);
+    }
+    .rc-milestones-pager .pg-btn.is-active {
+      border-color: rgba(46, 230, 255, 0.5);
+      background: linear-gradient(145deg, rgba(46, 230, 255, 0.28), rgba(46, 230, 255, 0.12));
+      color: var(--cyan-soft);
+    }
+    .rc-milestones-pager .pg-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+    .rc-milestones-pager-meta {
+      width: 100%;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-weight: 650;
+      margin-top: 0.15rem;
+    }
+    .rc-growth-teaser {
+      margin: 0.55rem 0 0.75rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .rc-growth-teaser strong {
+      color: var(--cyan-soft);
+      font-weight: 700;
     }
 
     /* Rank ladder popup */
@@ -2028,6 +2634,7 @@
     .rc-meter-nums span { color: var(--cyan-soft); }
 
     .rc-section {
+      position: relative;
       margin: 0 0 1rem;
       padding: 1.15rem 1.15rem 1.2rem;
       border-radius: 18px;
@@ -2043,6 +2650,10 @@
       font-size: 1.12rem;
       font-weight: 800;
       color: var(--text);
+    }
+    #rc-growth h3,
+    #rc-growth .rc-lead {
+      padding-left: 2.4rem;
     }
     .rc-section .rc-lead {
       margin: 0 0 1rem;
@@ -2077,6 +2688,14 @@
       grid-template-columns: minmax(7rem, 28%) 1fr auto;
       gap: 0.5rem 0.65rem;
       align-items: center;
+    }
+    .rc-bar-row.is-empty .rc-bar-name,
+    .rc-bar-row.is-empty .rc-bar-val,
+    .rc-bar-row.is-empty .rc-bar-share {
+      opacity: 0.45;
+    }
+    .rc-bar-row.is-empty .rc-bar-fill {
+      opacity: 0.25;
     }
     .rc-bar-row .rc-bar-name {
       font-size: 0.78rem;
@@ -2117,23 +2736,97 @@
     }
     .rc-recent strong { color: var(--text); }
 
+    .rc-trend-wrap {
+      margin: 0 0 1rem;
+      padding: 0.75rem 0.8rem 0.65rem;
+      border-radius: 14px;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(46, 230, 255, 0.08), transparent 55%),
+        rgba(0, 0, 0, 0.32);
+      border: 1px solid rgba(46, 230, 255, 0.14);
+    }
+    .rc-trend-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.55rem;
+    }
+    .rc-trend-head strong {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--cyan-soft);
+    }
+    .rc-trend-head span {
+      font-size: 0.7rem;
+      font-weight: 650;
+      color: var(--text-dim);
+    }
     .rc-trend {
+      position: relative;
       display: flex;
       align-items: flex-end;
-      gap: 3px;
-      height: 72px;
-      margin: 0 0 1rem;
-      padding: 0.4rem 0.35rem 0;
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(46, 230, 255, 0.1);
+      gap: 4px;
+      height: 110px;
+      padding: 0.35rem 0.2rem 0;
+      border-radius: 10px;
+      background:
+        repeating-linear-gradient(
+          to top,
+          transparent 0,
+          transparent calc(25% - 1px),
+          rgba(46, 230, 255, 0.06) calc(25% - 1px),
+          rgba(46, 230, 255, 0.06) 25%
+        );
+      border: 1px solid rgba(46, 230, 255, 0.08);
     }
-    .rc-trend-bar {
+    .rc-trend-col {
       flex: 1;
       min-width: 0;
-      border-radius: 3px 3px 0 0;
-      background: linear-gradient(180deg, var(--cyan-soft), rgba(46, 230, 255, 0.25));
-      opacity: 0.85;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.28rem;
+    }
+    .rc-trend-bar {
+      width: 100%;
+      max-width: 18px;
+      min-height: 3px;
+      border-radius: 4px 4px 2px 2px;
+      /* Same cyan → gold dégradé on every day (showcase look) */
+      background: linear-gradient(180deg, #fff 0%, #e8f8ff 12%, var(--gold-soft) 42%, var(--cyan-soft) 78%, rgba(46, 230, 255, 0.55) 100%);
+      box-shadow:
+        0 0 12px rgba(232, 197, 106, 0.4),
+        0 0 18px rgba(46, 230, 255, 0.28);
+      opacity: 0.96;
+      transition: height 0.45s ease, opacity 0.2s;
+    }
+    .rc-trend-bar.is-empty {
+      min-height: 3px;
+      height: 3px !important;
+      opacity: 0.35;
+      background: linear-gradient(180deg, rgba(232, 197, 106, 0.45), rgba(46, 230, 255, 0.35));
+      box-shadow: none;
+    }
+    .rc-trend-bar.is-peak {
+      opacity: 1;
+      box-shadow:
+        0 0 16px rgba(232, 197, 106, 0.55),
+        0 0 22px rgba(46, 230, 255, 0.35);
+    }
+    .rc-trend-col span {
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+    .rc-trend-col.is-today span {
+      color: var(--cyan-soft);
     }
     .rc-milestones {
       list-style: none;
@@ -2192,58 +2885,112 @@
         linear-gradient(165deg, rgba(12, 18, 34, 0.96), rgba(6, 10, 22, 0.99));
     }
     .rc-core-visual {
-      width: min(280px, 100%);
-      height: 120px;
-      margin: 0.35rem auto 1rem;
+      width: min(380px, 100%);
+      height: 180px;
+      margin: 0.5rem auto 1.1rem;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
     }
     .rc-core-visual .rc-you {
       position: absolute;
-      left: 8%;
-      bottom: 18%;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      font-size: 1.1rem;
-      border: 1px solid rgba(126, 240, 255, 0.45);
-      background: rgba(12, 28, 48, 0.9);
-      box-shadow: 0 0 16px rgba(46, 230, 255, 0.3);
-      z-index: 2;
-    }
-    .rc-core-visual .rc-core-orb {
-      position: absolute;
-      right: 10%;
+      left: 2%;
       top: 50%;
       transform: translateY(-50%);
       width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 35% 30%, #fff 0%, var(--cyan-soft) 28%, #1a6a8a 70%, #061018 100%);
+      height: 84px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #b87333;
+      background: #140c06;
       box-shadow:
-        0 0 24px rgba(46, 230, 255, 0.55),
-        0 0 48px rgba(232, 197, 106, 0.2);
-      z-index: 2;
+        0 0 0 1px #8a5520,
+        0 0 18px rgba(184, 115, 51, 0.35),
+        0 0 24px rgba(46, 230, 255, 0.2);
+      z-index: 3;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .rc-core-visual .rc-you img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      display: block;
+      border-radius: 9px;
+      background: #0a0604;
+    }
+    /* Full Star Core art — no circular crop (rings + lightning stay visible) */
+    .rc-core-visual .rc-core-orb {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 168px;
+      height: 168px;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      z-index: 3;
+      animation: rcCorePulse 4.5s ease-in-out infinite;
+      display: grid;
+      place-items: center;
+      overflow: visible;
+    }
+    .rc-core-visual .rc-core-orb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      display: block;
+      filter:
+        drop-shadow(0 0 18px rgba(46, 230, 255, 0.55))
+        drop-shadow(0 0 36px rgba(126, 240, 255, 0.3))
+        drop-shadow(0 0 28px rgba(232, 197, 106, 0.18));
+      background: transparent;
+    }
+    .rc-core-visual .rc-core-orb::before {
+      display: none;
+    }
+    @keyframes rcCorePulse {
+      0%, 100% { filter: brightness(1) saturate(1.05); }
+      50% { filter: brightness(1.12) saturate(1.12); }
     }
     .rc-core-visual .rc-flow {
       position: absolute;
-      left: 22%;
-      right: 28%;
-      top: 48%;
-      height: 3px;
+      left: 18%;
+      right: 42%;
+      top: 50%;
+      height: 5px;
+      transform: translateY(-50%);
       border-radius: 999px;
-      background: linear-gradient(90deg, rgba(46, 230, 255, 0.2), var(--cyan-soft), var(--gold-soft));
-      box-shadow: 0 0 12px rgba(46, 230, 255, 0.45);
+      background: linear-gradient(90deg,
+        rgba(46, 230, 255, 0.15),
+        var(--cyan-soft) 40%,
+        var(--gold-soft) 75%,
+        rgba(255, 255, 255, 0.7));
+      box-shadow:
+        0 0 14px rgba(46, 230, 255, 0.55),
+        0 0 28px rgba(232, 197, 106, 0.25);
       overflow: hidden;
+      z-index: 1;
+    }
+    .rc-core-visual .rc-flow::before {
+      content: "";
+      position: absolute;
+      inset: -6px 0;
+      background: linear-gradient(90deg, transparent, rgba(46, 230, 255, 0.2), transparent);
+      filter: blur(4px);
     }
     .rc-core-visual .rc-flow::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
-      width: 40%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+      width: 35%;
       animation: rcFlow 1.8s linear infinite;
     }
     @keyframes rcFlow {
@@ -2252,6 +2999,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .rc-core-visual .rc-flow::after { animation: none; opacity: 0.4; }
+      .rc-core-visual .rc-core-orb { animation: none; }
     }
     .rc-core-stats {
       display: flex;
@@ -2286,29 +3034,312 @@
       max-width: 28rem;
       margin-inline: auto;
     }
-    .rc-page .zone-actions { margin-top: 0.5rem; justify-content: center; }
+    .rc-page .zone-actions {
+      margin-top: 0.85rem;
+      margin-bottom: 0.5rem;
+      justify-content: center;
+      min-height: 0;
+    }
     .rc-nav-anchors {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem;
+      gap: 0.45rem;
       justify-content: center;
-      margin: 0 0 1rem;
+      margin: 0 0 1.1rem;
     }
+    .rc-nav-anchors button,
     .rc-nav-anchors a {
-      font-size: 0.72rem;
+      font-family: inherit;
+      font-size: 0.74rem;
       font-weight: 750;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--cyan-soft);
       text-decoration: none;
-      padding: 0.35rem 0.7rem;
+      padding: 0.45rem 0.95rem;
       border-radius: 999px;
       border: 1px solid rgba(46, 230, 255, 0.22);
       background: rgba(46, 230, 255, 0.06);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
     }
+    .rc-nav-anchors button:hover,
     .rc-nav-anchors a:hover {
       background: rgba(46, 230, 255, 0.14);
       color: var(--text);
+    }
+    .rc-nav-anchors button.is-active {
+      color: var(--text);
+      border-color: rgba(126, 240, 255, 0.55);
+      background: linear-gradient(145deg, rgba(46, 230, 255, 0.22), rgba(46, 230, 255, 0.1));
+      box-shadow: 0 0 16px rgba(46, 230, 255, 0.18);
+    }
+    /* One section page at a time under the Rank / Contributions / Growth / Star Core tabs */
+    .rc-tab-panel {
+      display: none;
+    }
+    .rc-tab-panel.is-active {
+      display: block;
+    }
+    /* Active tab content boxes — large, but no empty dead zone under content */
+    .rc-tab-panel.is-active.rc-hero-panel,
+    .rc-tab-panel.is-active.rc-section {
+      margin-bottom: 0.75rem;
+      min-height: 0;
+      padding: 2.25rem 2rem 2.1rem;
+      border-radius: 22px;
+      box-sizing: border-box;
+    }
+    .rc-tab-panel.is-active.rc-hero-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 2.5rem;
+      padding-bottom: 2.35rem;
+    }
+    .rc-tab-panel.is-active .rc-emblem {
+      width: 168px;
+      height: 220px;
+      margin-bottom: 1.15rem;
+    }
+    .rc-tab-panel.is-active .rc-rank-name {
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      margin-bottom: 0.45rem;
+    }
+    .rc-tab-panel.is-active .rc-rank-sub {
+      font-size: 1rem;
+      margin-bottom: 1.35rem;
+    }
+    .rc-tab-panel.is-active .rc-meter-wrap {
+      width: min(100%, 520px);
+      margin-top: 0.35rem;
+    }
+    .rc-tab-panel.is-active .rc-meter {
+      height: 12px;
+    }
+    .rc-tab-panel.is-active .rc-meter-nums {
+      font-size: 0.95rem;
+      margin-top: 0.65rem;
+    }
+    .rc-tab-panel.is-active.rc-section h3 {
+      font-size: 1.45rem;
+      margin-bottom: 0.5rem;
+    }
+    .rc-tab-panel.is-active.rc-section .rc-lead {
+      font-size: 0.95rem;
+      margin-bottom: 1.35rem;
+      max-width: 40rem;
+    }
+    .rc-tab-panel.is-active .rc-total-num {
+      font-size: 2.45rem;
+    }
+    .rc-tab-panel.is-active .rc-bar-track {
+      height: 12px;
+    }
+    .rc-tab-panel.is-active .rc-bar-name {
+      font-size: 0.88rem;
+    }
+    .rc-tab-panel.is-active .rc-bar-val {
+      font-size: 0.88rem;
+    }
+    .rc-tab-panel.is-active .rc-recent {
+      font-size: 0.9rem;
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+    }
+    /* Contributions page — fill the large panel */
+    .rc-contrib-hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem 1.5rem;
+      margin-bottom: 1.35rem;
+    }
+    .rc-contrib-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(5.5rem, 1fr));
+      gap: 0.55rem;
+      flex: 1 1 18rem;
+      min-width: min(100%, 22rem);
+    }
+    @media (max-width: 720px) {
+      .rc-contrib-kpis { grid-template-columns: 1fr 1fr; }
+    }
+    .rc-contrib-kpi {
+      padding: 0.7rem 0.65rem;
+      border-radius: 12px;
+      border: 1px solid rgba(46, 230, 255, 0.14);
+      background: rgba(0, 0, 0, 0.28);
+      text-align: center;
+    }
+    .rc-contrib-kpi b {
+      display: block;
+      font-size: 0.6rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.25rem;
+    }
+    .rc-contrib-kpi span {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--cyan-soft);
+      line-height: 1.2;
+      word-break: break-word;
+    }
+    .rc-contrib-subtitle {
+      margin: 0 0 0.25rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .rc-contrib-note {
+      margin: 0 0 0.85rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+    .rc-contrib-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 1.35rem;
+    }
+    @media (max-width: 720px) {
+      .rc-contrib-grid { grid-template-columns: 1fr; }
+    }
+    .rc-contrib-card {
+      padding: 1rem 1.05rem;
+      border-radius: 14px;
+      border: 1px solid rgba(46, 230, 255, 0.14);
+      background: rgba(0, 0, 0, 0.26);
+    }
+    .rc-contrib-card--wide {
+      grid-column: 1 / -1;
+    }
+    .rc-contrib-card h4 {
+      margin: 0 0 0.55rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+    }
+    .rc-contrib-card ul {
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+    .rc-contrib-card li {
+      margin: 0 0 0.4rem;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .rc-contrib-card li strong {
+      color: var(--cyan-soft);
+      font-weight: 800;
+    }
+    .rc-contrib-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .rc-bars .rc-bar-share {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-weight: 650;
+      min-width: 2.6rem;
+      text-align: right;
+    }
+    .rc-tab-panel.is-active#rc-contrib .rc-bar-row {
+      grid-template-columns: minmax(7.5rem, 26%) 1fr auto auto;
+      gap: 0.45rem 0.55rem;
+      margin-bottom: 0.15rem;
+    }
+    .rc-tab-panel.is-active .rc-trend-wrap {
+      margin-bottom: 1.25rem;
+      padding: 1.1rem 1.15rem 1rem;
+    }
+    .rc-tab-panel.is-active .rc-trend {
+      height: 160px;
+    }
+    .rc-tab-panel.is-active .rc-insights li {
+      font-size: 0.92rem;
+      padding: 0.75rem 0.9rem;
+    }
+    .rc-tab-panel.is-active .rc-growth-teaser {
+      font-size: 0.9rem;
+      margin: 0.85rem 0 1rem;
+    }
+    .rc-tab-panel.is-active .rc-core-visual {
+      width: min(440px, 100%);
+      height: 220px;
+      margin: 0.75rem auto 1.5rem;
+    }
+    .rc-tab-panel.is-active .rc-core-orb {
+      width: 200px;
+      height: 200px;
+    }
+    .rc-tab-panel.is-active .rc-core-orb img {
+      width: 200px;
+      height: 200px;
+    }
+    .rc-tab-panel.is-active .rc-you {
+      width: 76px;
+      height: 100px;
+    }
+    .rc-tab-panel.is-active .rc-core-stat span {
+      font-size: 1.55rem;
+    }
+    .rc-tab-panel.is-active .rc-core-msg {
+      font-size: 1.05rem;
+      max-width: 34rem;
+    }
+    @media (max-width: 720px) {
+      .rc-tab-panel.is-active.rc-hero-panel,
+      .rc-tab-panel.is-active.rc-section {
+        min-height: 0;
+        padding: 1.5rem 1.15rem 1.45rem;
+      }
+      .rc-tab-panel.is-active .rc-emblem {
+        width: 140px;
+        height: 184px;
+      }
+      .rc-tab-panel.is-active .rc-core-visual {
+        height: 180px;
+      }
+      .rc-tab-panel.is-active .rc-core-orb,
+      .rc-tab-panel.is-active .rc-core-orb img {
+        width: 150px;
+        height: 150px;
+      }
+    }
+    /* Kill residual Hall floor / skyline “empty button” glow under Chambers & other views */
+    .shell:not([data-view="home"]) .cosmos .hall-floor,
+    .shell:not([data-view="home"]) .cosmos .citadel-skyline,
+    .shell:not([data-view="home"]) .cosmos .star-core,
+    .shell:not([data-view="home"]) .cosmos .bolt-sky,
+    .shell:not([data-view="home"]) .cosmos .lightning-vein {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    .rc-page .zone-actions {
+      margin-top: 0.85rem;
+      margin-bottom: 0.5rem;
+      min-height: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    .rc-page .zone-actions::before,
+    .rc-page .zone-actions::after {
+      display: none !important;
+      content: none !important;
     }
 
     /* Profile pages */
@@ -6960,47 +7991,11 @@
           <div class="forge-hero-actions">
             <button type="button" class="btn btn-primary" id="forgeCreateNew">Create New</button>
             <button type="button" class="btn btn-ghost" id="forgeMyCreations">My Creations</button>
+            <button type="button" class="btn btn-gold" id="forgePublishingGate">Publishing Gate</button>
           </div>
         </div>
 
-        <!-- 2. Quick actions -->
-        <section class="forge-hub-section" aria-labelledby="forgeQuickTitle">
-          <h3 id="forgeQuickTitle">Quick <span>Actions</span></h3>
-          <div class="forge-actions-grid">
-            <button type="button" class="forge-action" data-forge-action="spark">
-              <span class="forge-action__ico" aria-hidden="true">✦</span>
-              <span class="forge-action__title">Spark Benches</span>
-              <span class="forge-action__desc">Simple create · describe, refine, publish</span>
-            </button>
-            <button type="button" class="forge-action" data-forge-action="deep">
-              <span class="forge-action__ico" aria-hidden="true">⚒</span>
-              <span class="forge-action__title">Deep Forges</span>
-              <span class="forge-action__desc">Advanced tools · complex Sparks</span>
-            </button>
-            <button type="button" class="forge-action" data-forge-action="publish">
-              <span class="forge-action__ico" aria-hidden="true">⚡</span>
-              <span class="forge-action__title">Publishing Gate</span>
-              <span class="forge-action__desc">Release to the Pack · Wrapper + Core</span>
-            </button>
-            <button type="button" class="forge-action" data-forge-action="influence">
-              <span class="forge-action__ico" aria-hidden="true">◎</span>
-              <span class="forge-action__title">My Influence</span>
-              <span class="forge-action__desc">Plays, Resonance, your standing</span>
-            </button>
-            <button type="button" class="forge-action" data-forge-action="gallery">
-              <span class="forge-action__ico" aria-hidden="true">★</span>
-              <span class="forge-action__title">Hall of Honor</span>
-              <span class="forge-action__desc">Featured Sparks · Pack honors</span>
-            </button>
-            <button type="button" class="forge-action" data-forge-action="mentor">
-              <span class="forge-action__ico" aria-hidden="true">🐺</span>
-              <span class="forge-action__title">Mentorship</span>
-              <span class="forge-action__desc">Feedback, collab, remix support</span>
-            </button>
-          </div>
-        </section>
-
-        <!-- 3. Your status -->
+        <!-- 2. Your status -->
         <section class="forge-hub-section" aria-labelledby="forgeStatusTitle">
           <h3 id="forgeStatusTitle">Your <span>Status</span></h3>
           <div class="forge-status">
@@ -7020,22 +8015,6 @@
               <b>Top honor</b>
               <span id="forgeStatHonor">—</span>
             </div>
-          </div>
-        </section>
-
-        <!-- 4. Featured / rising -->
-        <section class="forge-hub-section" aria-labelledby="forgeFeaturedTitle">
-          <h3 id="forgeFeaturedTitle">Featured <span>Sparks</span></h3>
-          <div class="forge-featured-grid" id="forgeFeaturedGrid"></div>
-        </section>
-
-        <!-- 5. Soft guidance -->
-        <section class="forge-hub-section" aria-labelledby="forgeTipsTitle">
-          <h3 id="forgeTipsTitle">Forge <span>Tips</span></h3>
-          <div class="forge-tips">
-            <p class="forge-tip"><strong>First Spark?</strong> Start at Spark Benches — describe what the Pack should feel, then pass the Gate.</p>
-            <p class="forge-tip"><strong>Power user?</strong> Deep Forges are for complex systems, custom tools, and heavy builds.</p>
-            <p class="forge-tip"><strong>Want honor?</strong> Study the Hall of Honor — highest Resonance Sparks light the path.</p>
           </div>
         </section>
       </div>
@@ -7065,23 +8044,16 @@
           </button>
         </div>
 
-        <div class="create-steps" aria-label="Creation steps">
-          <div class="create-step-pill is-active" data-create-step-pill="1">1 · Describe</div>
-          <div class="create-step-pill" data-create-step-pill="2">2 · Refine</div>
-          <div class="create-step-pill" data-create-step-pill="3">3 · Publish</div>
-        </div>
-
         <div class="create-layout">
           <div class="create-main">
             <div class="create-flow" id="createFlowSpark">
               <div class="create-grok-banner" id="createSparkGrokBanner">
                 <div class="create-grok-banner__text">
-                  <strong>Build Spark Benches with Grok Build</strong>
+                  <span class="create-grok-banner__title">Build Spark Benches with Grok Build</span>
                   <p>
-                    Open the <strong style="color:var(--text)">Grok app</strong> and use <strong style="color:var(--gold-soft)">Grok Build</strong> to craft your Spark Bench:
-                    describe and refine it in natural language, then <strong style="color:var(--text)">publish it inside the Grok app</strong>.
-                    Copy the <strong style="color:var(--cyan-soft)">sandbox Grok link</strong> it gives you and paste it here when you publish —
-                    that link connects your creation to the Boltverse.
+                    Open the <strong>Grok app</strong> and use <strong class="gold">Grok Build</strong> to craft your Spark Bench:
+                    describe and refine it in natural language, then <strong>publish it inside the Grok app</strong>.
+                    Copy the <strong class="cyan">sandbox Grok link</strong> it gives you and paste it here when you publish — that link connects your creation to the Boltverse.
                   </p>
                 </div>
                 <div class="create-grok-banner__actions">
@@ -7091,7 +8063,10 @@
               </div>
               <div class="create-panel" data-create-panel="1">
                 <h3>Describe</h3>
-                <p class="create-lead">Note the soul of your Spark here (or paste what you built in Grok). Pick a template, then later add the sandbox link at the Gate.</p>
+                <p class="create-lead">
+                  Tap a Spark type (Mini-Quest, Story Branch, etc.) to open a popup with two full web-game example prompts
+                  (2D or 3D Three.js for browser play). Pick one, then open the Grok app to build &amp; publish — paste the sandbox link at the Publishing Gate.
+                </p>
                 <div class="create-templates" id="createTemplates">
                   <button type="button" class="create-template-chip is-active" data-create-type="mini-quest">Mini-Quest</button>
                   <button type="button" class="create-template-chip" data-create-type="story-branch">Story Branch</button>
@@ -7101,146 +8076,50 @@
                   <button type="button" class="create-template-chip" data-create-type="howl">Howl</button>
                   <button type="button" class="create-template-chip" data-create-type="remix">Remix</button>
                 </div>
-                <label for="createTitle">Title</label>
-                <input id="createTitle" maxlength="80" placeholder="Name of your Spark…" />
-                <label for="createDescribe">Describe to Grok</label>
-                <textarea id="createDescribe" maxlength="1200" placeholder="Describe the experience in natural language…"></textarea>
-                <div class="create-examples" id="createExamples">
-                  <button type="button" class="create-example" data-example="A short storm sprint where Bolt collects three orbs before the fog closes.">Example · Sprint</button>
-                  <button type="button" class="create-example" data-example="A quiet story branch: a cub finds a silent seed under the ice.">Example · Story</button>
-                  <button type="button" class="create-example" data-example="A Howl from the balcony calling the Pack to gather at dawn.">Example · Howl</button>
+                <div class="create-selected-prompt" id="createSelectedPromptBox" hidden>
+                  <span class="create-selected-prompt__tag">Selected prompt</span>
+                  <strong id="createSelectedPromptTitle">—</strong>
+                  <p id="createSelectedPromptBody"></p>
+                  <button type="button" class="btn btn-ghost" id="createChangePrompt" style="margin-top:0.5rem;font-size:0.78rem;padding:0.4rem 0.75rem">Change prompt</button>
                 </div>
+                <input type="hidden" id="createTitle" value="" />
+                <input type="hidden" id="createDescribe" value="" />
                 <div class="create-nav-row">
                   <span></span>
                   <div class="create-nav-right">
-                    <button type="button" class="btn btn-primary" data-create-next="2">Continue to Refine →</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="create-panel" data-create-panel="2" hidden>
-                <h3>Refine</h3>
-                <p class="create-lead">Shape the Spark with Grok. Soft controls, live preview of your soul text.</p>
-                <div class="create-refine-chips">
-                  <button type="button" data-refine="shorter">Make it shorter</button>
-                  <button type="button" data-refine="emotion">Add more emotion</button>
-                  <button type="button" data-refine="difficulty">Increase difficulty</button>
-                  <button type="button" data-refine="pack">More Pack energy</button>
-                  <button type="button" data-refine="clearer">Make it clearer</button>
-                </div>
-                <label for="createRefine">Refine notes / chat with Grok</label>
-                <textarea id="createRefine" maxlength="800" placeholder="Ask for changes… e.g. make the ending softer"></textarea>
-                <div class="create-preview">
-                  <h4>Live preview</h4>
-                  <p id="createPreviewText">Your description will appear here.</p>
-                </div>
-                <div class="create-nav-row">
-                  <button type="button" class="btn btn-ghost" data-create-next="1">← Describe</button>
-                  <div class="create-nav-right">
-                    <button type="button" class="btn btn-primary" data-create-next="3">Continue to Publish →</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="create-panel" data-create-panel="3" hidden>
-                <h3>Publish</h3>
-                <p class="create-lead">Final review — then pass the Publishing Gate so Resonance and the Star Core can hear your Spark.</p>
-                <div class="create-publish-summary" id="createPublishSummary">
-                  <div><b>Title</b><span id="createSumTitle">—</span></div>
-                  <div><b>Type</b><span id="createSumType">—</span></div>
-                  <div><b>Mode</b><span id="createSumMode">Spark Benches</span></div>
-                  <div><b>Length</b><span id="createSumLen">—</span></div>
-                </div>
-                <div class="create-preview">
-                  <h4>Description</h4>
-                  <p id="createSumDesc">—</p>
-                </div>
-                <div class="create-nav-row" id="createPublishNav">
-                  <button type="button" class="btn btn-ghost" data-create-next="2">← Refine</button>
-                  <div class="create-nav-right">
-                    <button type="button" class="btn btn-primary" id="createPublishBtn">Publish to the Pack ⚡</button>
-                  </div>
-                </div>
-                <div class="create-success" id="createSuccess">
-                  <h3>Your Spark is live in the Pack</h3>
-                  <p>It is bound to the Official Wrapper · Resonance and the Star Core can now hear it.</p>
-                  <div class="forge-hero-actions">
-                    <button type="button" class="btn btn-primary" id="createSuccessHall">Open Hall of Sparks</button>
-                    <button type="button" class="btn btn-ghost" id="createSuccessAgain">Forge another</button>
+                    <a class="btn btn-primary" id="createOpenGrokFromDescribe" href="https://grok.com" target="_blank" rel="noopener noreferrer">Open Grok app →</a>
                   </div>
                 </div>
               </div>
             </div>
 
             <div class="create-flow" id="createFlowDeep" hidden>
-              <div class="create-panel" data-create-panel="1">
-                <h3>Deep Forges</h3>
-                <p class="create-lead">Advanced workspace for power users. Bring Grok Build, code, and complex systems — still ends at the same Gate.</p>
-                <label for="createDeepTitle">Project title</label>
-                <input id="createDeepTitle" maxlength="80" placeholder="Name of your advanced Spark…" />
-                <label for="createDeepType">Type</label>
-                <select id="createDeepType">
-                  <option value="mini-quest">Mini-Quest</option>
-                  <option value="sprint-path">Sprint Path</option>
-                  <option value="crystal-challenge">Crystal Challenge</option>
-                  <option value="ar-portal">AR Portal</option>
-                  <option value="story-branch">Story Branch</option>
-                  <option value="puzzle">Puzzle</option>
-                  <option value="remix">Remix</option>
-                </select>
-                <label for="createDeepSpec">Technical brief</label>
-                <textarea id="createDeepSpec" maxlength="1500" placeholder="Describe systems, assets, interactions, test plan…"></textarea>
-                <div class="create-preview">
-                  <h4>Deep tools</h4>
-                  <p>Grok Build · custom HTML/Three.js · technical templates · local test preview (coming deeper soon). Ship still goes through the Official Wrapper.</p>
+              <div class="create-panel deep-forge-hero" data-create-panel="1">
+                <div class="deep-forge-hero__badge"><em>New</em> Grok in the terminal · Deep Forges</div>
+                <h3>Bring Grok into <span>your Deep Forges</span></h3>
+                <p class="deep-forge-hero__lead">
+                  A powerful coding agent and CLI for complex Spark work — forge systems, Three.js trials, and Pack tools in the terminal, powered by Grok.
+                  When your build is ready, bring it through the Publishing Gate so the Star Core can hear it.
+                </p>
+                <div class="deep-forge-cli" aria-label="Install command">
+                  <div class="deep-forge-cli__tabs">PowerShell · WSL · Terminal</div>
+                  <code>$ <span>curl</span> -fsSL https://x.ai/cli/install.sh | bash</code>
                 </div>
-                <div class="create-nav-row">
-                  <span></span>
-                  <div class="create-nav-right">
-                    <button type="button" class="btn btn-primary" data-create-next="2">Continue to Refine →</button>
-                  </div>
+                <div class="deep-forge-hero__actions">
+                  <a class="btn btn-primary" href="https://x.ai/cli" target="_blank" rel="noopener noreferrer">Open x.ai/cli →</a>
+                  <a class="btn btn-ghost" href="https://grok.com" target="_blank" rel="noopener noreferrer">Grok app</a>
+                  <button type="button" class="btn btn-gold" id="createDeepPublishBtn">Publishing Gate ⚡</button>
                 </div>
-              </div>
-              <div class="create-panel" data-create-panel="2" hidden>
-                <h3>Test &amp; Refine</h3>
-                <p class="create-lead">Polish the brief, note test results, then move to the Gate.</p>
-                <label for="createDeepRefine">Test notes / refinements</label>
-                <textarea id="createDeepRefine" maxlength="800" placeholder="What passed · what still needs work…"></textarea>
-                <div class="create-preview">
-                  <h4>Preview</h4>
-                  <p id="createDeepPreview">Your technical brief will appear here.</p>
-                </div>
-                <div class="create-nav-row">
-                  <button type="button" class="btn btn-ghost" data-create-next="1">← Deep brief</button>
-                  <div class="create-nav-right">
-                    <button type="button" class="btn btn-primary" data-create-next="3">Continue to Publish →</button>
-                  </div>
-                </div>
-              </div>
-              <div class="create-panel" data-create-panel="3" hidden>
-                <h3>Publish</h3>
-                <p class="create-lead">Same Gate as Spark Benches — Resonance, Star Core, and Influence stay unified.</p>
-                <div class="create-publish-summary">
-                  <div><b>Title</b><span id="createDeepSumTitle">—</span></div>
-                  <div><b>Type</b><span id="createDeepSumType">—</span></div>
-                  <div><b>Mode</b><span>Deep Forges</span></div>
-                </div>
-                <div class="create-preview">
-                  <h4>Brief</h4>
-                  <p id="createDeepSumDesc">—</p>
-                </div>
-                <div class="create-nav-row">
-                  <button type="button" class="btn btn-ghost" data-create-next="2">← Refine</button>
-                  <div class="create-nav-right">
-                    <button type="button" class="btn btn-primary" id="createDeepPublishBtn">Publish to the Pack ⚡</button>
-                  </div>
-                </div>
+                <p class="deep-forge-hero__note">
+                  Docs &amp; install live at <a href="https://x.ai/cli" target="_blank" rel="noopener noreferrer">https://x.ai/cli</a>.
+                  Deep Forges are for power users — Spark Benches stay the recommended path for most of the Pack.
+                </p>
               </div>
             </div>
           </div>
 
           <aside class="create-side">
-            <div class="create-side-card">
+            <div class="create-side-card" id="createSideTemplatesCard">
               <h4>Templates</h4>
               <ul>
                 <li>Mini-Quest · orbs &amp; storms</li>
@@ -7249,18 +8128,22 @@
                 <li>Howl · Pack signal on X</li>
               </ul>
             </div>
+            <div class="create-side-card" id="createSideDeepCliCard" hidden>
+              <h4>Deep CLI</h4>
+              <p>
+                Install the Grok CLI and forge in the terminal.
+                Docs: <a href="https://x.ai/cli" target="_blank" rel="noopener noreferrer" style="color:var(--cyan-soft);font-weight:700">x.ai/cli</a>
+              </p>
+            </div>
             <div class="create-side-card" id="createSideGrokCard">
               <h4>Grok Build flow</h4>
-              <p>
-                1. Open the
-                <a href="https://grok.com" target="_blank" rel="noopener noreferrer" style="color:var(--cyan-soft);font-weight:700">Grok app</a><br />
-                2. Use <strong style="color:var(--gold-soft)">Grok Build</strong> — describe &amp; refine in natural language<br />
-                3. <strong style="color:var(--text)">Publish inside Grok</strong><br />
-                4. Paste the <strong style="color:var(--cyan-soft)">sandbox link</strong> here to connect it to the Boltverse
-              </p>
-              <p style="margin-top:0.45rem">
-                <a class="btn btn-ghost" href="https://grok.com" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;padding:0.35rem 0.65rem">Open Grok →</a>
-              </p>
+              <ol class="create-side-steps">
+                <li>Open the <a href="https://grok.com" target="_blank" rel="noopener noreferrer">Grok app</a></li>
+                <li>Use <strong class="gold">Grok Build</strong> — describe &amp; refine</li>
+                <li><strong>Publish inside Grok</strong></li>
+                <li>Paste the <strong class="cyan">sandbox link</strong> to connect to the Boltverse</li>
+              </ol>
+              <a class="btn btn-ghost" href="https://grok.com" target="_blank" rel="noopener noreferrer">Open Grok →</a>
             </div>
             <div class="create-side-card">
               <h4>Tips</h4>
@@ -7376,15 +8259,15 @@
           </p>
         </div>
 
-        <nav class="rc-nav-anchors" aria-label="Chambers sections">
-          <a href="#rc-rank">Rank</a>
-          <a href="#rc-contrib">Contributions</a>
-          <a href="#rc-growth">Growth</a>
-          <a href="#rc-core">Star Core</a>
+        <nav class="rc-nav-anchors" id="rcTabNav" aria-label="Chambers pages">
+          <button type="button" class="is-active" data-rc-tab="rank">Rank</button>
+          <button type="button" data-rc-tab="contrib">Contributions</button>
+          <button type="button" data-rc-tab="growth">Growth</button>
+          <button type="button" data-rc-tab="core">Star Core</button>
         </nav>
 
-        <!-- 1. Rank display -->
-        <section class="rc-hero-panel" id="rc-rank" aria-labelledby="rcRankName">
+        <!-- Rank page -->
+        <section class="rc-hero-panel rc-tab-panel is-active" id="rc-rank" data-rc-panel="rank" aria-labelledby="rcRankName">
           <button type="button" class="rc-rank-info-btn" id="rcRankInfoBtn" title="View all ranks" aria-label="View all Resonance ranks and requirements">
             !
           </button>
@@ -7405,35 +8288,80 @@
           </div>
         </section>
 
-        <!-- 2. Contribution history -->
-        <section class="rc-section" id="rc-contrib" aria-labelledby="rcContribTitle">
+        <!-- Contributions page -->
+        <section class="rc-section rc-tab-panel" id="rc-contrib" data-rc-panel="contrib" aria-labelledby="rcContribTitle">
           <h3 id="rcContribTitle">Contribution History</h3>
-          <p class="rc-lead">Where your personal Resonance was earned — play, howl, create, and explore.</p>
-          <div class="rc-total">
-            <span class="rc-total-label">Total Resonance</span>
-            <span class="rc-total-num" id="rcTotalRes">0</span>
+          <p class="rc-lead">Where your personal Resonance was earned — play, howl, create, and explore. Every path below feeds the living Core.</p>
+
+          <div class="rc-contrib-hero">
+            <div class="rc-total">
+              <span class="rc-total-label">Total Resonance</span>
+              <span class="rc-total-num" id="rcTotalRes">0</span>
+            </div>
+            <div class="rc-contrib-kpis" id="rcContribKpis">
+              <div class="rc-contrib-kpi"><b>Last 7 days</b><span id="rcKpi7">0</span></div>
+              <div class="rc-contrib-kpi"><b>Last 30 days</b><span id="rcKpi30">0</span></div>
+              <div class="rc-contrib-kpi"><b>Active paths</b><span id="rcKpiPaths">0</span></div>
+              <div class="rc-contrib-kpi"><b>Top path</b><span id="rcKpiTop">—</span></div>
+            </div>
           </div>
+
+          <h4 class="rc-contrib-subtitle">Resonance by path</h4>
+          <p class="rc-contrib-note">Share of your total · cyan bar = strength of that contribution stream</p>
           <div class="rc-bars" id="rcBars"></div>
+
+          <div class="rc-contrib-grid">
+            <div class="rc-contrib-card">
+              <h4>How you feed the Core</h4>
+              <ul id="rcContribHow">
+                <li>Play Mini-Quests and trials</li>
+                <li>Howl on Sparks that move the Pack</li>
+                <li>Pass the Publishing Gate with new work</li>
+                <li>Explore Echoes, stories, and events</li>
+              </ul>
+            </div>
+            <div class="rc-contrib-card">
+              <h4>Activity pulse</h4>
+              <ul id="rcContribPulse">
+                <li>Plays: <strong id="rcPulsePlays">0</strong></li>
+                <li>Howls given: <strong id="rcPulseHowls">0</strong></li>
+                <li>Wins: <strong id="rcPulseWins">0</strong></li>
+                <li>Gate passes: <strong id="rcPulseCreates">0</strong></li>
+              </ul>
+            </div>
+            <div class="rc-contrib-card rc-contrib-card--wide">
+              <h4>Chamber reading</h4>
+              <p id="rcContribReading">Your contribution map is still forming. Every action lights a new path.</p>
+            </div>
+          </div>
+
           <p class="rc-recent" id="rcRecent">Last 7 days: <strong>0</strong> · Last 30 days: <strong>0</strong></p>
         </section>
 
-        <!-- 3. Growth & insights -->
-        <section class="rc-section" id="rc-growth" aria-labelledby="rcGrowthTitle">
+        <!-- Growth page -->
+        <section class="rc-section rc-tab-panel" id="rc-growth" data-rc-panel="growth" aria-labelledby="rcGrowthTitle">
+          <button type="button" class="rc-section-info-btn" id="rcGrowthInfoBtn" title="View milestones" aria-label="View growth milestones">
+            !
+          </button>
           <h3 id="rcGrowthTitle">Growth &amp; Insights</h3>
-          <p class="rc-lead">How your path has unfolded — trends, milestones, and soft guidance.</p>
+          <p class="rc-lead">How your path has unfolded — trends and soft guidance. Tap <strong style="color:var(--cyan-soft)">!</strong> for milestones.</p>
           <div class="rc-trend" id="rcTrend" aria-label="Resonance over recent days"></div>
-          <ul class="rc-milestones" id="rcMilestones"></ul>
+          <p class="rc-growth-teaser" id="rcGrowthTeaser">Milestones unlock as you rise — open <strong>!</strong> to see them all.</p>
           <ul class="rc-insights" id="rcInsights"></ul>
         </section>
 
-        <!-- 4. Star Core connection -->
-        <section class="rc-section rc-core-section" id="rc-core" aria-labelledby="rcCoreTitle">
+        <!-- Star Core page -->
+        <section class="rc-section rc-core-section rc-tab-panel" id="rc-core" data-rc-panel="core" aria-labelledby="rcCoreTitle">
           <h3 id="rcCoreTitle">Personal Connection to the Star Core</h3>
           <p class="rc-lead">Your individual effort is not isolated — it flows into the shared Heart of the Pack.</p>
           <div class="rc-core-visual" aria-hidden="true">
-            <div class="rc-you">🐺</div>
+            <div class="rc-you" title="You">
+              <img id="rcCoreYouBadge" src="assets/ranks/rank-01.jpg?v=full4" alt="Your rank badge" width="64" height="84" />
+            </div>
             <div class="rc-flow"></div>
-            <div class="rc-core-orb"></div>
+            <div class="rc-core-orb" title="Star Core">
+              <img src="assets/star-core.jpg" alt="Star Core" width="168" height="168" />
+            </div>
           </div>
           <div class="rc-core-stats">
             <div class="rc-core-stat">
@@ -8001,6 +8929,50 @@
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-ghost" data-close-ranks>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create type example prompts popup -->
+  <div class="modal-overlay" id="createPromptsModal" role="dialog" aria-modal="true" aria-labelledby="createPromptsTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 class="modal-title" id="createPromptsTitle">Example prompts</h2>
+        <button type="button" class="close-btn" data-close-create-prompts aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="rc-ladder-lead" id="createPromptsLead">
+          Two full web-game prompts for this Spark type. Pick one to use in Grok Build or refine here.
+        </p>
+        <div class="create-prompt-grid" id="createPromptGrid" role="listbox" aria-label="Example prompts"></div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close-create-prompts>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Growth milestones popup -->
+  <div class="modal-overlay" id="milestonesModal" role="dialog" aria-modal="true" aria-labelledby="milestonesTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 class="modal-title" id="milestonesTitle">Growth Milestones</h2>
+        <button type="button" class="close-btn" data-close-milestones aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="rc-ladder-lead">
+          Haut faits of the Pack — ranks, Resonance, Howls, Sparks, and Core-charged victories across 10 pages.
+        </p>
+        <ul class="rc-milestones-modal-list" id="milestonesModalList"></ul>
+        <div class="rc-milestones-pager" id="milestonesPager" aria-label="Milestones pages">
+          <button type="button" class="pg-btn" id="msPgPrev" aria-label="Previous page">‹</button>
+          <div class="pg-nums" id="msPgNums" role="group" aria-label="Page numbers"></div>
+          <button type="button" class="pg-btn" id="msPgNext" aria-label="Next page">›</button>
+          <div class="rc-milestones-pager-meta" id="msPgMeta">Page 1 / 10</div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close-milestones>Close</button>
       </div>
     </div>
   </div>
@@ -10362,15 +11334,55 @@
     /** One-time: ensure Pack member is Rank 12 (Heart of the Pack) */
     function ensureAtLeastRank12() {
       let led = loadPersonalLedger();
-      if (led.promotedHeart12) return led;
-      const heartNeed = PERSONAL_RANKS.find((r) => r.rank === 12)?.need ?? 55000;
-      const total = led.total || 0;
-      if (total < heartNeed) {
-        grantPersonalResonance(heartNeed - total, "bonus", {});
-        led = loadPersonalLedger();
+      if (!led.promotedHeart12) {
+        const heartNeed = PERSONAL_RANKS.find((r) => r.rank === 12)?.need ?? 55000;
+        const total = led.total || 0;
+        if (total < heartNeed) {
+          grantPersonalResonance(heartNeed - total, "bonus", {});
+          led = loadPersonalLedger();
+        }
+        led.promotedHeart12 = true;
+        led.promotedRunner = true;
+        savePersonalLedger(led);
       }
-      led.promotedHeart12 = true;
-      led.promotedRunner = true;
+      return ensureShowcaseDailyResonance(led);
+    }
+
+    /**
+     * Fill last 14 days with varied daily Resonance so the Growth chart
+     * showcases a living path (not a single spike). Keeps total aligned.
+     */
+    function ensureShowcaseDailyResonance(ledIn) {
+      let led = ledIn || loadPersonalLedger();
+      if (led.showcaseDaily14) return led;
+      const total = Math.max(led.total || 0, 1000);
+      // Rising path with natural variation — peaks near today for showcase
+      const weights = [
+        0.45, 0.55, 0.50, 0.70, 0.85, 0.75, 1.00,
+        1.15, 1.05, 1.35, 1.50, 1.40, 1.75, 2.10,
+      ];
+      const wobble = (key, i) => {
+        let h = 0;
+        for (let c = 0; c < key.length; c++) h = (h * 31 + key.charCodeAt(c)) | 0;
+        const u = ((Math.abs(h) + i * 17) % 100) / 100;
+        return 0.82 + u * 0.36;
+      };
+      const days = [];
+      let sumW = 0;
+      for (let i = 13; i >= 0; i--) {
+        const k = dayKey(Date.now() - i * 86400000);
+        const w = weights[13 - i] * wobble(k, i);
+        days.push({ k, w });
+        sumW += w;
+      }
+      let assigned = 0;
+      for (let i = 0; i < 13; i++) {
+        const amount = Math.max(120, Math.round((total * days[i].w) / sumW));
+        led.daily[days[i].k] = amount;
+        assigned += amount;
+      }
+      led.daily[days[13].k] = Math.max(120, total - assigned);
+      led.showcaseDaily14 = true;
       savePersonalLedger(led);
       return led;
     }
@@ -10397,11 +11409,34 @@
       return Math.max(12, Math.min(96, Math.round(raw)));
     }
 
+    let rcActiveTab = "rank"; // rank | contrib | growth | core
+
+    function setRcTab(tab) {
+      const allowed = ["rank", "contrib", "growth", "core"];
+      rcActiveTab = allowed.includes(tab) ? tab : "rank";
+      document.querySelectorAll("#rcTabNav [data-rc-tab]").forEach((btn) => {
+        btn.classList.toggle("is-active", btn.dataset.rcTab === rcActiveTab);
+      });
+      document.querySelectorAll("#resonanceChambersPage [data-rc-panel]").forEach((panel) => {
+        panel.classList.toggle("is-active", panel.dataset.rcPanel === rcActiveTab);
+      });
+      // Update hash without jumping the whole page harshly
+      try {
+        const idMap = { rank: "rc-rank", contrib: "rc-contrib", growth: "rc-growth", core: "rc-core" };
+        const el = document.getElementById(idMap[rcActiveTab]);
+        if (el && history.replaceState) {
+          history.replaceState(null, "", "#" + idMap[rcActiveTab]);
+        }
+      } catch (_) {}
+    }
+
     function renderResonanceChambers() {
       const page = document.getElementById("resonanceChambersPage");
       if (!page) return;
       bootstrapPersonalLedgerIfNeeded();
       const led = ensureAtLeastRank12();
+      // Prefer active tab; only honor hash when opening Chambers fresh
+      setRcTab(rcActiveTab || "rank");
       const rankInfo = personalRankFromTotal(led.total || 0);
       const { current, next, pct, total, floor, ceil } = rankInfo;
 
@@ -10414,6 +11449,14 @@
           emblemImg.src = current.badge;
         }
         emblemImg.alt = current.name + " rank badge";
+      }
+      const coreYou = document.getElementById("rcCoreYouBadge");
+      if (coreYou && current.badge) {
+        if (coreYou.getAttribute("src") !== current.badge) {
+          coreYou.src = current.badge;
+        }
+        coreYou.alt = "You · " + current.name;
+        coreYou.title = current.name + " · Rank " + current.rank;
       }
       if (emblem) {
         emblem.classList.toggle("is-high", current.rank >= 8);
@@ -10450,67 +11493,123 @@
 
       document.getElementById("rcTotalRes").textContent = formatCount(total);
 
-      const bars = document.getElementById("rcBars");
-      if (bars) {
-        const entries = Object.keys(RES_SOURCE_LABELS).map((k) => ({
-          key: k,
-          label: RES_SOURCE_LABELS[k],
-          val: led.bySource[k] || 0,
-        })).filter((e) => e.val > 0)
-          .sort((a, b) => b.val - a.val);
-        const max = Math.max(1, ...entries.map((e) => e.val));
-        if (!entries.length) {
-          bars.innerHTML = `<p class="rc-lead" style="margin:0">No Resonance recorded yet — play, howl, or pass the Publishing Gate to begin.</p>`;
-        } else {
-          bars.innerHTML = entries.map((e) => {
-            const w = Math.max(4, Math.round((e.val / max) * 100));
-            const pctShare = total > 0 ? ((e.val / total) * 100).toFixed(1) : "0";
-            return `<div class="rc-bar-row" title="${escapeAttr(e.label)} · ${pctShare}%">
-              <span class="rc-bar-name">${escapeHtml(e.label)}</span>
-              <div class="rc-bar-track"><div class="rc-bar-fill" style="width:${w}%"></div></div>
-              <span class="rc-bar-val">${formatCount(e.val)}</span>
-            </div>`;
-          }).join("");
-        }
-      }
-
       const d7 = sumDays(led, 7);
       const d30 = sumDays(led, 30);
-      const recent = document.getElementById("rcRecent");
-      if (recent) {
-        recent.innerHTML = `Last 7 days: <strong>${formatCount(d7)}</strong> · Last 30 days: <strong>${formatCount(d30)}</strong>`;
-      }
+      const entriesAll = Object.keys(RES_SOURCE_LABELS).map((k) => ({
+        key: k,
+        label: RES_SOURCE_LABELS[k],
+        val: led.bySource[k] || 0,
+      })).sort((a, b) => b.val - a.val);
+      const activePaths = entriesAll.filter((e) => e.val > 0);
+      const topPath = activePaths[0];
 
-      // 14-day trend
-      const trend = document.getElementById("rcTrend");
-      if (trend) {
-        const days = [];
-        for (let i = 13; i >= 0; i--) {
-          days.push(led.daily[dayKey(Date.now() - i * 86400000)] || 0);
-        }
-        const tMax = Math.max(1, ...days);
-        trend.innerHTML = days.map((v, i) => {
-          const h = Math.max(4, Math.round((v / tMax) * 100));
-          return `<div class="rc-trend-bar" style="height:${h}%" title="Day ${i + 1}: ${v}"></div>`;
+      const setTxt = (id, v) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = v;
+      };
+      setTxt("rcKpi7", formatCount(d7));
+      setTxt("rcKpi30", formatCount(d30));
+      setTxt("rcKpiPaths", String(activePaths.length));
+      setTxt("rcKpiTop", topPath ? topPath.label : "—");
+      setTxt("rcPulsePlays", formatCount(led.plays || 0));
+      setTxt("rcPulseHowls", formatCount(led.howlsGiven || 0));
+      setTxt("rcPulseWins", formatCount(led.wins || 0));
+      setTxt("rcPulseCreates", formatCount(led.creates || 0));
+
+      const bars = document.getElementById("rcBars");
+      if (bars) {
+        const max = Math.max(1, ...entriesAll.map((e) => e.val));
+        bars.innerHTML = entriesAll.map((e) => {
+          const w = e.val > 0 ? Math.max(6, Math.round((e.val / max) * 100)) : 0;
+          const pctShare = total > 0 ? ((e.val / total) * 100).toFixed(1) : "0.0";
+          const empty = e.val <= 0 ? " is-empty" : "";
+          return `<div class="rc-bar-row${empty}" title="${escapeAttr(e.label)} · ${pctShare}% of total">
+            <span class="rc-bar-name">${escapeHtml(e.label)}</span>
+            <div class="rc-bar-track"><div class="rc-bar-fill" style="width:${w}%"></div></div>
+            <span class="rc-bar-share">${pctShare}%</span>
+            <span class="rc-bar-val">${formatCount(e.val)}</span>
+          </div>`;
         }).join("");
       }
 
-      // Milestones
-      const ms = document.getElementById("rcMilestones");
-      if (ms) {
-        const checks = [
-          { id: "rank3", ok: current.rank >= 3, label: `Reached ${PERSONAL_RANKS[2].name} (Rank 3)` },
-          { id: "rank5", ok: current.rank >= 5, label: `Reached ${PERSONAL_RANKS[4].name} (Rank 5)` },
-          { id: "rank7", ok: current.rank >= 7, label: `Reached ${PERSONAL_RANKS[6].name} (Rank 7)` },
-          { id: "r10k", ok: total >= 10000, label: "Generated 10,000 Total Resonance" },
-          { id: "howl10", ok: (led.howlsGiven || 0) >= 10, label: "Howled on 10 creations" },
-          { id: "play5", ok: (led.plays || 0) >= 5, label: "Entered 5 play experiences" },
-          { id: "win1", ok: (led.wins || 0) >= 1, label: "First Core-charged victory" },
-          { id: "create1", ok: (led.creates || 0) >= 1, label: "Passed the Publishing Gate" },
-        ];
-        ms.innerHTML = checks.map((c) =>
-          `<li class="${c.ok ? "" : "is-locked"}">${escapeHtml(c.label)}${c.ok ? "" : " — still ahead"}</li>`
-        ).join("");
+      const reading = document.getElementById("rcContribReading");
+      if (reading) {
+        let text = "Your contribution map is still forming. Every play, Howl, and Gate pass lights a new path into the Core.";
+        if (topPath && topPath.val > 0) {
+          const share = total > 0 ? Math.round((topPath.val / total) * 100) : 0;
+          text = `Your strongest stream is <strong style="color:var(--cyan-soft)">${escapeHtml(topPath.label)}</strong> (${share}% of your total). `;
+          if (activePaths.length >= 3) {
+            text += `You already walk ${activePaths.length} Resonance paths — a balanced Pack contribution. `;
+          } else if (activePaths.length === 1) {
+            text += `Widen your path: try Mini-Quests, Howls, or publishing a Spark. `;
+          } else {
+            text += `Keep feeding quieter paths so the Core hears the full Pack rhythm. `;
+          }
+          if (d7 > 0) text += `In the last 7 days you gathered <strong style="color:var(--gold-soft)">${formatCount(d7)}</strong> Resonance.`;
+          else text += `Quiet days still count — one Howl rekindles the chamber.`;
+        }
+        reading.innerHTML = text;
+      }
+
+      const recent = document.getElementById("rcRecent");
+      if (recent) {
+        recent.innerHTML = `Last 7 days: <strong>${formatCount(d7)}</strong> · Last 30 days: <strong>${formatCount(d30)}</strong> · Lifetime total: <strong>${formatCount(total)}</strong>`;
+      }
+
+      // 14-day trend graphic
+      const trend = document.getElementById("rcTrend");
+      if (trend) {
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const days = [];
+        for (let i = 13; i >= 0; i--) {
+          const ts = Date.now() - i * 86400000;
+          const d = new Date(ts);
+          days.push({
+            v: led.daily[dayKey(ts)] || 0,
+            label: dayNames[d.getDay()],
+            isToday: i === 0,
+            dateLabel: `${d.getMonth() + 1}/${d.getDate()}`,
+          });
+        }
+        const tMax = Math.max(1, ...days.map((d) => d.v));
+        const peak = Math.max(...days.map((d) => d.v));
+        // sqrt scale so a single huge day doesn't flatten every other bar to zero
+        const scale = (v) => {
+          if (v <= 0) return 0;
+          return Math.max(8, Math.round(Math.sqrt(v / tMax) * 100));
+        };
+        const sum14 = days.reduce((s, d) => s + d.v, 0);
+        trend.outerHTML = `
+          <div class="rc-trend-wrap" id="rcTrend">
+            <div class="rc-trend-head">
+              <strong>14-day Resonance</strong>
+              <span>Peak ${formatCount(peak)} · Total ${formatCount(sum14)}</span>
+            </div>
+            <div class="rc-trend" role="img" aria-label="Resonance over the last 14 days">
+              ${days.map((d) => {
+                const h = scale(d.v);
+                const empty = d.v <= 0;
+                const peakCls = !empty && d.v === peak && peak > 0 ? " is-peak" : "";
+                const todayCls = d.isToday ? " is-today" : "";
+                return `<div class="rc-trend-col${todayCls}" title="${d.dateLabel}: ${formatCount(d.v)} Resonance">
+                  <div class="rc-trend-bar${empty ? " is-empty" : ""}${peakCls}" style="height:${empty ? 3 : h}%"></div>
+                  <span>${d.label}</span>
+                </div>`;
+              }).join("")}
+            </div>
+          </div>`;
+      }
+
+      // Haut faits / milestones (10 pages in popup)
+      const milestoneChecks = buildHautFaits(led, current, total);
+      window.__rcMilestoneChecks = milestoneChecks;
+      const doneCount = milestoneChecks.filter((c) => c.ok).length;
+      const teaser = document.getElementById("rcGrowthTeaser");
+      if (teaser) {
+        teaser.innerHTML = `<strong>${doneCount}/${milestoneChecks.length}</strong> haut faits — tap <strong>!</strong> for 10 pages of the path.`;
+      }
+      if (document.getElementById("milestonesModal")?.classList.contains("open")) {
+        renderMilestonesModalList();
       }
 
       // Insights
@@ -10583,6 +11682,156 @@
       window.setTimeout(() => {
         if (!lb.classList.contains("open")) lb.hidden = true;
       }, 220);
+    }
+
+    const MS_PAGE_SIZE = 8; // 8 × 10 pages = 80 haut faits
+    let milestonesPage = 1;
+
+    /** Full catalog of Pack haut faits (achievements) — at least 10 pages */
+    function buildHautFaits(led, current, total) {
+      const r = current?.rank || 1;
+      const howls = led.howlsGiven || 0;
+      const plays = led.plays || 0;
+      const wins = led.wins || 0;
+      const creates = led.creates || 0;
+      const packmates = (typeof loadPackmates === "function" ? loadPackmates() : []).length;
+      const d7 = sumDays(led, 7);
+      const d30 = sumDays(led, 30);
+      const by = led.bySource || {};
+      const feats = [];
+      const add = (id, ok, label) => feats.push({ id, ok: !!ok, label });
+
+      // Page 1–2: Ranks (haut faits of ascent)
+      PERSONAL_RANKS.forEach((rank) => {
+        add(`rank-${rank.rank}`, r >= rank.rank, `Haut fait · Reached ${rank.name} (Rank ${rank.rank})`);
+      });
+
+      // Resonance thresholds
+      [100, 300, 700, 1500, 3000, 5500, 9000, 10000, 14000, 22000, 35000, 55000, 75000, 100000].forEach((n) => {
+        add(`res-${n}`, total >= n, `Haut fait · ${formatCount(n)} personal Resonance`);
+      });
+
+      // Howls
+      [1, 3, 5, 10, 25, 50, 100].forEach((n) => {
+        add(`howl-${n}`, howls >= n, n === 1 ? "Haut fait · First Howl for the Pack" : `Haut fait · Howled on ${n} creations`);
+      });
+
+      // Plays & wins
+      [1, 3, 5, 10, 25, 50].forEach((n) => {
+        add(`play-${n}`, plays >= n, n === 1 ? "Haut fait · First play experience" : `Haut fait · Entered ${n} play experiences`);
+      });
+      [1, 3, 5, 10, 25].forEach((n) => {
+        add(`win-${n}`, wins >= n, n === 1 ? "Haut fait · First Core-charged victory" : `Haut fait · ${n} Core-charged victories`);
+      });
+
+      // Gate / creates
+      [1, 3, 5, 10, 20].forEach((n) => {
+        add(`gate-${n}`, creates >= n, n === 1 ? "Haut fait · Passed the Publishing Gate" : `Haut fait · ${n} Sparks through the Gate`);
+      });
+
+      // Pack-mates
+      [1, 3, 5, 10].forEach((n) => {
+        add(`pm-${n}`, packmates >= n, n === 1 ? "Haut fait · First Pack-mate bond" : `Haut fait · ${n} Pack-mates bonded`);
+      });
+
+      // Daily / streak-style
+      add("d7-100", d7 >= 100, "Haut fait · 100 Resonance in 7 days");
+      add("d7-1k", d7 >= 1000, "Haut fait · 1,000 Resonance in 7 days");
+      add("d7-10k", d7 >= 10000, "Haut fait · 10,000 Resonance in 7 days");
+      add("d30-500", d30 >= 500, "Haut fait · 500 Resonance in 30 days");
+      add("d30-5k", d30 >= 5000, "Haut fait · 5,000 Resonance in 30 days");
+      add("d30-25k", d30 >= 25000, "Haut fait · 25,000 Resonance in 30 days");
+
+      // Source mastery
+      Object.keys(RES_SOURCE_LABELS).forEach((key) => {
+        const v = by[key] || 0;
+        const label = RES_SOURCE_LABELS[key];
+        add(`src-${key}-1`, v >= 1, `Haut fait · First Resonance from ${label}`);
+        add(`src-${key}-100`, v >= 100, `Haut fait · 100 Resonance from ${label}`);
+        add(`src-${key}-1k`, v >= 1000, `Haut fait · 1,000 Resonance from ${label}`);
+      });
+
+      // Lore flavor (unlocked by rank/res thresholds for progress feel)
+      add("lore-spark", r >= 1, "Haut fait · Lit the first Spark in the Chambers");
+      add("lore-silence", total >= 50, "Haut fait · Heard the silence under crystal ice");
+      add("lore-howl-dome", r >= 3, "Haut fait · Howl carried under the Dome");
+      add("lore-gate-feel", creates >= 1 || total >= 200, "Haut fait · Felt unfinished work at the Gate");
+      add("lore-core-pulse", r >= 5, "Haut fait · Felt the Star Core pulse answer");
+      add("lore-citadel", r >= 7, "Haut fait · Trusted on Citadel stone");
+      add("lore-adept", r >= 8, "Haut fait · Thunderwolf Adept path opens");
+      add("lore-luminary", r >= 9, "Haut fait · Luminary light on the Pack");
+      add("lore-starforged", r >= 10, "Haut fait · Starforged in living fire");
+      add("lore-eternal", r >= 11, "Haut fait · Eternal Runner stride");
+      add("lore-heart", r >= 12, "Haut fait · Heart of the Pack — highest living honor");
+      add("lore-bonus", (by.bonus || 0) >= 40, "Haut fait · Accepted the welcome Spark of the Core");
+      add("lore-balanced", Object.values(by).filter((v) => v > 0).length >= 3, "Haut fait · Three paths of Resonance open");
+      add("lore-wide", Object.values(by).filter((v) => v > 0).length >= 5, "Haut fait · Five Resonance paths woven");
+
+      // Pad to exactly 80 (10 pages × 8) with extra lore if needed
+      let i = 0;
+      while (feats.length < 80) {
+        i += 1;
+        add(`pad-${i}`, total >= i * 500, `Haut fait · Path stone ${i} — keep feeding the Core`);
+      }
+      return feats.slice(0, 80);
+    }
+
+    function milestonesPageCount() {
+      const rows = window.__rcMilestoneChecks || [];
+      return Math.max(1, Math.ceil(rows.length / MS_PAGE_SIZE));
+    }
+
+    function renderMilestonesModalList() {
+      const list = document.getElementById("milestonesModalList");
+      if (!list) return;
+      const rows = window.__rcMilestoneChecks || [];
+      const pages = milestonesPageCount();
+      if (milestonesPage > pages) milestonesPage = pages;
+      if (milestonesPage < 1) milestonesPage = 1;
+      const start = (milestonesPage - 1) * MS_PAGE_SIZE;
+      const slice = rows.slice(start, start + MS_PAGE_SIZE);
+      list.innerHTML = slice.map((c) =>
+        `<li class="${c.ok ? "is-done" : "is-locked"}">${escapeHtml(c.label)}${c.ok ? "" : " — still ahead"}</li>`
+      ).join("");
+
+      const prev = document.getElementById("msPgPrev");
+      const next = document.getElementById("msPgNext");
+      const nums = document.getElementById("msPgNums");
+      const meta = document.getElementById("msPgMeta");
+      if (prev) prev.disabled = milestonesPage <= 1;
+      if (next) next.disabled = milestonesPage >= pages;
+      if (meta) {
+        const done = rows.filter((c) => c.ok).length;
+        meta.textContent = `Page ${milestonesPage} / ${pages} · ${done}/${rows.length} haut faits`;
+      }
+      if (nums) {
+        // Show a window of page numbers
+        const windowSize = 5;
+        let from = Math.max(1, milestonesPage - 2);
+        let to = Math.min(pages, from + windowSize - 1);
+        from = Math.max(1, to - windowSize + 1);
+        let html = "";
+        for (let p = from; p <= to; p++) {
+          html += `<button type="button" class="pg-btn${p === milestonesPage ? " is-active" : ""}" data-ms-page="${p}" aria-label="Page ${p}" ${p === milestonesPage ? 'aria-current="page"' : ""}>${p}</button>`;
+        }
+        nums.innerHTML = html;
+      }
+    }
+
+    function openMilestonesModal() {
+      const modal = document.getElementById("milestonesModal");
+      if (!modal) return;
+      if (!window.__rcMilestoneChecks) {
+        try { renderResonanceChambers(); } catch (_) {}
+      }
+      milestonesPage = 1;
+      renderMilestonesModalList();
+      modal.classList.add("open");
+      try { document.querySelector("#milestonesModal [data-close-milestones]")?.focus(); } catch (_) {}
+    }
+
+    function closeMilestonesModal() {
+      document.getElementById("milestonesModal")?.classList.remove("open");
     }
 
     function openRanksLadder() {
@@ -13160,17 +14409,147 @@
       mode: "spark", // spark | deep
       step: 1,
       type: "mini-quest",
+      promptIndex: -1,
+    };
+
+    /** Two ready-to-use Grok Build example prompts per Spark type — long, web-game only (2D or 3D Three.js) */
+    const CREATE_PROMPTS = {
+      "mini-quest": [
+        {
+          title: "Storm Orb Dash",
+          body: "Build a complete playable WEB browser Mini-Quest using 2D canvas (HTML5 Canvas or similar) for web play only — no native apps, no mobile-only builds. Genre: short action collect-run. Setting: a Boltverse lightning canyon under a dark navy sky with cyan storm veins and gold fog walls closing in from both sides. Player controls Bolt (or a Pack cub avatar) with keyboard arrows / WASD and optional on-screen touch buttons for web. Goal: collect exactly three glowing storm orbs placed along a forward path before a 45-second fog timer ends. Include: spawn at canyon mouth, three clearly lit orb pickups with cyan spark VFX, progressive fog that reduces safe width, one short safe pocket mid-run, collision with fog = soft reset to last checkpoint (not full game over), success when third orb is collected with a gold flash and Pack howl sting. UI: timer, orbs collected 0/3, restart button, win panel “Core charged — return to the Citadel.” Art direction: deep indigo, cyan lightning, soft gold accents, no text baked into art. Keep session length under 90 seconds. Output as a self-contained web game ready to publish and share via sandbox link.",
+        },
+        {
+          title: "Crystal Step Trial",
+          body: "Create a complete playable WEB browser Mini-Quest in 3D using Three.js for web play only (desktop + mobile browser), not a native app. Genre: precision platform trial. Scene: floating crystal stepping stones over a bottomless dark void with distant Star Core glow. Player moves a small white wolf / Bolt figure with click-to-move or arrow keys on web. Mechanics: 8–12 platforms; each lights cyan when landed; missing a step costs one of three lives and respawns on the last safe crystal; platforms may gently drift on a sine path. Win condition: reach the final gold-lit crystal spire; play a short success pulse and show “Trial complete — the Pack felt that.” Include: soft bloom, cyan emissive materials, fog, simple orbiting camera or fixed three-quarter camera, mobile-friendly UI buttons, restart. Session under 2 minutes. Deliver as a browser Three.js experience ready for Grok Build publish + sandbox link into the Boltverse.",
+        },
+      ],
+      "story-branch": [
+        {
+          title: "The Cub and the Silent Seed",
+          body: "Build a complete playable WEB interactive Story Branch as a 2D web game (HTML/CSS/JS or Canvas UI) for browser play only. Genre: short narrative choice adventure. Setting: under crystal ice near the Citadel roots. Flow: intro scene (cub finds a glowing silent seed); then two clear choices presented as large clickable web buttons — (A) bury the seed again, (B) carry it toward the Star Core. Each choice leads to a unique short ending scene with 2–3 text panels, soft ambient art background (navy, cyan ice, gold seed light), and a final Resonance flavor line. Include: progress dots, optional skip, replay choice from the fork, accessible contrast, keyboard focus for buttons. No combat. Total play 2–4 minutes. Publish as a self-contained web experience; player must finish with a shareable sandbox URL for the Boltverse Gate.",
+        },
+        {
+          title: "Fork at Twin Gates",
+          body: "Create a playable WEB Story Branch in 2D for browser only: mythic dialogue + branching UI, not a mobile native app. Setting: Twin Gates of the Citadel at dusk — one gate thrums with loud Howl energy (cyan), the other with silence and gold listening runes. Player reads short lore text, then chooses Gate of Howl or Gate of Silence. Each path has two micro-scenes and a consequence epilogue that changes a simple on-screen “Pack mood” meter. Use clickable cards for choices, fade transitions, soft particle dust. End screens: “The Hall remembers your choice.” Keep language mythic but clear. Web-only, keyboard + mouse + touch. Output a complete browser story game ready to publish via Grok Build sandbox link.",
+        },
+      ],
+      "bolt-story": [
+        {
+          title: "Howl at the Star Core",
+          body: "Build a playable WEB Echo experience in 2D for the browser (Canvas or DOM animation) — web play only. Genre: short cinematic interactive replay. Player clicks / taps “Raise Howl” to charge a howl meter while a Pack silhouettes and Star Core backdrop pulse cyan. At full charge, trigger a dramatic lightning answer from the Core with screen flash, particle burst, and a 5–8 second victory tableau. Include: mute toggle, replay button, optional spacebar to howl, subtle shake, score flavor “Resonance +1.” No combat, no levels — pure emotional loop under 60 seconds. Art: deep space hall, cyan Core, gold edge light. Deliver as a complete web game/sandbox page for Boltverse publish.",
+        },
+        {
+          title: "Gate of Howls Opens",
+          body: "Create a WEB-only 3D Three.js Echo scene for browser play. Camera slowly dollies toward a cracked Publishing Gate at dusk; cyan runes light in sequence as the player holds click/touch on “Open.” When fully charged, the gate splits with light beams and unfinished Sparks drift out as glowing orbs the player can click for short lore tooltips (3 snippets). Include orbit drag (limited), bloom, fog, restart. Session 1–2 minutes. Must run in modern browsers via Three.js, publishable as a sandbox web experience linking into the Boltverse.",
+        },
+      ],
+      "ar-portal": [
+        {
+          title: "Portal Under the Moon",
+          body: "IMPORTANT: For now we only publish WEB browser games — implement this as a web “portal room” simulation (not device AR). Use 3D Three.js for web play. Player stands in a dark citadel courtyard; a glowing cyan portal frame floats ahead. Click/tap to step through: fade, then load a second scene — a floating balcony over nebula with a short walk (WASD/arrows or on-screen stick) and a Howl button that plays a pulse. Include portal VFX, simple collision, back-through-portal to return. Web desktop + mobile browser. Total loop under 3 minutes. Package as a full Three.js web game for Grok Build publish + sandbox link.",
+        },
+        {
+          title: "Tabletop Star Bridge",
+          body: "WEB-only playable “portal” Mini experience in 2D or lightweight 3D Three.js for the browser (simulate tabletop magic, no real-world AR required for v1). A crystal bridge appears between two glowing pads. Player guides a mini Bolt across with drag or arrow keys; falling off resets. Success lights both pads gold and shows “Bridge stable — Pack may cross.” Clean UI, short tutorial tip, restart. Emphasize web performance, no install. Output a complete browser game ready for sandbox publish into the Boltverse.",
+        },
+      ],
+      "puzzle": [
+        {
+          title: "Gravity Ring Align",
+          body: "Build a complete WEB browser puzzle game in 2D (Canvas) for web play only. Three concentric gravity rings can be rotated with mouse drag or touch; a star bead falls under simulated gravity when the player presses “Drop.” Goal: align gaps so the bead reaches the center Core socket. Include: 5 escalating layouts, undo, reset, move counter, win VFX cyan/gold, “Seal open” end state. Clear rules panel on first load. Session 1–3 minutes. No native apps — pure web game for Grok Build sandbox publish.",
+        },
+        {
+          title: "Echo Frequency Lock",
+          body: "Create a WEB-only puzzle in 2D for the browser: three crystal dials must match a target Howl frequency pattern shown as a short waveform. Player rotates dials; audio optional (with mute). Correct set triggers a gate seal animation and Core pulse. Include hint button (reveals one dial), three difficulty presets, responsive layout for laptop and phone browser. Win message: “Frequency locked — the Gate hears you.” Deliver as a self-contained web game with sandbox share link for Boltverse connection.",
+        },
+      ],
+      "howl": [
+        {
+          title: "Dawn Balcony Call",
+          body: "Build a short WEB social mini-game / interactive Howl tool for browser play (2D UI + Canvas accents). Player stands on a Howling Balcony scene; they compose a short Pack call (text input, max 140 chars) and charge a Howl meter by holding a button. On release, the howl “broadcasts” with cyan rings and a shareable on-screen card of their message. Include 3 mood presets (Dawn, Storm, Quiet), character counter, copy-text button, replay. Not a native app — full web experience meant to feel like a living Howl station. Publish via Grok Build sandbox for Boltverse.",
+        },
+        {
+          title: "Core Pulse Check-in",
+          body: "WEB browser Howl ritual game in 2D: a Star Core charge meter and three emoji-free choice chips (Low / Steady / Full) answering “How full is your Core today?” Selecting animates the Core fill, shows a communal tally (local mock of Pack votes), and a warm closing line. Include subtle particles, mute, and “Send Howl” confirming the check-in. Keep under 60 seconds, accessible, web-only. Output complete web app for sandbox publish into the Boltverse Gate.",
+        },
+      ],
+      "remix": [
+        {
+          title: "Reforge the First Howl",
+          body: "Build a WEB remix game in 2D for the browser that reinterprets the classic Pack Howl at the Star Core: player controls a nervous cub learning to howl. Same emotional destination (Core answers), new angle. Mechanics: timing mini-game to match a gentle howl wave; fail softly and retry; success triggers Core lightning. Credit line on start screen: “Remix of the First Howl — Pack legacy.” Include tutorial, 3 difficulties, win/replay. Web play only (no native). Full sandbox-ready web game for Boltverse publish.",
+        },
+        {
+          title: "Orb Sprint — Night Mode",
+          body: "Create a WEB remix of a storm-orb sprint as a 3D Three.js browser game (web play only). Night mode: darker fog, gold trail markers, tighter timing, same collect-3-orbs goal. Keyboard + on-screen controls, checkpoint system, ghost trail of previous best (localStorage). UI labels it clearly as a Remix. Performance-friendly Three.js, mobile browser support, publishable sandbox link for the Citadel Gate. Session under 2 minutes per run.",
+        },
+      ],
     };
 
     function openCreatePage(opts = {}) {
       if (opts.mode === "deep" || opts.mode === "spark") createState.mode = opts.mode;
-      createState.step = opts.step || 1;
-      const success = document.getElementById("createSuccess");
-      if (success) success.classList.remove("is-visible");
-      const nav = document.getElementById("createPublishNav");
-      if (nav) nav.style.display = "";
+      createState.step = 1;
+      if (opts.resetPrompt !== false) createState.promptIndex = -1;
       setNavView("create");
       syncCreateUI();
+    }
+
+    function renderCreatePrompts() {
+      const grid = document.getElementById("createPromptGrid");
+      const type = createState.type || "mini-quest";
+      const prompts = CREATE_PROMPTS[type] || CREATE_PROMPTS["mini-quest"];
+      const titleEl = document.getElementById("createPromptsTitle");
+      if (titleEl) titleEl.textContent = (CREATE_TYPE_LABELS[type] || type) + " · example prompts";
+      const lead = document.getElementById("createPromptsLead");
+      if (lead) {
+        lead.textContent = "Two full web-game prompts for " + (CREATE_TYPE_LABELS[type] || type) +
+          ". Pick one to use in Grok Build, or continue to refine it here.";
+      }
+      if (!grid) return;
+      grid.innerHTML = prompts.map((p, i) => {
+        const sel = createState.promptIndex === i ? " is-selected" : "";
+        return `<button type="button" class="create-prompt-card${sel}" data-prompt-index="${i}" role="option" aria-selected="${createState.promptIndex === i}">
+          <span class="create-prompt-card__tag">Example ${i + 1}</span>
+          <span class="create-prompt-card__title">${escapeHtml(p.title)}</span>
+          <span class="create-prompt-card__body">${escapeHtml(p.body)}</span>
+          <span class="create-prompt-card__hint">${createState.promptIndex === i ? "Selected · open Grok app" : "Tap to use this prompt"}</span>
+        </button>`;
+      }).join("");
+    }
+
+    function applySelectedCreatePrompt() {
+      const type = createState.type || "mini-quest";
+      const prompts = CREATE_PROMPTS[type] || [];
+      const p = prompts[createState.promptIndex];
+      const titleEl = document.getElementById("createTitle");
+      const descEl = document.getElementById("createDescribe");
+      const box = document.getElementById("createSelectedPromptBox");
+      const selTitle = document.getElementById("createSelectedPromptTitle");
+      const selBody = document.getElementById("createSelectedPromptBody");
+      if (!p) {
+        if (titleEl) titleEl.value = "";
+        if (descEl) descEl.value = "";
+        if (box) box.hidden = true;
+        return;
+      }
+      if (titleEl) titleEl.value = p.title;
+      if (descEl) descEl.value = p.body;
+      if (box) box.hidden = false;
+      if (selTitle) selTitle.textContent = p.title;
+      if (selBody) selBody.textContent = p.body;
+    }
+
+    function openCreatePromptsModal(type) {
+      if (type) createState.type = type;
+      document.querySelectorAll("[data-create-type]").forEach((c) => {
+        c.classList.toggle("is-active", c.dataset.createType === createState.type);
+      });
+      renderCreatePrompts();
+      document.getElementById("createPromptsModal")?.classList.add("open");
+    }
+
+    function closeCreatePromptsModal() {
+      document.getElementById("createPromptsModal")?.classList.remove("open");
     }
 
     function syncCreateUI() {
@@ -13186,87 +14565,46 @@
       if (grokBanner) grokBanner.hidden = mode !== "spark";
       const grokSide = document.getElementById("createSideGrokCard");
       if (grokSide) grokSide.hidden = mode !== "spark";
+      const tmplSide = document.getElementById("createSideTemplatesCard");
+      if (tmplSide) tmplSide.hidden = mode !== "spark";
+      const deepCliSide = document.getElementById("createSideDeepCliCard");
+      if (deepCliSide) deepCliSide.hidden = mode !== "deep";
       const tips = document.getElementById("createSideTipsText");
       if (tips) {
         tips.innerHTML = mode === "deep"
-          ? "Deep Forges still finish at the Gate. Use Grok Build in the Grok app for heavy systems, publish there, then paste the sandbox link + Boltverse cover."
+          ? "Deep Forges: bring Grok into your terminal via <a href=\"https://x.ai/cli\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--cyan-soft);font-weight:700\">x.ai/cli</a>, forge complex Sparks, then pass the Publishing Gate."
           : "Use <strong style=\"color:var(--gold-soft)\">Grok Build</strong> in the <strong style=\"color:var(--cyan-soft)\">Grok app</strong>: describe &amp; refine in natural language, publish inside Grok, then paste the <strong style=\"color:var(--cyan-soft)\">sandbox link</strong> here to connect your Spark to the Boltverse.";
       }
 
-      document.querySelectorAll("[data-create-step-pill]").forEach((pill) => {
-        const n = Number(pill.dataset.createStepPill);
-        pill.classList.toggle("is-active", n === step);
-        pill.classList.toggle("is-done", n < step);
-      });
-
-      const flow = mode === "deep"
-        ? document.getElementById("createFlowDeep")
-        : document.getElementById("createFlowSpark");
-      if (flow) {
-        flow.querySelectorAll("[data-create-panel]").forEach((panel) => {
-          const n = Number(panel.dataset.createPanel);
-          panel.hidden = n !== step;
-        });
+      if (mode === "spark") {
+        const flow = document.getElementById("createFlowSpark");
+        if (flow) {
+          flow.querySelectorAll("[data-create-panel]").forEach((panel) => {
+            panel.hidden = Number(panel.dataset.createPanel) !== 1;
+          });
+        }
+        applySelectedCreatePrompt();
       }
-
-      // live previews
-      const desc = document.getElementById("createDescribe")?.value?.trim() || "";
-      const prev = document.getElementById("createPreviewText");
-      if (prev) prev.textContent = desc || "Your description will appear here.";
-
-      const deepSpec = document.getElementById("createDeepSpec")?.value?.trim() || "";
-      const deepPrev = document.getElementById("createDeepPreview");
-      if (deepPrev) deepPrev.textContent = deepSpec || "Your technical brief will appear here.";
-
-      if (step === 3) updateCreatePublishSummary();
     }
 
     function updateCreatePublishSummary() {
-      if (createState.mode === "spark") {
-        const title = document.getElementById("createTitle")?.value?.trim() || "Untitled Spark";
-        const desc = document.getElementById("createDescribe")?.value?.trim() || "—";
-        const type = createState.type;
-        const words = desc === "—" ? 0 : desc.split(/\s+/).filter(Boolean).length;
-        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-        set("createSumTitle", title);
-        set("createSumType", CREATE_TYPE_LABELS[type] || type);
-        set("createSumMode", "Spark Benches");
-        set("createSumLen", words ? `~${words} words` : "—");
-        set("createSumDesc", desc);
-      } else {
-        const title = document.getElementById("createDeepTitle")?.value?.trim() || "Untitled Spark";
-        const type = document.getElementById("createDeepType")?.value || "mini-quest";
-        const desc = document.getElementById("createDeepSpec")?.value?.trim() || "—";
-        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-        set("createDeepSumTitle", title);
-        set("createDeepSumType", CREATE_TYPE_LABELS[type] || type);
-        set("createDeepSumDesc", desc);
-      }
+      if (createState.mode !== "spark") return;
+      const title = document.getElementById("createTitle")?.value?.trim() || "Untitled Spark";
+      const desc = document.getElementById("createDescribe")?.value?.trim() || "—";
+      const type = createState.type;
+      const words = desc === "—" ? 0 : desc.split(/\s+/).filter(Boolean).length;
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set("createSumTitle", title);
+      set("createSumType", CREATE_TYPE_LABELS[type] || type);
+      set("createSumMode", "Spark Benches");
+      set("createSumLen", words ? `~${words} words` : "—");
+      set("createSumDesc", desc);
     }
 
     function goCreateStep(n) {
       const step = Math.max(1, Math.min(3, Number(n) || 1));
-      if (createState.mode === "spark" && step > 1) {
-        const title = document.getElementById("createTitle")?.value?.trim();
-        const desc = document.getElementById("createDescribe")?.value?.trim();
-        if (step >= 2 && (!title || !desc)) {
-          toast("Add a title and description before refining ⚡");
-          return;
-        }
-      }
-      if (createState.mode === "deep" && step > 1) {
-        const title = document.getElementById("createDeepTitle")?.value?.trim();
-        const desc = document.getElementById("createDeepSpec")?.value?.trim();
-        if (step >= 2 && (!title || !desc)) {
-          toast("Add a project title and technical brief first ⚡");
-          return;
-        }
-      }
-      createState.step = step;
-      const success = document.getElementById("createSuccess");
-      if (success) success.classList.remove("is-visible");
-      const nav = document.getElementById("createPublishNav");
-      if (nav) nav.style.display = "";
+      // Multi-step refine/publish removed for Spark Benches; Deep has no steps
+      createState.step = 1;
       syncCreateUI();
     }
 
@@ -13304,26 +14642,25 @@
     }
 
     function openPublishGateFromCreate() {
-      updateCreatePublishSummary();
-      let title, type, description, creator;
       const profile = loadProfile(PROFILE_CREATOR_KEY, { name: "Forge Hero", handle: "@creator" });
-      creator = (profile.handle || profile.name || "Pack Creator").trim();
+      const creator = (profile.handle || profile.name || "Pack Creator").trim();
 
-      if (createState.mode === "spark") {
-        title = document.getElementById("createTitle")?.value?.trim() || "";
-        type = createState.type || "mini-quest";
-        description = document.getElementById("createDescribe")?.value?.trim() || "";
-        const refine = document.getElementById("createRefine")?.value?.trim();
-        if (refine) description = description + "\n\nRefine notes: " + refine;
-      } else {
-        title = document.getElementById("createDeepTitle")?.value?.trim() || "";
-        type = document.getElementById("createDeepType")?.value || "mini-quest";
-        description = document.getElementById("createDeepSpec")?.value?.trim() || "";
-        const refine = document.getElementById("createDeepRefine")?.value?.trim();
-        if (refine) description = description + "\n\nTest notes: " + refine;
+      if (createState.mode === "deep") {
+        openSubmit();
+        const fCreator = document.getElementById("fCreator");
+        if (fCreator && !fCreator.value.trim()) fCreator.value = creator;
+        toast("Publishing Gate open · ship your Deep Forge Spark with cover + link ⚡");
+        return;
       }
+
+      updateCreatePublishSummary();
+      let title = document.getElementById("createTitle")?.value?.trim() || "";
+      let type = createState.type || "mini-quest";
+      let description = document.getElementById("createDescribe")?.value?.trim() || "";
+      const refine = document.getElementById("createRefine")?.value?.trim();
+      if (refine) description = description + "\n\nRefine notes: " + refine;
       if (!title || !description) {
-        toast("Finish title and soul text before the Gate ⚡");
+        toast("Pick an example prompt before the Gate ⚡");
         return;
       }
       openSubmit();
@@ -13333,7 +14670,6 @@
       const fCreator = document.getElementById("fCreator");
       if (fTitle) fTitle.value = title;
       if (fType) {
-        // ensure option exists
         if ([...fType.options].some((o) => o.value === type)) fType.value = type;
       }
       if (fDesc) fDesc.value = description.slice(0, 600);
@@ -13912,12 +15248,10 @@
       openCreatePage({ mode: "spark", step: 1 });
     });
     document.getElementById("forgeMyCreations")?.addEventListener("click", () => setNavView("creator"));
+    document.getElementById("forgePublishingGate")?.addEventListener("click", () => {
+      openSubmit();
+    });
     document.getElementById("forgesView")?.addEventListener("click", (e) => {
-      const actionBtn = e.target.closest("[data-forge-action]");
-      if (actionBtn) {
-        handleForgeAction(actionBtn.dataset.forgeAction);
-        return;
-      }
       const feat = e.target.closest("[data-forge-open]");
       if (feat) {
         const id = feat.dataset.forgeOpen;
@@ -13931,18 +15265,26 @@
       if (modeBtn) {
         createState.mode = modeBtn.dataset.createMode === "deep" ? "deep" : "spark";
         createState.step = 1;
-        document.getElementById("createSuccess")?.classList.remove("is-visible");
-        const nav = document.getElementById("createPublishNav");
-        if (nav) nav.style.display = "";
         syncCreateUI();
         return;
       }
       const typeChip = e.target.closest("[data-create-type]");
       if (typeChip) {
-        createState.type = typeChip.dataset.createType;
-        document.querySelectorAll("[data-create-type]").forEach((c) => {
-          c.classList.toggle("is-active", c === typeChip);
-        });
+        const nextType = typeChip.dataset.createType;
+        if (nextType !== createState.type) {
+          createState.type = nextType;
+          createState.promptIndex = -1;
+          applySelectedCreatePrompt();
+        } else {
+          createState.type = nextType;
+        }
+        // Open popup with the two prompts for this type button
+        openCreatePromptsModal(createState.type);
+        syncCreateUI();
+        return;
+      }
+      if (e.target.closest("#createChangePrompt")) {
+        openCreatePromptsModal(createState.type);
         return;
       }
       const ex = e.target.closest("[data-example]");
@@ -13962,18 +15304,30 @@
         goCreateStep(next.dataset.createNext);
       }
     });
+    document.getElementById("createPromptGrid")?.addEventListener("click", (e) => {
+      const promptCard = e.target.closest("[data-prompt-index]");
+      if (!promptCard) return;
+      createState.promptIndex = Number(promptCard.dataset.promptIndex);
+      applySelectedCreatePrompt();
+      renderCreatePrompts();
+      closeCreatePromptsModal();
+      syncCreateUI();
+      toast("Prompt selected · open the Grok app to craft it ⚡");
+    });
+    document.querySelectorAll("[data-close-create-prompts]").forEach((el) => {
+      el.addEventListener("click", closeCreatePromptsModal);
+    });
+    document.getElementById("createPromptsModal")?.addEventListener("click", (e) => {
+      if (e.target.id === "createPromptsModal") closeCreatePromptsModal();
+    });
     document.getElementById("createDescribe")?.addEventListener("input", () => syncCreateUI());
     document.getElementById("createDeepSpec")?.addEventListener("input", () => syncCreateUI());
-    document.getElementById("createPublishBtn")?.addEventListener("click", openPublishGateFromCreate);
     document.getElementById("createDeepPublishBtn")?.addEventListener("click", openPublishGateFromCreate);
-    document.getElementById("createSuccessHall")?.addEventListener("click", () => setNavView("home"));
-    document.getElementById("createSuccessAgain")?.addEventListener("click", () => {
-      openCreatePage({ mode: createState.mode, step: 1 });
-      ["createTitle", "createDescribe", "createRefine", "createDeepTitle", "createDeepSpec", "createDeepRefine"].forEach((id) => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-      });
-      syncCreateUI();
+    document.getElementById("createOpenGrokFromDescribe")?.addEventListener("click", (e) => {
+      if (createState.promptIndex < 0) {
+        // still allow opening Grok, but nudge to pick a prompt
+        toast("Tip: pick a Mini-Quest / Story prompt first, then craft it in Grok ⚡");
+      }
     });
     document.querySelectorAll("[data-close-player]").forEach((el) => {
       el.addEventListener("click", closePlayerCard);
@@ -14100,10 +15454,45 @@
     document.querySelectorAll("[data-close]").forEach((el) => el.addEventListener("click", closeSubmit));
     document.querySelectorAll("[data-close-detail]").forEach((el) => el.addEventListener("click", closeDetail));
     document.querySelectorAll("[data-close-ranks]").forEach((el) => el.addEventListener("click", closeRanksLadder));
+    document.getElementById("rcTabNav")?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-rc-tab]");
+      if (!btn) return;
+      e.preventDefault();
+      setRcTab(btn.dataset.rcTab);
+    });
     document.getElementById("rcRankInfoBtn")?.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
       openRanksLadder();
+    });
+    document.getElementById("rcGrowthInfoBtn")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openMilestonesModal();
+    });
+    document.querySelectorAll("[data-close-milestones]").forEach((el) => {
+      el.addEventListener("click", closeMilestonesModal);
+    });
+    document.getElementById("milestonesModal")?.addEventListener("click", (e) => {
+      if (e.target.id === "milestonesModal") closeMilestonesModal();
+    });
+    document.getElementById("msPgPrev")?.addEventListener("click", () => {
+      if (milestonesPage > 1) {
+        milestonesPage -= 1;
+        renderMilestonesModalList();
+      }
+    });
+    document.getElementById("msPgNext")?.addEventListener("click", () => {
+      if (milestonesPage < milestonesPageCount()) {
+        milestonesPage += 1;
+        renderMilestonesModalList();
+      }
+    });
+    document.getElementById("msPgNums")?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-ms-page]");
+      if (!btn) return;
+      milestonesPage = Number(btn.dataset.msPage) || 1;
+      renderMilestonesModalList();
     });
     document.getElementById("rcEmblem")?.addEventListener("click", (e) => {
       e.preventDefault();
@@ -14148,6 +15537,8 @@
         const submitOpen = document.getElementById("submitModal").classList.contains("open");
         const detailOpen = document.getElementById("detailModal").classList.contains("open");
         const ranksOpen = document.getElementById("ranksLadderModal")?.classList.contains("open");
+        const milestonesOpen = document.getElementById("milestonesModal")?.classList.contains("open");
+        const createPromptsOpen = document.getElementById("createPromptsModal")?.classList.contains("open");
         const badgeLbOpen = document.getElementById("rcBadgeLightbox")?.classList.contains("open");
         const playerOpen = document.getElementById("playerCardModal")?.classList.contains("open");
         if (playOpen) {
@@ -14163,6 +15554,16 @@
         if (playerOpen) {
           e.preventDefault();
           closePlayerCard();
+          return;
+        }
+        if (createPromptsOpen) {
+          e.preventDefault();
+          closeCreatePromptsModal();
+          return;
+        }
+        if (milestonesOpen) {
+          e.preventDefault();
+          closeMilestonesModal();
           return;
         }
         if (ranksOpen) {
@@ -14266,15 +15667,6 @@
       const rung = RESONANCE_LADDER[item.type];
       const resNote = rung ? ` · +${item.resonance} card · +${createRes} personal` : ` · +${createRes} personal Resonance`;
       toast("Passed the Gate with Boltverse cover ⚡" + resNote);
-      // If coming from Create page, show success state
-      if (document.getElementById("shell")?.dataset.view === "create") {
-        const success = document.getElementById("createSuccess");
-        const nav = document.getElementById("createPublishNav");
-        if (success) success.classList.add("is-visible");
-        if (nav) nav.style.display = "none";
-        createState.step = 3;
-        syncCreateUI();
-      }
     });
 
     applyOverrides();

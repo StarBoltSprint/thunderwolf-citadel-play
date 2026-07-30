@@ -1557,13 +1557,15 @@
       pointer-events: none;
       z-index: 1;
     }
+    /* Same under-image text block as Hall feed cards */
     .echo-body {
-      padding: 0.6rem 0.7rem 0.7rem;
+      padding: 0.65rem 0.7rem 0.85rem;
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 0.12rem;
+      gap: 0.35rem;
       flex: 1;
+      min-height: 8.6rem;
     }
     .echo-title {
       font-family: var(--font-display);
@@ -1586,25 +1588,54 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.35rem;
-      margin-top: 0.35rem;
+      gap: 0.4rem;
+      margin-top: 0.12rem;
       font-size: var(--fs-meta);
       letter-spacing: var(--ls-meta);
       color: var(--text-dim);
+      min-height: 1.85rem;
+      width: 100%;
     }
-    .echo-meta .creator {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 42%;
+    .echo-meta .border-tier-pip {
+      margin-right: auto;
+      position: static;
+      flex-shrink: 0;
     }
     .echo-meta .right {
       display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.35rem;
       flex-shrink: 0;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       justify-content: flex-end;
+    }
+    .echo-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+      margin-top: auto;
+      min-height: 1.85rem;
+      padding-top: 0.35rem;
+    }
+    .echo-footer .tile-creator {
+      flex: 1;
+      min-width: 0;
+    }
+    .echo-footer .tile-stats {
+      flex-shrink: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.28rem;
+      flex-wrap: nowrap;
+    }
+    .echo-card:hover .tile-creator .creator,
+    .echo-card:focus-within .tile-creator .creator {
+      color: #e8fcff;
+      border-color: rgba(126, 240, 255, 0.55);
+      background: linear-gradient(135deg, rgba(46, 230, 255, 0.26), rgba(46, 230, 255, 0.1));
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.22);
     }
 
     /* ── GRID FEED (pump.fun style) — 6 columns × 10 rows per page ── */
@@ -2745,8 +2776,9 @@
     .tile.border-diamond .tile-body {
       border-radius: 0 0 calc(var(--radius) - 2px) calc(var(--radius) - 2px);
       background: linear-gradient(165deg, rgba(18, 28, 50, 0.96) 0%, rgba(10, 16, 32, 0.98) 55%, rgba(8, 12, 24, 0.99) 100%);
-      /* room for pip + bottom rim glow */
-      padding: 0.65rem 0.75rem 1.85rem 0.75rem;
+      /* same under-image text space as every other grade */
+      padding: 0.65rem 0.7rem 0.85rem;
+      min-height: 8.6rem;
     }
     .tile.border-diamond .tile-badge-row {
       /* clear of corner diamond gems (~18px) */
@@ -2864,9 +2896,7 @@
         drop-shadow(0 0 14px rgba(255, 255, 255, 0.3));
     }
     .tile.border-diamond .border-tier-pip {
-      z-index: 8;
-      bottom: 0.45rem;
-      right: 0.65rem;
+      z-index: 2;
     }
     /* Featured strip diamond cards — smaller corner gems */
     .echo-card.border-diamond {
@@ -2902,11 +2932,11 @@
     .tile.border-gold .border-corners span { border-color: #f0d78a; filter: drop-shadow(0 0 4px rgba(232,197,106,0.8)); }
     .tile.border-platinum .border-corners span { border-color: #9ef0ff; width: 10px; height: 10px; filter: drop-shadow(0 0 5px rgba(126,240,255,0.9)); }
 
+    /* Grade sits inline left of Play (not bottom-right) */
     .tile .border-tier-pip {
-      position: absolute;
-      bottom: 0.4rem;
-      right: 0.4rem;
-      z-index: 5;
+      position: static;
+      z-index: 2;
+      flex-shrink: 0;
       font-size: 0.56rem;
       font-weight: 800;
       letter-spacing: 0.1em;
@@ -2916,6 +2946,8 @@
       pointer-events: none;
       backdrop-filter: blur(10px);
       border: 1px solid transparent;
+      line-height: 1.1;
+      align-self: center;
     }
     .border-bronze .border-tier-pip {
       color: #ffc98a;
@@ -3202,12 +3234,14 @@
     }
 
     .tile-body {
-      padding: 0.6rem 0.65rem 1.55rem;
+      /* Classic Hall text block under the art (title + grade/play + footer) */
+      padding: 0.65rem 0.7rem 0.85rem;
       display: flex;
       flex-direction: column;
-      gap: 0.12rem;
+      gap: 0.35rem;
       flex: 1;
       position: relative;
+      min-height: 8.6rem;
     }
 
     .tile-title {
@@ -3229,22 +3263,79 @@
       letter-spacing: 0.03em;
     }
 
+    /* Creator chip (footer left) */
+    .tile-creator {
+      display: flex;
+      align-items: center;
+      gap: 0.28rem;
+      min-width: 0;
+      flex: 1;
+      margin: 0;
+    }
+    .tile-creator .creator-by {
+      flex-shrink: 0;
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .tile-creator .creator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.22rem;
+      min-width: 0;
+      max-width: 100%;
+      padding: 0.14rem 0.42rem 0.14rem 0.32rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      line-height: 1.15;
+      color: #b8f7ff;
+      background: linear-gradient(135deg, rgba(46, 230, 255, 0.18), rgba(46, 230, 255, 0.07));
+      border: 1px solid rgba(126, 240, 255, 0.4);
+      box-shadow: 0 0 10px rgba(46, 230, 255, 0.12);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      backdrop-filter: blur(8px);
+    }
+    .tile-creator .creator-ico {
+      flex-shrink: 0;
+      font-size: 0.66rem;
+      line-height: 1;
+      opacity: 0.95;
+    }
+    .tile-creator .creator-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tile:hover .tile-creator .creator,
+    .tile:focus-within .tile-creator .creator {
+      color: #e8fcff;
+      border-color: rgba(126, 240, 255, 0.55);
+      background: linear-gradient(135deg, rgba(46, 230, 255, 0.26), rgba(46, 230, 255, 0.1));
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.22);
+    }
+
     .tile-meta {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.35rem;
-      margin-top: 0.4rem;
+      gap: 0.4rem;
+      margin-top: 0.12rem;
       font-size: var(--fs-meta);
       letter-spacing: var(--ls-meta);
       color: var(--text-dim);
+      min-height: 1.85rem;
+      width: 100%;
     }
 
-    .tile-meta .creator {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 58%;
+    /* Grade sits full-left on the Play row */
+    .tile-meta .border-tier-pip {
+      margin-right: auto;
     }
 
     .tile-meta .right {
@@ -3252,6 +3343,30 @@
       align-items: center;
       gap: 0.35rem;
       flex-shrink: 0;
+      margin-left: 0;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+    }
+
+    /* Footer row: creator left · views/howls right — pinned to bottom of tall body */
+    .tile-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+      margin-top: auto;
+      min-height: 1.85rem;
+      padding-top: 0.35rem;
+    }
+    .tile-footer .tile-creator {
+      flex: 1;
+      min-width: 0;
+    }
+    .tile-footer .tile-stats {
+      flex-shrink: 0;
+      margin: 0;
+      max-width: none;
+      justify-content: flex-end;
     }
 
     .tile-stats {
@@ -3260,6 +3375,14 @@
       gap: 0.35rem;
       flex-wrap: wrap;
       margin-top: 0.45rem;
+    }
+    .tile .tile-stats {
+      flex-wrap: nowrap;
+      gap: 0.28rem;
+    }
+    .tile .tile-stats .stat-chip,
+    .tile .tile-stats .howl-btn {
+      flex-shrink: 0;
     }
     .stat-chip {
       display: inline-flex;
@@ -3449,6 +3572,131 @@
       border: 0;
       background: #02040c;
       display: block;
+    }
+    /* ── X Howl / Decree gate (X blocks raw page iframes) ── */
+    .xhowl-gate {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 0.85rem 0.9rem 1rem;
+      min-height: min(64vh, 620px);
+      overflow: auto;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(46, 230, 255, 0.1), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 90% 80%, rgba(232, 197, 106, 0.08), transparent 50%),
+        #050b16;
+    }
+    .xhowl-head {
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+    }
+    .xhowl-cover {
+      width: 88px;
+      height: 88px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 1px solid rgba(46, 230, 255, 0.28);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      flex-shrink: 0;
+    }
+    .xhowl-meta h3 {
+      margin: 0 0 0.25rem;
+      font-size: 1.05rem;
+      color: var(--text);
+      line-height: 1.25;
+    }
+    .xhowl-meta .xhowl-creator {
+      margin: 0 0 0.4rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--cyan-soft);
+    }
+    .xhowl-meta .xhowl-story {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .xhowl-quote {
+      margin: 0;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(232, 197, 106, 0.28);
+      background: linear-gradient(135deg, rgba(20, 28, 48, 0.95), rgba(12, 18, 36, 0.92));
+      box-shadow: inset 0 0 0 1px rgba(46, 230, 255, 0.06);
+    }
+    .xhowl-quote p {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--text);
+    }
+    .xhowl-quote .xhowl-label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+    }
+    .xhowl-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+    }
+    .xhowl-actions .btn-play {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .xhowl-actions .btn-x-secondary {
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.55rem 0.95rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.35);
+      background: rgba(46, 230, 255, 0.1);
+      color: var(--cyan-soft);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .xhowl-actions .btn-x-secondary:hover {
+      background: rgba(46, 230, 255, 0.2);
+      color: var(--text);
+    }
+    .xhowl-hint {
+      margin: 0;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .xhowl-embed-wrap {
+      flex: 1;
+      min-height: 280px;
+      border-radius: 14px;
+      border: 1px solid rgba(46, 230, 255, 0.18);
+      background: #000;
+      overflow: hidden;
+      position: relative;
+    }
+    .xhowl-embed-wrap iframe {
+      width: 100%;
+      height: min(52vh, 480px);
+      min-height: 280px;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+    .xhowl-embed-note {
+      margin: 0.35rem 0 0;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      line-height: 1.4;
     }
     .play-stage {
       border-radius: 14px;
@@ -5649,6 +5897,7 @@
       howl4: "covers/howl-cub-cheer.jpg",
       howl5: "covers/howl-void-call.jpg",
       howl6: "covers/howl-gate-open.jpg",
+      howlPandlerLaputa: "covers/howl-pandler-laputa.jpg",
       decree1: "covers/decree-citadel-rises.jpg",
       decree2: "covers/decree-culture-os.jpg",
       decree3: "covers/decree-quiet-lab.jpg",
@@ -6425,6 +6674,57 @@
         featured: false,
         canon: "community",
         createdAt: Date.now() - 1000 * 60 * 31,
+      },
+      {
+        id: "howl-boltboy-alpha",
+        title: "The Cosmic Pup Breaks Silence",
+        type: "howl",
+        description: "Howl from @BoltboyAlpha: the cosmic pup went silent for a reason — Bolt has been charging. Silence breaks, mini-game loading, full adventure coming, and $BOLT riding every lightning step.",
+        creator: "@BoltboyAlpha",
+        link: "https://x.com/BoltboyAlpha/status/2079672210990702903?s=20",
+        image: COVER.howl1,
+        storyLine: "The silence breaks. The Pack answers.",
+        resonance: 99,
+        howls: 420,
+        views: 8200,
+        plays: 180,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 5,
+      },
+      {
+        id: "howl-jenolet-space",
+        title: "LIL HOWL · Pack Space Call",
+        type: "howl",
+        description: "Howl from @Jenolet (LIL HOWL⚡️): @starboltsprint Space — Thursday 7/30 · 9:20 PM EST (so it's 4:20 somewhere). Pack gathering, lore drops, chaos energy. No filter. No sleep. Pure StarBoltSprint frequency. Link drops closer to launch. #StarBoltSprint #BoltPack",
+        creator: "@Jenolet",
+        link: "https://x.com/Jenolet/status/2081551020908315112?s=20",
+        image: COVER.howl6,
+        storyLine: "Pack's gathering. Jump in if you're built for it.",
+        resonance: 99,
+        howls: 380,
+        views: 7100,
+        plays: 150,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 4,
+      },
+      {
+        id: "howl-pandler-laputa",
+        title: "Laputa — The Panda in the Sky",
+        type: "howl",
+        description: "Howl from @pandler (Panda): Laputa — The Panda in the Sky 🌌🐼⚡ Realm ID LPT-SKY-PANDA-001. A corner of the Boltverse is open — floating bamboo islands, ancient panda guardians, pure Miyazaki-esque wonder. Who’s ready to explore? @grok @StarBoltSprint",
+        creator: "@pandler",
+        link: "https://x.com/pandler/status/2067098482733912095?s=20",
+        image: COVER.howlPandlerLaputa,
+        storyLine: "Floating bamboo. Sky guardians. The Boltverse expands.",
+        resonance: 99,
+        howls: 360,
+        views: 6800,
+        plays: 140,
+        featured: true,
+        canon: "featured",
+        createdAt: Date.now() - 1000 * 60 * 3,
       },
       // ── Decrees — official X decrees (SmiR / Thread Keeper style) ──
       {
@@ -8074,8 +8374,10 @@
         if (item.canon === "semi-canon") extra += '<span class="badge badge-semi">Semi-Canon</span>';
         if (item.canon === "official") extra += '<span class="badge badge-official">Official</span>';
         const tier = borderTier(item);
+        const tierName = borderTierLabel(tier);
+        const locked = !!item.locked;
         return `
-        <article class="echo-card ${borderClass(item)}" data-id="${item.id}" title="${escapeAttr(borderTierLabel(tier) + " border")}">
+        <article class="echo-card ${borderClass(item)}" data-id="${item.id}" title="${escapeAttr(tierName + " border")}">
           <div class="echo-media">
             ${mediaHtml(item)}
             <div class="tile-badge-row">
@@ -8087,24 +8389,38 @@
           </div>
           <div class="echo-body">
             <div class="echo-title" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</div>
-            <div class="echo-ticker">${tickerFrom(item)}</div>
-            <div class="echo-meta">
-              <span class="creator" title="${escapeAttr(item.creator)}">${escapeHtml(item.creator)}</span>
+            <div class="echo-meta tile-meta">
+              <span class="border-tier-pip" title="${escapeAttr(tierName + " border")}">${escapeHtml(tierName)}</span>
               <span class="right">
                 <span>${relativeTime(item.createdAt)}</span>
+                <button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Play"}" ${locked ? "disabled" : ""}>
+                  <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
+                  ${locked ? "Soon" : "Play"}
+                </button>
+              </span>
+            </div>
+            <div class="echo-footer">
+              <div class="tile-creator" title="Creator · ${escapeAttr(item.creator)}">
+                <span class="creator-by">by</span>
+                <span class="creator">
+                  <span class="creator-ico" aria-hidden="true">✦</span>
+                  <span class="creator-name">${escapeHtml(item.creator)}</span>
+                </span>
+              </div>
+              <div class="tile-stats">
                 <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)}</span>
-                <button type="button" class="howl-btn ${state.howled.has(item.id) ? "is-howled" : ""}" data-howl="${item.id}" title="Howl" aria-label="Howl">
+                <button type="button" class="howl-btn ${state.howled.has(item.id) ? "is-howled" : ""}" data-howl="${item.id}" title="Howl" aria-label="Howl" ${locked ? "disabled" : ""}>
                   <span class="howl-ico" aria-hidden="true">🐺</span>
                   <span>${formatCount(item.howls)}</span>
                 </button>
-              </span>
+              </div>
             </div>
           </div>
         </article>`;
       }).join("");
       scroll.querySelectorAll(".echo-card").forEach((el) => {
         el.addEventListener("click", (e) => {
-          if (e.target.closest("[data-howl]")) return;
+          if (e.target.closest("[data-howl]") || e.target.closest("[data-play]")) return;
           openDetail(el.dataset.id);
         });
       });
@@ -8112,6 +8428,15 @@
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
           toggleHowl(btn.dataset.howl);
+        });
+      });
+      scroll.querySelectorAll("[data-play]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (btn.disabled) return;
+          const id = btn.dataset.play;
+          flashPlayEnergy(btn, btn.closest(".echo-card")?.querySelector(".echo-media"));
+          window.setTimeout(() => launchPlay(id), prefersReducedMotion() ? 0 : 120);
         });
       });
       requestAnimationFrame(updateEchoNav);
@@ -8247,9 +8572,8 @@
             </div>
             <div class="tile-body">
               <div class="tile-title" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</div>
-              <div class="tile-ticker">${tickerFrom(item)}</div>
               <div class="tile-meta">
-                <span class="creator" title="${escapeAttr(item.creator)}">${escapeHtml(item.creator)}</span>
+                <span class="border-tier-pip" title="${escapeAttr(tierName + " border")}">${escapeHtml(tierName)}</span>
                 <span class="right">
                   <span>${relativeTime(item.createdAt)}</span>
                   <button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Play"}" ${locked ? "disabled" : ""}>
@@ -8258,14 +8582,22 @@
                   </button>
                 </span>
               </div>
-              <div class="tile-stats">
-                <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)}</span>
-                <button type="button" class="howl-btn ${state.howled.has(item.id) ? "is-howled" : ""}" data-howl="${item.id}" title="Howl" aria-label="Howl" ${locked ? "disabled" : ""}>
-                  <span class="howl-ico" aria-hidden="true">🐺</span>
-                  <span>${formatCount(item.howls)}</span>
-                </button>
+              <div class="tile-footer">
+                <div class="tile-creator" title="Creator · ${escapeAttr(item.creator)}">
+                  <span class="creator-by">by</span>
+                  <span class="creator">
+                    <span class="creator-ico" aria-hidden="true">✦</span>
+                    <span class="creator-name">${escapeHtml(item.creator)}</span>
+                  </span>
+                </div>
+                <div class="tile-stats">
+                  <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)}</span>
+                  <button type="button" class="howl-btn ${state.howled.has(item.id) ? "is-howled" : ""}" data-howl="${item.id}" title="Howl" aria-label="Howl" ${locked ? "disabled" : ""}>
+                    <span class="howl-ico" aria-hidden="true">🐺</span>
+                    <span>${formatCount(item.howls)}</span>
+                  </button>
+                </div>
               </div>
-              <span class="border-tier-pip" title="${escapeAttr(tierName + " border")}">${escapeHtml(tierName)}</span>
             </div>
           </article>`;
       }).join("");
@@ -8669,7 +9001,7 @@
           </button>
           <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)} views</span>
         </div>
-        ${item.link ? `<p><a href="${escapeAttr(item.link)}" target="_blank" rel="noopener" style="color:var(--cyan-soft)">Open link →</a></p>` : ""}
+        ${item.link ? `<p><a href="${escapeAttr(item.link)}" target="_blank" rel="noopener" style="color:var(--cyan-soft)">${(item.type === "howl" || item.type === "decree" || isXUrl(item.link)) ? "Open Howl / post on X →" : "Open link →"}</a></p>` : ""}
         <p style="font-size:0.78rem;color:var(--text-dim)">Bound to the Official Wrapper · play feeds the Star Core.</p>
       `;
       document.getElementById("detailHowl")?.addEventListener("click", () => {
@@ -9010,11 +9342,105 @@
       document.getElementById("playStartBtn").onclick = () => startPlayExperience(item);
     }
 
+    function isXUrl(url) {
+      if (!url) return false;
+      try {
+        const host = new URL(url, location.href).hostname.replace(/^www\./i, "");
+        return host === "x.com" || host === "twitter.com" || host.endsWith(".x.com") || host.endsWith(".twitter.com");
+      } catch {
+        return /(?:^|\/\/)(?:www\.)?(?:x|twitter)\.com\//i.test(String(url));
+      }
+    }
+
+    function parseXStatusId(url) {
+      if (!url) return null;
+      const m = String(url).match(/(?:x\.com|twitter\.com)\/(?:i\/web\/)?[^/?#]+\/status(?:es)?\/(\d+)/i);
+      return m ? m[1] : null;
+    }
+
+    function openExternalLink(url) {
+      if (!url) return;
+      try {
+        window.open(url, "_blank", "noopener,noreferrer");
+      } catch {
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.click();
+      }
+    }
+
+    /** X/Twitter block raw page iframes — show quote + official embed + open tab. */
+    function startXHowlGate(item) {
+      const link = item.link;
+      const statusId = parseXStatusId(link);
+      const kind = item.type === "decree" ? "Official Decree" : "Howl";
+      playState = { id: item.id, item, fullGame: true, external: true, xhowl: true };
+      document.getElementById("playTitle").textContent = item.title;
+      document.getElementById("playAgain").style.display = "none";
+      const stage = document.getElementById("playStage");
+      const embedSrc = statusId
+        ? `https://platform.twitter.com/embed/Tweet.html?id=${encodeURIComponent(statusId)}&theme=dark&dnt=true`
+        : "";
+      stage.innerHTML = `
+        <div class="external-gate-bar">
+          <p><strong style="color:var(--text)">${escapeHtml(kind)} Gate</strong> · X blocks embedding the full site — open the post or use the quote below · <kbd>Esc</kbd> returns</p>
+          <button type="button" class="btn-gate-back" id="gateBackBtn">← Back to Citadel</button>
+        </div>
+        <div class="xhowl-gate">
+          <div class="xhowl-head">
+            ${item.image ? `<img class="xhowl-cover" src="${escapeAttr(item.image)}" alt="" />` : ""}
+            <div class="xhowl-meta">
+              <h3>${escapeHtml(item.title)}</h3>
+              <p class="xhowl-creator">${escapeHtml(item.creator || "Pack")}</p>
+              ${item.storyLine ? `<p class="xhowl-story">${escapeHtml(item.storyLine)}</p>` : ""}
+            </div>
+          </div>
+          <blockquote class="xhowl-quote">
+            <span class="xhowl-label">${escapeHtml(kind)} · in the Citadel</span>
+            <p>${escapeHtml(item.description || "Open this Howl on X to hear the full call.")}</p>
+          </blockquote>
+          <div class="xhowl-actions">
+            <button type="button" class="btn-play" id="xhowlOpenBtn">
+              <span aria-hidden="true">𝕏</span>
+              <span>Open post on X</span>
+            </button>
+            <a class="btn-x-secondary" href="${escapeAttr(link)}" target="_blank" rel="noopener noreferrer" id="xhowlOpenLink">Same tab fallback →</a>
+          </div>
+          <p class="xhowl-hint">X does not allow the full x.com page inside apps. Use <strong>Open post on X</strong> for the live thread — the quote above is always readable here.</p>
+          ${statusId ? `
+          <div class="xhowl-embed-wrap" id="xhowlEmbedWrap">
+            <iframe
+              id="gameFrame"
+              title="X embed · ${escapeAttr(item.title)}"
+              src="${escapeAttr(embedSrc)}"
+              allow="fullscreen; clipboard-write"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+          <p class="xhowl-embed-note">If the live embed stays blank (common on <code>file://</code>), use <strong>Open post on X</strong> — the Howl quote above always works here.</p>` : `
+          <p class="xhowl-hint">No status id in the link — open on X to view the full post.</p>`}
+        </div>`;
+      document.getElementById("playModal").classList.add("open");
+      document.querySelector("#playModal .modal")?.classList.add("play-wide", "play-external");
+      document.getElementById("gateBackBtn")?.addEventListener("click", () => closePlay());
+      document.getElementById("xhowlOpenBtn")?.addEventListener("click", () => openExternalLink(link));
+      setTimeout(() => {
+        try { document.getElementById("xhowlOpenBtn")?.focus(); } catch (_) {}
+      }, 200);
+    }
+
     function startPlayExperience(item) {
       stopPlayTimers();
       document.getElementById("playAgain").style.display = "none";
-      // External story gate (e.g. Citadel Gate → Grok space)
-      // Stay on Citadel in an iframe so Leave / Esc return to the cards.
+      // Howl / Decree / any X URL — X blocks raw page iframes; use Howl Gate instead
+      if (item.link && /^https?:\/\//i.test(item.link) && (item.type === "howl" || item.type === "decree" || isXUrl(item.link))) {
+        startXHowlGate(item);
+        return;
+      }
+      // Other external story gates — stay on Citadel in an iframe when possible
       if (item.link && /^https?:\/\//i.test(item.link)) {
         playState = { id: item.id, item, fullGame: true, external: true };
         document.getElementById("playTitle").textContent = item.title;
@@ -9022,7 +9448,9 @@
         const stage = document.getElementById("playStage");
         stage.innerHTML = `
           <div class="external-gate-bar">
-            <p><strong style="color:var(--text)">Inside the Gate</strong> · <kbd>Esc</kbd> or Back returns to your cards</p>
+            <p><strong style="color:var(--text)">Inside the Gate</strong> · <kbd>Esc</kbd> or Back returns to your cards ·
+              <a href="${escapeAttr(item.link)}" target="_blank" rel="noopener noreferrer" style="color:var(--cyan-soft)">Open in new tab →</a>
+            </p>
             <button type="button" class="btn-gate-back" id="gateBackBtn">← Back to Citadel</button>
           </div>
           <iframe
@@ -9037,7 +9465,6 @@
         document.getElementById("playModal").classList.add("open");
         document.querySelector("#playModal .modal")?.classList.add("play-wide", "play-external");
         document.getElementById("gateBackBtn")?.addEventListener("click", () => closePlay());
-        // After a short delay, try focus parent so Esc hits the Citadel listener
         setTimeout(() => {
           try { document.getElementById("gateBackBtn")?.focus(); } catch (_) {}
         }, 400);

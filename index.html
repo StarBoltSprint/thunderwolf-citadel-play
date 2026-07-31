@@ -4237,9 +4237,11 @@
 
     .echoes-scroll {
       display: flex;
-      gap: 1rem;
+      gap: 0.55rem;
       overflow-x: auto;
-      padding: 0.2rem 0.35rem 0.65rem;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.25rem 0.15rem 0.7rem;
       scroll-snap-type: x mandatory;
       scrollbar-width: thin;
       scrollbar-color: rgba(232, 197, 106, 0.45) rgba(0, 0, 0, 0.2);
@@ -4256,51 +4258,211 @@
       border-radius: 999px;
     }
 
+    /*
+      Hall of Honor — same Artifact slab as Hall of Artifacts
+      (stone/bronze frame + fused hologram). Horizontal strip only.
+    */
     .echo-card {
-      flex: 0 0 min(280px, 78vw);
+      --artifact-bronze: #b08a45;
+      --artifact-bronze-deep: #5c3a18;
+      --artifact-bronze-hi: #e8c56a;
+      --artifact-inset-t: 3.2%;
+      --artifact-inset-x: 5.2%;
+      --artifact-inset-b: 3.2%;
+      --frame-glow: rgba(176, 138, 69, 0.32);
+      --frame-filter: contrast(1.05) saturate(1.08);
+      /*
+        Size: mobile scroll with solid width; desktop = 6 equal slots
+        filling the full Honor strip (match Artifact visual weight).
+      */
+      flex: 0 0 clamp(250px, 48vw, 320px);
       scroll-snap-align: start;
-      border-radius: var(--radius);
+      aspect-ratio: 3 / 4;
+      border-radius: 8px;
       overflow: hidden;
-      background: linear-gradient(180deg, rgba(20, 18, 12, 0.9), rgba(10, 14, 26, 0.95));
-      border: 1px solid rgba(232, 197, 106, 0.4);
+      background: #1a1c22;
+      border: none;
       cursor: pointer;
-      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
       box-shadow:
-        0 10px 28px rgba(0, 0, 0, 0.4),
-        0 0 24px rgba(232, 197, 106, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        0 14px 32px rgba(0, 0, 0, 0.55),
+        0 0 24px var(--frame-glow);
       display: flex;
       flex-direction: column;
+      position: relative;
+      isolation: isolate;
+      padding: 0;
+      min-width: 0;
     }
     .echo-card:hover {
-      transform: translateY(-3px) scale(1.02);
-      border-color: rgba(245, 224, 168, 0.8);
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 40px rgba(232, 197, 106, 0.2);
+      transform: translateY(-6px);
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.6),
+        0 0 36px var(--frame-glow),
+        0 0 48px rgba(46, 230, 255, 0.12);
+    }
+    .echo-card:hover .artifact-frame {
+      filter: var(--frame-filter) brightness(1.08) saturate(1.12);
     }
 
-    @media (min-width: 900px) {
+    /* Desktop: exactly 6 Honor slots share the full row width */
+    @media (min-width: 1100px) {
+      .echoes-scroll {
+        overflow-x: hidden;
+        gap: 0.65rem;
+      }
       .echo-card {
-        flex: 0 0 min(300px, 28vw);
+        flex: 1 1 0;
+        max-width: none;
+        width: 0; /* equal flex distribution */
+      }
+      .echo-nav {
+        display: none; /* no scroll when 6 fill the row */
       }
     }
 
-    /* 1:1 matches cover art — landscape crop was cutting height */
-    .echo-media {
-      aspect-ratio: 1 / 1;
-      position: relative;
+    /* Reuse Hall tile chamber styles on Honor strip */
+    .echo-card .artifact-inner {
+      position: absolute;
+      top: var(--artifact-inset-t);
+      right: var(--artifact-inset-x);
+      bottom: var(--artifact-inset-b);
+      left: var(--artifact-inset-x);
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
       overflow: hidden;
-      background: #061018;
+      border-radius: 4px;
+      background: #0a0c12;
+      box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+        inset 0 0 28px rgba(0, 0, 0, 0.55);
     }
-    .echo-media img {
+    .echo-card .artifact-frame {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      background: url("assets/artifact-frame-mask.png") center / 100% 100% no-repeat;
+      filter: var(--frame-filter);
+    }
+    .echo-card .tile-media {
+      position: relative;
+      flex: 1 1 80%;
+      min-height: 70%;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-      transition: transform 0.35s ease;
+      margin: 0;
+      overflow: hidden;
+      background: #060a12;
+      isolation: isolate;
     }
-    .echo-card:hover .echo-media img {
-      transform: scale(1.03);
+    .echo-card .tile-media img {
+      position: absolute;
+      inset: -2%;
+      width: 104%;
+      height: 104%;
+      object-fit: cover;
+      object-position: center 30%;
+      display: block;
+      transform: scale(1.02);
+      filter: brightness(1.05) saturate(1.1) contrast(1.04);
+      z-index: 0;
+      transition: transform 0.35s ease, filter 0.35s ease;
+    }
+    .echo-card:hover .tile-media img {
+      transform: scale(1.05);
+      filter: brightness(1.08) saturate(1.12) contrast(1.05);
+    }
+    .echo-card .tile-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(4, 6, 12, 0.72) 0%, transparent 7%, transparent 93%, rgba(4, 6, 12, 0.72) 100%),
+        linear-gradient(180deg, rgba(4, 6, 12, 0.55) 0%, transparent 8%, transparent 78%, rgba(4, 6, 12, 0.88) 100%),
+        radial-gradient(ellipse 85% 75% at 50% 42%, transparent 45%, rgba(2, 6, 14, 0.35) 100%),
+        radial-gradient(ellipse 90% 80% at 50% 45%, rgba(46, 230, 255, 0.06), transparent 70%);
+      box-shadow:
+        inset 0 0 20px rgba(0, 0, 0, 0.55),
+        inset 0 0 40px rgba(0, 0, 0, 0.35);
+    }
+    .echo-card .artifact-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      margin: 0;
+      padding: 0.08rem 0.25rem;
+      flex: 0 0 auto;
+      color: var(--cyan-soft);
+      font-size: 0.45rem;
+      z-index: 2;
+      background: linear-gradient(180deg, rgba(4, 8, 14, 0.05), rgba(6, 10, 16, 0.95));
+    }
+    .echo-card .artifact-divider::before,
+    .echo-card .artifact-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(176, 138, 69, 0.75), rgba(46, 230, 255, 0.45), transparent);
+    }
+    .echo-card .tile-body,
+    .echo-card .echo-body {
+      padding: 0.28rem 0.5rem 0.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.16rem;
+      flex: 0 0 auto;
+      max-height: 30%;
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(180deg, rgba(4, 8, 14, 0.92) 0%, rgba(3, 5, 10, 0.97) 100%);
+      border: none;
+      box-shadow: none;
+    }
+    .echo-card .echo-title,
+    .echo-card .tile-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(0.78rem, 1.2vw, 0.95rem);
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      color: #e8fbff;
+      text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.95),
+        0 0 12px rgba(46, 230, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .echo-card .tile-meta-clean {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      min-height: 1.5rem;
+    }
+    .echo-card .border-tier-pip,
+    .echo-card .tile-stats {
+      display: none !important;
+    }
+    .echo-card .tile-creator .creator-name {
+      font-size: 0.68rem;
+      color: #c8e8f5;
+      font-weight: 700;
+    }
+    .echo-card .play-btn {
+      font-size: 0.65rem;
+      padding: 0.22rem 0.45rem;
+    }
+    /* legacy selectors — media is now .tile-media */
+    .echo-media {
+      display: none;
     }
     .media-fallback {
       width: 100%;
@@ -4329,28 +4491,6 @@
     }
     .echo-media .media-fallback span { font-size: 3rem; }
 
-    /* Light bottom fade only — keep art readable, don't hide half the image */
-    .echo-media::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 28%;
-      background: linear-gradient(180deg, transparent, rgba(6, 8, 16, 0.55));
-      pointer-events: none;
-      z-index: 1;
-    }
-    /* Same under-image text block as Hall feed cards */
-    .echo-body {
-      padding: 0.65rem 0.7rem 0.85rem;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      flex: 1;
-      min-height: 8.6rem;
-    }
     .echo-title {
       font-family: var(--font-display);
       font-weight: 700;
@@ -4425,27 +4565,37 @@
     /* ── GRID FEED (pump.fun style) — 6 columns × 10 rows per page ── */
     .feed-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+      gap: 0.45rem;
       align-items: start;
     }
 
     @media (min-width: 640px) {
       .feed-grid {
-        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-        gap: 1.15rem;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.5rem;
       }
     }
 
     @media (min-width: 1024px) {
       .feed-grid {
-        grid-template-columns: repeat(5, 1fr);
+        /* fewer columns + tight gap = larger cards */
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.55rem;
       }
     }
 
     @media (min-width: 1400px) {
       .feed-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.55rem;
+      }
+    }
+
+    @media (min-width: 1700px) {
+      .feed-grid {
         grid-template-columns: repeat(6, 1fr);
+        gap: 0.6rem;
       }
     }
 
@@ -4545,17 +4695,20 @@
       --artifact-bronze: #b08a45;
       --artifact-bronze-deep: #5c3a18;
       --artifact-bronze-hi: #e8c56a;
-      --artifact-inset-t: 17.2%;
-      --artifact-inset-x: 20.5%;
-      --artifact-inset-b: 17.2%;
-      --frame-glow: rgba(176, 138, 69, 0.35);
-      --frame-filter: none;
+      /*
+        Exact Pack border compressed a bit tighter (~6.2%);
+        content tucked under the rim so hologram + frame stay fused.
+      */
+      --artifact-inset-t: 3.2%;
+      --artifact-inset-x: 5.2%;
+      --artifact-inset-b: 3.2%;
+      --frame-glow: rgba(176, 138, 69, 0.32);
+      --frame-filter: contrast(1.05) saturate(1.08);
       aspect-ratio: 3 / 4;
-      border-radius: 14px;
+      border-radius: 8px;
       overflow: hidden;
-      background:
-        radial-gradient(ellipse 70% 55% at 50% 38%, #1a2230 0%, #0a0c12 70%),
-        #080a10;
+      /* Underfill only; bronze frame sits on the outer edge */
+      background: #1a1c22;
       border: none;
       cursor: pointer;
       transition:
@@ -4583,7 +4736,7 @@
       content: none;
       display: none;
     }
-    /* Content lives in the punched window of the frame */
+    /* Content tucks under the bronze so art + frame read as one relic */
     .artifact-inner {
       position: absolute;
       top: var(--artifact-inset-t);
@@ -4595,12 +4748,14 @@
       flex-direction: column;
       min-height: 0;
       overflow: hidden;
-      border-radius: 3px;
-      background:
-        linear-gradient(180deg, rgba(8, 12, 20, 0.15) 0%, rgba(6, 8, 14, 0.55) 100%),
-        url("assets/artifact-stone-tex.jpg") center / cover no-repeat;
+      border-radius: 4px;
+      background: #0a0c12;
+      /* soft recess so the chamber sits inside the tablet */
+      box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+        inset 0 0 28px rgba(0, 0, 0, 0.55);
     }
-    /* Painted stone + bronze + lightning veins (reference frame) */
+    /* Exact border art overlay — sits ABOVE the hologram and clips its edges */
     .artifact-frame {
       position: absolute;
       inset: 0;
@@ -4609,6 +4764,8 @@
       background: url("assets/artifact-frame-mask.png") center / 100% 100% no-repeat;
       filter: var(--frame-filter);
       transition: filter 0.25s ease, opacity 0.25s ease;
+      /* helps the painted rim “own” the edge of the image */
+      mix-blend-mode: normal;
     }
     .tile:hover {
       transform: translateY(-8px);
@@ -5529,25 +5686,26 @@
       Artifact rarity = frame light intensity only (same painted slab for all).
       No extra CSS ring borders — those looked buggy over the real frame.
     */
+    /* Rarity only tints glow — keep stone/bronze split readable */
     .tile.border-bronze {
-      --frame-glow: rgba(184, 115, 51, 0.32);
-      --frame-filter: saturate(0.95) brightness(0.96);
+      --frame-glow: rgba(184, 115, 51, 0.28);
+      --frame-filter: saturate(1.02) brightness(0.98) contrast(1.04);
     }
     .tile.border-silver {
-      --frame-glow: rgba(170, 190, 210, 0.28);
-      --frame-filter: saturate(0.85) brightness(1.05) hue-rotate(-8deg);
+      --frame-glow: rgba(170, 190, 210, 0.26);
+      --frame-filter: saturate(0.95) brightness(1.02) contrast(1.04);
     }
     .tile.border-gold {
-      --frame-glow: rgba(232, 197, 106, 0.42);
-      --frame-filter: saturate(1.15) brightness(1.06) contrast(1.05);
+      --frame-glow: rgba(232, 197, 106, 0.34);
+      --frame-filter: saturate(1.08) brightness(1.02) contrast(1.05);
     }
     .tile.border-platinum {
-      --frame-glow: rgba(126, 240, 255, 0.4);
-      --frame-filter: saturate(1.2) brightness(1.08) hue-rotate(6deg);
+      --frame-glow: rgba(126, 240, 255, 0.34);
+      --frame-filter: saturate(1.1) brightness(1.03) contrast(1.05);
     }
     .tile.border-diamond {
-      --frame-glow: rgba(180, 235, 255, 0.5);
-      --frame-filter: saturate(1.25) brightness(1.12) contrast(1.08);
+      --frame-glow: rgba(180, 235, 255, 0.4);
+      --frame-filter: saturate(1.12) brightness(1.04) contrast(1.06);
     }
     .tile.border-diamond .artifact-frame {
       animation: diamondFramePulse 5.5s ease-in-out infinite;
@@ -5627,32 +5785,26 @@
       filter: drop-shadow(0 0 8px rgba(232, 197, 106, 0.85));
       pointer-events: none;
     }
-    /* Gallery echo cards — same rank language, scaled for strip (dup block removed below) */
+    /* Honor strip: same frame-filter rarity language as Hall tiles (no CSS ring borders) */
     .echo-card.border-bronze {
-      border: 1.5px solid #b87333;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(90,48,16,0.45);
+      --frame-glow: rgba(184, 115, 51, 0.28);
+      --frame-filter: saturate(1.02) brightness(0.98) contrast(1.04);
     }
     .echo-card.border-silver {
-      border: 2px solid #c5d0dc;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(90,110,130,0.5), 0 0 16px rgba(170,190,210,0.2);
+      --frame-glow: rgba(170, 190, 210, 0.26);
+      --frame-filter: saturate(0.95) brightness(1.02) contrast(1.04);
     }
     .echo-card.border-gold {
-      border: 2.5px solid #e8c56a;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.38), 0 0 0 2px rgba(90,64,12,0.7), 0 0 24px rgba(232,197,106,0.35);
+      --frame-glow: rgba(232, 197, 106, 0.34);
+      --frame-filter: saturate(1.08) brightness(1.02) contrast(1.05);
     }
     .echo-card.border-platinum {
-      border: 2.5px solid #dceeff;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 2px rgba(46,230,255,0.45), 0 0 28px rgba(126,240,255,0.3);
+      --frame-glow: rgba(126, 240, 255, 0.34);
+      --frame-filter: saturate(1.1) brightness(1.03) contrast(1.05);
     }
     .echo-card.border-diamond {
-      border: 2.5px solid #e8f9ff;
-      box-shadow:
-        0 8px 28px rgba(0,0,0,0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.65),
-        0 0 0 3px rgba(8, 22, 40, 0.95),
-        0 0 0 5px rgba(140, 230, 255, 0.4),
-        0 0 24px rgba(180, 235, 255, 0.38),
-        0 0 40px rgba(255, 255, 255, 0.14);
+      --frame-glow: rgba(180, 235, 255, 0.4);
+      --frame-filter: saturate(1.12) brightness(1.04) contrast(1.06);
     }
     .border-diamond .border-tier-pip {
       color: #041018;
@@ -5661,57 +5813,104 @@
       box-shadow: 0 0 14px rgba(200, 240, 255, 0.45);
     }
 
-    /* Hologram chamber — art floats on the stone like a projection */
+    /*
+      Hologram chamber — art is projected FROM the relic, not a hard photo box.
+      Edges vignette into the frame so image + border feel fused.
+    */
     .tile-media {
       position: relative;
-      flex: 1 1 auto;
-      min-height: 0;
+      flex: 1 1 80%;
+      min-height: 70%;
       width: 100%;
       margin: 0;
       aspect-ratio: auto;
       overflow: hidden;
-      background:
-        radial-gradient(ellipse 75% 65% at 50% 42%, rgba(30, 50, 90, 0.45), #060a14 78%),
-        url("assets/artifact-stone-tex.jpg") center / cover no-repeat;
+      background: #060a12;
       border-radius: 0;
       border: none;
-      box-shadow:
-        inset 0 0 36px rgba(46, 230, 255, 0.12),
-        inset 0 0 50px rgba(0, 0, 0, 0.45);
+      isolation: isolate;
     }
     .tile-media img {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      inset: -2%;
+      width: 104%;
+      height: 104%;
       object-fit: cover;
+      object-position: center 30%;
       display: block;
-      transform: scale(1) translate(0, 0);
-      filter: brightness(1.07) saturate(1.12) contrast(1.05);
+      transform: scale(1.02);
+      filter: brightness(1.05) saturate(1.1) contrast(1.04);
       transition:
         transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
         filter 0.45s ease;
+      z-index: 0;
     }
-    .tile:hover .tile-media {
+    /* Soft melt: art edges dissolve into the dark frame recess */
+    .tile-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 1 !important;
+      mix-blend-mode: normal !important;
+      animation: none !important;
+      transform: none !important;
+      background:
+        /* edge burn into bronze rim */
+        linear-gradient(90deg, rgba(4, 6, 12, 0.72) 0%, transparent 7%, transparent 93%, rgba(4, 6, 12, 0.72) 100%),
+        linear-gradient(180deg, rgba(4, 6, 12, 0.55) 0%, transparent 8%, transparent 78%, rgba(4, 6, 12, 0.88) 100%),
+        /* soft center glow so it feels projected */
+        radial-gradient(ellipse 85% 75% at 50% 42%, transparent 45%, rgba(2, 6, 14, 0.35) 100%),
+        /* cyan dust tying art to frame lightning */
+        radial-gradient(ellipse 90% 80% at 50% 45%, rgba(46, 230, 255, 0.06), transparent 70%);
       box-shadow:
-        inset 0 0 40px rgba(46, 230, 255, 0.2),
-        inset 0 0 56px rgba(0, 0, 0, 0.35);
+        inset 0 0 20px rgba(0, 0, 0, 0.55),
+        inset 0 0 40px rgba(0, 0, 0, 0.35),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.35);
     }
-    /* Lightning bolt divider between hologram and carved face */
+    .tile-media::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.55;
+      mix-blend-mode: screen;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 40%, rgba(80, 200, 255, 0.1), transparent 62%);
+      transition: opacity 0.35s ease;
+    }
+    .tile:hover .tile-media::before {
+      opacity: 0.85;
+    }
+    .tile:hover .tile-media img {
+      filter: brightness(1.08) saturate(1.12) contrast(1.05);
+    }
+    .tile.is-locked .tile-media::after {
+      /* keep edge melt even when locked fog runs */
+      opacity: 1 !important;
+    }
+    /* Soft seam between hologram and plaque (no hard photo cut) */
     .artifact-divider {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.35rem;
+      gap: 0.25rem;
       margin: 0;
-      padding: 0.2rem 0.4rem;
+      padding: 0.1rem 0.25rem;
       flex: 0 0 auto;
       color: var(--cyan-soft);
-      font-size: 0.72rem;
+      font-size: 0.5rem;
       line-height: 1;
       text-shadow: 0 0 10px rgba(46, 230, 255, 0.65);
       z-index: 2;
-      background: linear-gradient(180deg, rgba(6, 10, 18, 0.2), rgba(8, 12, 20, 0.55));
+      background: linear-gradient(
+        180deg,
+        rgba(4, 8, 14, 0.05) 0%,
+        rgba(6, 10, 16, 0.75) 55%,
+        rgba(6, 10, 16, 0.95) 100%
+      );
     }
     .artifact-divider::before,
     .artifact-divider::after {
@@ -5736,82 +5935,47 @@
       70%  { transform: scale(1.1) translate(1.4%, -0.9%); }
       100% { transform: scale(1.07) translate(-0.8%, 1.2%); }
     }
-    /* Soft light sweep across the art on hover */
-    .tile-media::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      background: linear-gradient(
-        115deg,
-        transparent 30%,
-        rgba(180, 245, 255, 0.07) 45%,
-        rgba(255, 255, 255, 0.16) 50%,
-        rgba(232, 197, 106, 0.08) 55%,
-        transparent 70%
-      );
-      background-size: 220% 100%;
-      background-position: 120% 0;
-      opacity: 0;
-      transition: opacity 0.35s ease;
-      mix-blend-mode: screen;
-    }
-    .tile:hover .tile-media::before {
-      opacity: 1;
-      animation: tileArtShimmer 2.4s ease-in-out infinite;
-    }
+    /* Hover shimmer rides ON TOP of the permanent edge-melt vignette */
     @keyframes tileArtShimmer {
       0%   { background-position: 130% 0; }
       100% { background-position: -40% 0; }
     }
-    /* Soft vignette lift + cyan dust on hover */
-    .tile-media::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      background:
-        radial-gradient(ellipse 70% 55% at 50% 40%, transparent 40%, rgba(2, 8, 20, 0.28) 100%),
-        radial-gradient(circle at 20% 80%, rgba(46, 230, 255, 0.12), transparent 28%),
-        radial-gradient(circle at 80% 25%, rgba(232, 197, 106, 0.1), transparent 24%);
-      mix-blend-mode: screen;
+    .tile:hover .tile-media::before {
+      opacity: 0.9;
+      background-image:
+        radial-gradient(ellipse 70% 55% at 50% 40%, rgba(80, 200, 255, 0.12), transparent 62%),
+        linear-gradient(
+          115deg,
+          transparent 30%,
+          rgba(180, 245, 255, 0.08) 45%,
+          rgba(255, 255, 255, 0.14) 50%,
+          rgba(232, 197, 106, 0.08) 55%,
+          transparent 70%
+        );
+      background-size: 100% 100%, 220% 100%;
+      animation: tileArtShimmer 2.4s ease-in-out infinite;
     }
-    .tile:hover .tile-media::after {
-      opacity: 1;
-      animation: tileArtDust 2.8s ease-in-out infinite alternate;
-    }
-    @keyframes tileArtDust {
-      0%   { opacity: 0.55; transform: scale(1); }
-      100% { opacity: 0.95; transform: scale(1.04); }
-    }
-    /* Locked fog (::after) must win over hover dust */
+    /* Keep edge melt during lock / open — never zero it */
     .tile.is-locked .tile-media::after {
-      mix-blend-mode: normal;
-      animation: lockedFog 6s linear infinite !important;
       opacity: 1 !important;
+      animation: none !important;
       transform: none !important;
+      mix-blend-mode: normal !important;
+    }
+    .tile.is-locked .tile-media::before {
+      opacity: 0.25;
+      animation: none;
     }
     .tile.is-locked:hover .tile-media img {
       animation: none;
-      transform: scale(1);
       filter: none;
     }
-    .tile.is-locked:hover .tile-media::before {
-      opacity: 0;
-      animation: none;
-    }
-    /* Don't fight opening howl */
     .tile.is-opening .tile-media img {
       animation: none !important;
     }
-    .tile.is-opening .tile-media::before,
     .tile.is-opening .tile-media::after {
+      opacity: 1 !important;
       animation: none !important;
-      opacity: 0 !important;
     }
     /* Play button pulse on hover of card */
     .tile:hover .play-btn {
@@ -5909,6 +6073,80 @@
         0 0 16px rgba(52, 211, 153, 0.15),
         0 0 10px rgba(232, 197, 106, 0.12),
         inset 0 1px 0 rgba(255, 240, 200, 0.12);
+    }
+
+
+    /* Clean plaque: title + by + Play only (no rarity colors / views / howls) */
+    .tile .artifact-lore-row { display: none !important; }
+    .tile .artifact-kicker { display: none !important; }
+    .tile .border-tier-pip { display: none !important; }
+    .tile .tile-stats { display: none !important; }
+    .tile .tile-footer { display: none !important; }
+    .tile .tile-body {
+      padding: 0.3rem 0.55rem 0.4rem !important;
+      gap: 0.18rem !important;
+      flex: 0 0 auto !important;
+      max-height: 30%;
+      /* continues the hologram dark so plaque is part of the chamber, not a second card */
+      background:
+        linear-gradient(180deg, rgba(4, 8, 14, 0.92) 0%, rgba(3, 5, 10, 0.97) 100%) !important;
+      border-top: none !important;
+      box-shadow: none !important;
+    }
+    .tile .tile-title {
+      font-size: clamp(0.88rem, 1.45vw, 1.1rem) !important;
+      -webkit-line-clamp: 2 !important;
+      line-height: 1.22 !important;
+      letter-spacing: 0.03em !important;
+      color: #e8fbff !important;
+      text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.95),
+        0 0 12px rgba(0, 0, 0, 0.7),
+        0 0 18px rgba(46, 230, 255, 0.35) !important;
+      font-weight: 800 !important;
+    }
+    .tile .tile-meta-clean {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 0.4rem !important;
+      margin-top: 0.12rem !important;
+      min-height: 1.65rem !important;
+      width: 100% !important;
+    }
+    .tile .tile-meta-clean .tile-creator {
+      flex: 1 !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+    }
+    .tile .tile-meta-clean .play-btn {
+      flex-shrink: 0 !important;
+      margin-left: auto !important;
+    }
+    .tile .tile-creator .creator-name {
+      font-size: 0.72rem !important;
+      color: #c8e8f5 !important;
+      font-weight: 700 !important;
+    }
+    .tile .tile-creator .creator-by {
+      font-size: 0.62rem !important;
+      color: rgba(180, 200, 220, 0.75) !important;
+    }
+    .tile .artifact-divider {
+      padding: 0.08rem 0.3rem !important;
+      font-size: 0.5rem !important;
+    }
+    .tile .artifact-divider::before,
+    .tile .artifact-divider::after {
+      height: 1px !important;
+    }
+    .tile .tile-resonance {
+      font-size: 0.85rem !important;
+      padding: 0.2rem 0.48rem !important;
+    }
+    .tile .badge {
+      font-size: 0.58rem !important;
+      padding: 0.18rem 0.4rem !important;
     }
 
     .tile-body {
@@ -6106,18 +6344,19 @@
       border-top: 1px solid rgba(176, 138, 69, 0.18);
     }
     .tile .play-btn {
-      font-size: 0.58rem;
-      padding: 0.18rem 0.4rem;
-      gap: 0.2rem;
+      font-size: 0.7rem;
+      padding: 0.28rem 0.55rem;
+      gap: 0.28rem;
+      font-weight: 800;
     }
     .tile .play-btn img {
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
     }
     .tile .stat-chip,
     .tile .howl-btn {
-      font-size: 0.58rem;
-      padding: 0.12rem 0.32rem;
+      font-size: 0.68rem;
+      padding: 0.18rem 0.4rem;
     }
     .tile-footer .tile-creator {
       flex: 1;
@@ -12129,9 +12368,9 @@
       return list;
     }
 
-    const MAX_FEATURED = 10;
+    const MAX_FEATURED = 6;
 
-    /** Top featured creations only (Hall of Honor + Featured filter). Cap at MAX_FEATURED. */
+    /** Top featured creations only (Hall of Honor). Exactly 6 slots max. */
     function featuredItems() {
       return allItems()
         .filter((i) => i.featured)
@@ -12259,45 +12498,36 @@
         const tierName = borderTierLabel(tier);
         const locked = !!item.locked;
         return `
-        <article class="echo-card ${borderClass(item)}" data-id="${item.id}" title="${escapeAttr(tierName + " border")}">
-          <div class="echo-media">
-            ${mediaHtml(item)}
-            <div class="tile-badge-row">
-              ${typeBadgeHtml(item)}
-              <span class="badge badge-featured">Featured</span>
-              ${extra}
+        <article class="echo-card artifact ${borderClass(item)}" data-id="${item.id}" title="${escapeAttr("Artifact · " + tierName)}">
+          <div class="artifact-inner">
+            <div class="tile-media artifact-holo">
+              ${mediaHtml(item)}
+              <div class="tile-badge-row">
+                ${typeBadgeHtml(item)}
+                <span class="badge badge-featured">Featured</span>
+                ${extra}
+              </div>
+              <div class="tile-resonance">${item.resonance}</div>
             </div>
-            <div class="tile-resonance">${item.resonance}</div>
-          </div>
-          <div class="echo-body">
-            <div class="echo-title" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</div>
-            <div class="echo-meta tile-meta">
-              <span class="border-tier-pip" title="${escapeAttr(tierName + " border")}">${escapeHtml(tierName)}</span>
-              <span class="right">
-                <span>${relativeTime(item.createdAt)}</span>
+            <div class="artifact-divider" aria-hidden="true">⚡</div>
+            <div class="tile-body echo-body">
+              <div class="echo-title tile-title" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</div>
+              <div class="tile-meta tile-meta-clean">
+                <div class="tile-creator" title="Creator · ${escapeAttr(item.creator)}">
+                  <span class="creator-by">by</span>
+                  <span class="creator">
+                    <span class="creator-ico" aria-hidden="true">✦</span>
+                    <span class="creator-name">${escapeHtml(item.creator)}</span>
+                  </span>
+                </div>
                 <button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Play"}" ${locked ? "disabled" : ""}>
                   <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
                   ${locked ? "Soon" : "Play"}
                 </button>
-              </span>
-            </div>
-            <div class="echo-footer">
-              <div class="tile-creator" title="Creator · ${escapeAttr(item.creator)}">
-                <span class="creator-by">by</span>
-                <span class="creator">
-                  <span class="creator-ico" aria-hidden="true">✦</span>
-                  <span class="creator-name">${escapeHtml(item.creator)}</span>
-                </span>
-              </div>
-              <div class="tile-stats">
-                <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)}</span>
-                <button type="button" class="howl-btn ${state.howled.has(item.id) ? "is-howled" : ""}" data-howl="${item.id}" title="Howl" aria-label="Howl" ${locked ? "disabled" : ""}>
-                  <span class="howl-ico" aria-hidden="true">🐺</span>
-                  <span>${formatCount(item.howls)}</span>
-                </button>
               </div>
             </div>
           </div>
+          <div class="artifact-frame" aria-hidden="true"></div>
         </article>`;
       }).join("");
       scroll.querySelectorAll(".echo-card").forEach((el) => {
@@ -12317,7 +12547,7 @@
           e.stopPropagation();
           if (btn.disabled) return;
           const id = btn.dataset.play;
-          flashPlayEnergy(btn, btn.closest(".echo-card")?.querySelector(".echo-media"));
+          flashPlayEnergy(btn, btn.closest(".echo-card")?.querySelector(".tile-media"));
           window.setTimeout(() => launchPlay(id), prefersReducedMotion() ? 0 : 120);
         });
       });
@@ -12460,17 +12690,7 @@
                   </div>
                   <div class="artifact-seal" title="Citadel seal" aria-hidden="true">🐺</div>
                 </div>
-                <div class="tile-meta">
-                  <span class="border-tier-pip" title="${escapeAttr(tierName + " Artifact")}">${escapeHtml(tierName)}</span>
-                  <span class="right">
-                    <span>${relativeTime(item.createdAt)}</span>
-                    <button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Play"}" ${locked ? "disabled" : ""}>
-                      <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
-                      ${locked ? "Soon" : "Play"}
-                    </button>
-                  </span>
-                </div>
-                <div class="tile-footer">
+                <div class="tile-meta tile-meta-clean">
                   <div class="tile-creator" title="Creator · ${escapeAttr(item.creator)}">
                     <span class="creator-by">by</span>
                     <span class="creator">
@@ -12478,13 +12698,10 @@
                       <span class="creator-name">${escapeHtml(item.creator)}</span>
                     </span>
                   </div>
-                  <div class="tile-stats">
-                    <span class="stat-chip" title="Views"><span class="ico" aria-hidden="true">👁</span>${formatCount(item.views)}</span>
-                    <button type="button" class="howl-btn ${state.howled.has(item.id) ? "is-howled" : ""}" data-howl="${item.id}" title="Howl" aria-label="Howl" ${locked ? "disabled" : ""}>
-                      <span class="howl-ico" aria-hidden="true">🐺</span>
-                      <span>${formatCount(item.howls)}</span>
-                    </button>
-                  </div>
+                  <button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Play"}" ${locked ? "disabled" : ""}>
+                    <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
+                    ${locked ? "Soon" : "Play"}
+                  </button>
                 </div>
               </div>
             </div>

@@ -4563,6 +4563,204 @@
     }
 
     /* ── GRID FEED (pump.fun style) — 6 columns × 10 rows per page ── */
+
+    /* ── Relic vessels in the same Hall feed (same size as Artifacts for now) ── */
+    .tile.is-relic {
+      --frame-glow: rgba(232, 197, 106, 0.42);
+      --frame-filter: saturate(1.12) brightness(1.04) contrast(1.06);
+    }
+    .tile.is-relic .artifact-inner {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(232, 197, 106, 0.08), transparent 55%),
+        #0a0c12;
+    }
+    .tile.is-relic .tile-title {
+      color: #ffe9a8 !important;
+      text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.95),
+        0 0 16px rgba(232, 197, 106, 0.35) !important;
+    }
+    .tile.is-relic .tile-resonance {
+      border-color: rgba(232, 197, 106, 0.55);
+      color: #f5e0a8;
+      box-shadow: 0 0 16px rgba(232, 197, 106, 0.25);
+    }
+    .badge-relic {
+      background: linear-gradient(135deg, rgba(60, 40, 10, 0.95), rgba(30, 20, 6, 0.95));
+      color: #f5e0a8;
+      border-color: rgba(232, 197, 106, 0.55);
+      box-shadow: 0 0 12px rgba(232, 197, 106, 0.25);
+    }
+    .badge-origin {
+      background: rgba(12, 28, 48, 0.9);
+      color: #9eecff;
+      border-color: rgba(46, 230, 255, 0.4);
+    }
+    .relic-lineage {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-top: 0.15rem;
+    }
+    .relic-lineage span {
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(200, 220, 240, 0.75);
+      padding: 0.1rem 0.35rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.15);
+      background: rgba(0, 0, 0, 0.25);
+      max-width: 7rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .tile.is-relic .play-btn {
+      background: linear-gradient(135deg, rgba(40, 28, 8, 0.95), rgba(20, 14, 4, 0.95));
+      border-color: rgba(232, 197, 106, 0.5);
+      color: #f5e0a8;
+    }
+    .modal-relic {
+      max-width: min(720px, 96vw);
+    }
+    .relic-tabs {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0 1rem 0.65rem;
+      border-bottom: 1px solid rgba(46, 230, 255, 0.12);
+      margin-bottom: 0.35rem;
+    }
+    .relic-tab {
+      appearance: none;
+      border: 1px solid rgba(46, 230, 255, 0.18);
+      background: rgba(8, 14, 28, 0.75);
+      color: var(--text-dim);
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    .relic-tab:hover {
+      color: var(--text);
+      border-color: rgba(46, 230, 255, 0.35);
+    }
+    .relic-tab.is-active {
+      color: #041018;
+      border-color: rgba(232, 197, 106, 0.65);
+      background: linear-gradient(135deg, #f5e0a8, #e8c56a 55%, #c9a44a);
+      box-shadow: 0 0 16px rgba(232, 197, 106, 0.3);
+    }
+    .relic-panel[hidden] { display: none !important; }
+    .relic-panel.is-active { display: block; }
+    .constellation-wrap {
+      padding: 0.5rem 1rem 0.75rem;
+    }
+    .constellation-wrap canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 14px;
+      border: 1px solid rgba(232, 197, 106, 0.28);
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 45%, rgba(30, 40, 80, 0.45), transparent 65%),
+        radial-gradient(ellipse 100% 100% at 50% 50%, #060a14, #02040a);
+      box-shadow:
+        inset 0 0 40px rgba(0, 0, 0, 0.45),
+        0 0 28px rgba(46, 230, 255, 0.08);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .constellation-hint {
+      margin: 0.55rem 0 0;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+      text-align: center;
+    }
+    .relic-hero {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: 12px;
+      margin: 0 1rem;
+      border: 1px solid rgba(232, 197, 106, 0.35);
+      box-shadow: 0 0 28px rgba(232, 197, 106, 0.12);
+      background: #060a12;
+    }
+    .relic-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .relic-members {
+      display: grid;
+      gap: 0.55rem;
+      margin-top: 0.85rem;
+    }
+    .relic-member {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 0.65rem;
+      align-items: center;
+      padding: 0.5rem 0.6rem;
+      border-radius: 12px;
+      border: 1px solid rgba(46, 230, 255, 0.14);
+      background: rgba(8, 14, 28, 0.75);
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+    .relic-member:hover {
+      border-color: rgba(232, 197, 106, 0.45);
+      box-shadow: 0 0 18px rgba(232, 197, 106, 0.12);
+      transform: translateY(-1px);
+    }
+    .relic-member.is-origin {
+      border-color: rgba(232, 197, 106, 0.4);
+      background: linear-gradient(135deg, rgba(40, 28, 8, 0.55), rgba(8, 14, 28, 0.85));
+    }
+    .relic-member__thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #061018;
+    }
+    .relic-member__thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .relic-member__meta b {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--text);
+      margin-bottom: 0.15rem;
+    }
+    .relic-member__meta span {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+    .relic-member__res {
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--mint);
+      font-family: var(--font-display);
+    }
+    #vesselFilters .chip[data-vessel="relic"].active {
+      border-color: rgba(232, 197, 106, 0.55);
+      color: #f5e0a8;
+      box-shadow: 0 0 14px rgba(232, 197, 106, 0.2);
+    }
+
     .feed-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
@@ -8167,8 +8365,13 @@
           <button type="button" class="chip active" data-sort="new">New</button>
           <button type="button" class="chip" data-sort="rising">Rising</button>
         </div>
+        <div class="filter-row" id="vesselFilters" aria-label="Vessel kind">
+          <button type="button" class="chip active" data-vessel="all">All</button>
+          <button type="button" class="chip" data-vessel="artifact">Artifacts</button>
+          <button type="button" class="chip" data-vessel="relic">Relics</button>
+        </div>
         <div class="filter-row" id="typeFilters">
-          <button type="button" class="chip active" data-type="all">All</button>
+          <button type="button" class="chip active" data-type="all">All types</button>
           <button type="button" class="chip" data-type="mini-quest">Mini-Quest</button>
           <button type="button" class="chip" data-type="story-branch">Story Branch</button>
           <button type="button" class="chip" data-type="codex">Codex</button>
@@ -9021,6 +9224,37 @@
     </div>
   </div>
 
+  <!-- Relic View — Overview + Constellation (Relic-only second tab) -->
+  <div class="modal-overlay" id="relicModal" role="dialog" aria-modal="true" aria-labelledby="relicTitle">
+    <div class="modal modal-relic">
+      <div class="modal-head">
+        <h2 class="modal-title" id="relicTitle">Relic</h2>
+        <button type="button" class="close-btn" data-close-relic aria-label="Close">&times;</button>
+      </div>
+      <div class="relic-tabs" id="relicTabs" role="tablist" aria-label="Relic views">
+        <button type="button" class="relic-tab is-active" role="tab" aria-selected="true" data-relic-tab="overview" id="relicTabOverview">Overview</button>
+        <button type="button" class="relic-tab" role="tab" aria-selected="false" data-relic-tab="constellation" id="relicTabConstellation">Constellation</button>
+      </div>
+      <div class="relic-panel is-active" id="relicPanelOverview" role="tabpanel" aria-labelledby="relicTabOverview">
+        <div class="relic-hero" id="relicHero"></div>
+        <div id="relicContent" class="detail-body"></div>
+      </div>
+      <div class="relic-panel" id="relicPanelConstellation" role="tabpanel" aria-labelledby="relicTabConstellation" hidden>
+        <div class="constellation-wrap">
+          <canvas id="relicConstellationCanvas" width="640" height="420" aria-label="Relic constellation graph"></canvas>
+          <p class="constellation-hint">Nodes = Artifacts · lines = lineage · size &amp; glow = Resonance · Origin sits at the center. Click a node to play.</p>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close-relic>Close</button>
+        <button type="button" class="btn-play" id="relicPlayOrigin">
+          <img src="assets/play-wolf.jpg" alt="" width="28" height="28" />
+          <span>Play Origin</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Play arena -->
   <div class="modal-overlay play-modal" id="playModal" role="dialog" aria-modal="true" aria-labelledby="playTitle">
     <div class="modal">
@@ -9267,6 +9501,7 @@
       howl:              { base: 38, spread: 10, label: "Howl · common X post" },
       decree:            { base: 58, range: 10, label: "Decree · official X decree" },
       remix:             { base: 62, range: 12, label: "Remix" },
+      relic:             { label: "Relic",            emoji: "🏛️", short: "RELIC" },
       codex:             { base: 68, range: 10, label: "Codex" },
       "story-branch":    { base: 72, range: 10, label: "Story Branch" },
       "bolt-story":      { base: 78, range: 12, label: "Echo · video" },
@@ -11360,6 +11595,50 @@
       },
     ];
 
+    /**
+     * Relics — denser nodes in the SAME Hall feed.
+     * vessel: "relic" · originId + childIds form the lineage.
+     * Relic Resonance is computed from Origin + children.
+     */
+    const RELICS = [
+      {
+        id: "relic-storm-lineage",
+        vessel: "relic",
+        title: "Storm Orbs Relic",
+        description: "The first lightning Mini-Quest grew into a living lineage — sprints, wings, and howls that share the storm.",
+        creator: "Forge Hero · SmiR",
+        originId: "seed-1",
+        childIds: ["seed-7", "seed-3", "seed-4"],
+        image: null,
+        createdAt: Date.now() - 1000 * 60 * 60 * 5,
+        tags: ["storm", "lineage", "relic"],
+      },
+      {
+        id: "relic-silent-seed",
+        vessel: "relic",
+        title: "Silent Seed Relic",
+        description: "From one dormant Guardian seed — codex, crystal ladders, and story branches under ice.",
+        creator: "Lore Weaver · Ara",
+        originId: "seed-2",
+        childIds: ["seed-5", "seed-6", "seed-8"],
+        image: null,
+        createdAt: Date.now() - 1000 * 60 * 60 * 18,
+        tags: ["seed", "guardian", "relic"],
+      },
+      {
+        id: "relic-decree-chain",
+        vessel: "relic",
+        title: "Decree Chain Relic",
+        description: "Official law that grew: torch, sky laws, and the council orb bind as one living decree lineage.",
+        creator: "Thread Keeper · SmiR",
+        originId: "decree-23",
+        childIds: ["decree-24", "decree-25", "decree-26"],
+        image: null,
+        createdAt: Date.now() - 1000 * 60 * 12,
+        tags: ["decree", "law", "relic"],
+      },
+    ];
+
     /** 6 columns × 10 rows per feed page (pump.fun-style paging) */
     const FEED_COLS = 6;
     const FEED_ROWS = 10;
@@ -11368,6 +11647,7 @@
     let state = {
       sort: "new",
       type: "all",
+      vessel: "all",
       query: "",
       page: 1,
       howled: loadHowled(),
@@ -12296,9 +12576,91 @@
       return String(v);
     }
 
-    function allItems() {
+    function isRelic(item) {
+      return !!(item && (item.vessel === "relic" || item.type === "relic"));
+    }
+
+    function isArtifact(item) {
+      return !!item && !isRelic(item);
+    }
+
+    function findItemById(id) {
+      return allItems().find((i) => i.id === id) || null;
+    }
+
+    /** Members of a Relic: Origin first, then children (as live Artifacts). */
+    function relicMembers(relic) {
+      if (!relic) return [];
+      const byId = new Map(allItemsRaw().map((i) => [i.id, i]));
+      const ids = [relic.originId, ...(relic.childIds || [])].filter(Boolean);
+      const seen = new Set();
+      const out = [];
+      ids.forEach((id) => {
+        if (seen.has(id)) return;
+        seen.add(id);
+        const m = byId.get(id);
+        if (m && !isRelic(m)) out.push(m);
+      });
+      return out;
+    }
+
+    /** Relic Resonance — denser lineage sorts higher in the same Hall ranking. */
+    function computeRelicResonance(relic) {
+      const members = relicMembers(relic);
+      if (!members.length) return relic.resonance || 70;
+      const avg = members.reduce((s, m) => s + (m.resonance || 0), 0) / members.length;
+      const bonus = Math.min(18, members.length * 3);
+      return Math.min(99, Math.round(avg + bonus));
+    }
+
+    function computeRelicHowls(relic) {
+      return relicMembers(relic).reduce((s, m) => s + (m.howls || 0), 0);
+    }
+
+    function hydrateRelic(relic) {
+      const members = relicMembers(relic);
+      const origin = members.find((m) => m.id === relic.originId) || members[0] || null;
+      const image = relic.image || (origin && origin.image) || "";
+      const resonance = computeRelicResonance(relic);
+      const howls = computeRelicHowls(relic);
+      const views = members.reduce((s, m) => s + (m.views || 0), 0);
+      return ensureEngagement({
+        ...relic,
+        vessel: "relic",
+        type: "relic",
+        title: relic.title,
+        description: relic.description,
+        creator: relic.creator || (origin && origin.creator) || "Pack",
+        image,
+        resonance,
+        howls,
+        views,
+        plays: members.reduce((s, m) => s + (m.plays || 0), 0),
+        featured: !!relic.featured || members.some((m) => m.featured),
+        canon: relic.canon || (origin && origin.canon) || "community",
+        createdAt: relic.createdAt || (origin && origin.createdAt) || Date.now(),
+        memberCount: members.length,
+        originTitle: origin ? origin.title : "Unknown Origin",
+        tags: relic.tags || [],
+      });
+    }
+
+    /** Artifacts only (no Relic vessels). */
+    function allItemsRaw() {
       const map = new Map();
-      [...SEED, ...loadUserItems()].forEach((i) => map.set(i.id, ensureEngagement(i)));
+      [...SEED, ...loadUserItems()].forEach((i) => {
+        if (isRelic(i)) return;
+        map.set(i.id, ensureEngagement({ ...i, vessel: i.vessel || "artifact" }));
+      });
+      return [...map.values()];
+    }
+
+    function allItems() {
+      const artifacts = allItemsRaw();
+      const relics = (typeof RELICS !== "undefined" ? RELICS : []).map(hydrateRelic);
+      const map = new Map();
+      artifacts.forEach((i) => map.set(i.id, i));
+      relics.forEach((i) => map.set(i.id, i));
       return [...map.values()];
     }
 
@@ -12343,10 +12705,21 @@
 
     function filtered() {
       let list = allItems();
-      if (state.type !== "all") list = list.filter((i) => i.type === state.type);
+      /* Vessel kind: All | Artifacts | Relics (same Hall, filter only) */
+      if (state.vessel === "artifact") list = list.filter(isArtifact);
+      else if (state.vessel === "relic") list = list.filter(isRelic);
+      /* Type chip — Artifacts by type; Relics if any member matches type */
+      if (state.type !== "all") {
+        list = list.filter((i) => {
+          if (isRelic(i)) {
+            return relicMembers(i).some((m) => m.type === state.type);
+          }
+          return i.type === state.type;
+        });
+      }
       if (state.sort === "featured") {
         const topIds = new Set(featuredItems().map((i) => i.id));
-        list = list.filter((i) => topIds.has(i.id));
+        list = list.filter((i) => topIds.has(i.id) || (isRelic(i) && i.featured));
       }
       const q = state.query.trim().toLowerCase();
       if (q) {
@@ -12355,8 +12728,9 @@
             i.title,
             i.creator,
             i.description,
-            typeLabel(i.type),
-            typeShort(i.type),
+            isRelic(i) ? "relic" : typeLabel(i.type),
+            isRelic(i) ? "RELIC" : typeShort(i.type),
+            i.originTitle || "",
             ...(i.tags || []),
           ].join(" ").toLowerCase();
           return blob.includes(q);
@@ -12625,6 +12999,92 @@
       });
     }
 
+
+    function artifactCardHtml(item, ctx = {}) {
+      const tier = borderTier(item);
+      const tierName = borderTierLabel(tier);
+      const flags = tileStateClasses(item, ctx);
+      const extraBadges = tileStateBadges(item, flags);
+      const locked = !!item.locked;
+      return `
+          <article class="tile artifact ${borderClass(item)} ${isActivelyFeatured(item) ? "is-featured" : ""} ${flags.className}" data-id="${item.id}" data-vessel="artifact" role="listitem" title="${escapeAttr(flags.title || ("Artifact · " + tierName))}">
+            <div class="artifact-inner">
+              <div class="tile-media artifact-holo">
+                ${mediaHtml(item)}
+                <div class="tile-badge-row">
+                  ${typeBadgeHtml(item)}
+                  ${canonBadges(item)}
+                  ${extraBadges}
+                </div>
+                <div class="tile-resonance" title="Resonance">${item.resonance}</div>
+              </div>
+              <div class="artifact-divider" aria-hidden="true">⚡</div>
+              <div class="tile-body">
+                <div class="tile-title" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</div>
+                <div class="tile-meta tile-meta-clean">
+                  <div class="tile-creator" title="Creator · ${escapeAttr(item.creator)}">
+                    <span class="creator-by">by</span>
+                    <span class="creator">
+                      <span class="creator-ico" aria-hidden="true">✦</span>
+                      <span class="creator-name">${escapeHtml(item.creator)}</span>
+                    </span>
+                  </div>
+                  <button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Play"}" ${locked ? "disabled" : ""}>
+                    <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
+                    ${locked ? "Soon" : "Play"}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="artifact-frame" aria-hidden="true"></div>
+          </article>`;
+    }
+
+    function relicCardHtml(item, ctx = {}) {
+      const members = relicMembers(item);
+      const origin = members.find((m) => m.id === item.originId) || members[0];
+      const locked = !!item.locked;
+      const lineage = members.slice(0, 4).map((m) =>
+        `<span title="${escapeAttr(m.title)}">${escapeHtml(m.title)}</span>`
+      ).join("");
+      const more = members.length > 4 ? `<span>+${members.length - 4}</span>` : "";
+      return `
+          <article class="tile artifact is-relic ${borderClass(item)} ${item.featured ? "is-featured" : ""}" data-id="${item.id}" data-vessel="relic" role="listitem" title="${escapeAttr("Relic · " + item.title)}">
+            <div class="artifact-inner">
+              <div class="tile-media artifact-holo">
+                ${mediaHtml(item)}
+                <div class="tile-badge-row">
+                  <span class="badge badge-relic">Relic</span>
+                  <span class="badge badge-origin">Origin</span>
+                  ${item.featured ? '<span class="badge badge-featured">Featured</span>' : ""}
+                </div>
+                <div class="tile-resonance" title="Relic Resonance">${item.resonance}</div>
+              </div>
+              <div class="artifact-divider" aria-hidden="true">⚡</div>
+              <div class="tile-body">
+                <div class="tile-title" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</div>
+                <div class="relic-lineage" aria-label="Lineage">
+                  ${lineage}${more}
+                </div>
+                <div class="tile-meta tile-meta-clean">
+                  <div class="tile-creator" title="Origin · ${escapeAttr(item.originTitle || "")}">
+                    <span class="creator-by">${members.length} linked</span>
+                    <span class="creator">
+                      <span class="creator-ico" aria-hidden="true">✦</span>
+                      <span class="creator-name">${escapeHtml(item.creator)}</span>
+                    </span>
+                  </div>
+                  <button type="button" class="play-btn" data-open-relic="${item.id}" title="Open Relic">
+                    <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
+                    Open
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="artifact-frame" aria-hidden="true"></div>
+          </article>`;
+    }
+
     function renderFeed() {
       const list = filtered();
       const feed = document.getElementById("feed");
@@ -12662,63 +13122,32 @@
       const myIdentity = currentCreatorIdentity();
 
       feed.innerHTML = pageItems.map((item) => {
-        const tier = borderTier(item);
-        const tierName = borderTierLabel(tier);
-        const flags = tileStateClasses(item, { trendingIds, myIdentity });
-        const extraBadges = tileStateBadges(item, flags);
-        const locked = !!item.locked;
-        return `
-          <article class="tile artifact ${borderClass(item)} ${isActivelyFeatured(item) ? "is-featured" : ""} ${flags.className}" data-id="${item.id}" role="listitem" title="${escapeAttr(flags.title || ("Artifact · " + tierName))}">
-            <div class="artifact-inner">
-              <div class="tile-media artifact-holo">
-                ${mediaHtml(item)}
-                <div class="tile-badge-row">
-                  ${typeBadgeHtml(item)}
-                  ${canonBadges(item)}
-                  ${extraBadges}
-                </div>
-                <div class="tile-resonance">${item.resonance}</div>
-              </div>
-              <div class="artifact-divider" aria-hidden="true">⚡</div>
-              <div class="tile-body">
-                <div class="artifact-kicker">Artifact</div>
-                <div class="tile-title" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</div>
-                <div class="artifact-lore-row">
-                  <div class="artifact-facts">
-                    Rarity: <b>${escapeHtml(tierName)}</b><br />
-                    Type: <b>${escapeHtml((TYPE_META[item.type] && TYPE_META[item.type].label) || item.type)}</b>
-                  </div>
-                  <div class="artifact-seal" title="Citadel seal" aria-hidden="true">🐺</div>
-                </div>
-                <div class="tile-meta tile-meta-clean">
-                  <div class="tile-creator" title="Creator · ${escapeAttr(item.creator)}">
-                    <span class="creator-by">by</span>
-                    <span class="creator">
-                      <span class="creator-ico" aria-hidden="true">✦</span>
-                      <span class="creator-name">${escapeHtml(item.creator)}</span>
-                    </span>
-                  </div>
-                  <button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Play"}" ${locked ? "disabled" : ""}>
-                    <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
-                    ${locked ? "Soon" : "Play"}
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="artifact-frame" aria-hidden="true"></div>
-          </article>`;
+        if (isRelic(item)) return relicCardHtml(item, { trendingIds, myIdentity });
+        return artifactCardHtml(item, { trendingIds, myIdentity });
       }).join("");
 
       feed.querySelectorAll(".tile").forEach((el) => {
         el.addEventListener("click", (e) => {
-          if (e.target.closest("[data-play]") || e.target.closest("[data-howl]")) return;
+          if (e.target.closest("[data-play]") || e.target.closest("[data-howl]") || e.target.closest("[data-open-relic]")) return;
           const id = el.dataset.id;
           const item = allItems().find((i) => i.id === id);
           if (item?.locked) {
             toast("Coming soon · fog still holds this spark");
             return;
           }
+          if (isRelic(item)) {
+            openCardWithBeauty(el, id, { relic: true });
+            return;
+          }
           openCardWithBeauty(el, id);
+        });
+      });
+      feed.querySelectorAll("[data-open-relic]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.openRelic;
+          const tile = btn.closest(".tile");
+          openCardWithBeauty(tile, id, { relic: true });
         });
       });
       feed.querySelectorAll("[data-play]").forEach((btn) => {
@@ -12876,10 +13305,14 @@
      * shake + core/rings → electricity travels the border → detail opens.
      * Longer so the border current can complete its run.
      */
-    function openCardWithBeauty(tileEl, id) {
+    function openCardWithBeauty(tileEl, id, opts = {}) {
       if (!id) return;
+      const go = () => {
+        if (opts.relic || isRelic(findItemById(id))) openRelicView(id);
+        else openDetail(id);
+      };
       if (prefersReducedMotion() || !tileEl) {
-        openDetail(id);
+        go();
         return;
       }
       if (tileEl.classList.contains("is-opening")) return;
@@ -12957,7 +13390,7 @@
         fx.remove();
         borderRun.remove();
         tileEl.classList.remove("is-opening");
-        openDetail(id);
+        go();
       }, 880);
     }
     function flashPlayEnergy(btn, tile) {
@@ -13071,9 +13504,270 @@
       grantPersonalResonance(12, mapItemTypeToSource(item.type), { kind: "play" });
     }
 
+
+    let relicViewState = { id: null, tab: "overview", nodes: [] };
+
+    function closeRelicView() {
+      document.getElementById("relicModal")?.classList.remove("open");
+      relicViewState = { id: null, tab: "overview", nodes: [] };
+    }
+
+    function setRelicTab(tab) {
+      const next = tab === "constellation" ? "constellation" : "overview";
+      relicViewState.tab = next;
+      document.querySelectorAll(".relic-tab").forEach((b) => {
+        const on = b.dataset.relicTab === next;
+        b.classList.toggle("is-active", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      const overview = document.getElementById("relicPanelOverview");
+      const constellation = document.getElementById("relicPanelConstellation");
+      if (overview) {
+        overview.hidden = next !== "overview";
+        overview.classList.toggle("is-active", next === "overview");
+      }
+      if (constellation) {
+        constellation.hidden = next !== "constellation";
+        constellation.classList.toggle("is-active", next === "constellation");
+      }
+      if (next === "constellation" && relicViewState.id) {
+        requestAnimationFrame(() => drawRelicConstellation(relicViewState.id));
+      }
+    }
+
+    /** Simple radial constellation: Origin center, children around, size/glow by Resonance. */
+    function drawRelicConstellation(relicId) {
+      const relic = allItems().find((i) => i.id === relicId && isRelic(i));
+      const canvas = document.getElementById("relicConstellationCanvas");
+      if (!relic || !canvas) return;
+      const members = relicMembers(relic);
+      if (!members.length) return;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const cssW = canvas.clientWidth || 640;
+      const cssH = Math.max(320, Math.round(cssW * 0.62));
+      canvas.width = Math.round(cssW * dpr);
+      canvas.height = Math.round(cssH * dpr);
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const W = cssW;
+      const H = cssH;
+      const cx = W / 2;
+      const cy = H / 2;
+
+      // starfield
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "rgba(180, 220, 255, 0.35)";
+      for (let i = 0; i < 48; i++) {
+        const x = (Math.sin(i * 12.7 + W) * 0.5 + 0.5) * W;
+        const y = (Math.cos(i * 9.3 + H) * 0.5 + 0.5) * H;
+        const r = (i % 3) * 0.4 + 0.4;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const origin = members.find((m) => m.id === relic.originId) || members[0];
+      const children = members.filter((m) => m.id !== origin.id);
+      const maxRes = Math.max(1, ...members.map((m) => m.resonance || 1));
+      const minRes = Math.min(...members.map((m) => m.resonance || 1));
+
+      function nodeRadius(m, isOrigin) {
+        const t = maxRes === minRes ? 1 : ((m.resonance || 0) - minRes) / (maxRes - minRes);
+        const base = isOrigin ? 28 : 16;
+        return base + t * (isOrigin ? 14 : 12);
+      }
+
+      const ringR = Math.min(W, H) * 0.32;
+      const nodes = [];
+      nodes.push({
+        id: origin.id,
+        m: origin,
+        x: cx,
+        y: cy,
+        r: nodeRadius(origin, true),
+        origin: true,
+      });
+      children.forEach((m, i) => {
+        const ang = -Math.PI / 2 + (i / Math.max(1, children.length)) * Math.PI * 2;
+        nodes.push({
+          id: m.id,
+          m,
+          x: cx + Math.cos(ang) * ringR,
+          y: cy + Math.sin(ang) * ringR,
+          r: nodeRadius(m, false),
+          origin: false,
+        });
+      });
+      relicViewState.nodes = nodes.map((n) => ({ id: n.id, x: n.x, y: n.y, r: n.r }));
+
+      // edges: origin → each child
+      const originNode = nodes[0];
+      ctx.lineWidth = 1.5;
+      children.forEach((_, i) => {
+        const n = nodes[i + 1];
+        const grad = ctx.createLinearGradient(originNode.x, originNode.y, n.x, n.y);
+        grad.addColorStop(0, "rgba(232, 197, 106, 0.55)");
+        grad.addColorStop(1, "rgba(46, 230, 255, 0.35)");
+        ctx.strokeStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(originNode.x, originNode.y);
+        ctx.lineTo(n.x, n.y);
+        ctx.stroke();
+      });
+
+      // nodes
+      nodes.forEach((n) => {
+        const glow = n.origin ? "rgba(232, 197, 106, 0.55)" : "rgba(46, 230, 255, 0.4)";
+        const fill = n.origin
+          ? "rgba(232, 197, 106, 0.95)"
+          : `rgba(${80 + (n.m.resonance || 0)}, ${180 + Math.min(60, (n.m.resonance || 0) / 2)}, 255, 0.92)`;
+        ctx.save();
+        ctx.shadowColor = glow;
+        ctx.shadowBlur = n.origin ? 28 : 14 + ((n.m.resonance || 0) / 99) * 16;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fillStyle = fill;
+        ctx.fill();
+        ctx.lineWidth = n.origin ? 2.5 : 1.5;
+        ctx.strokeStyle = n.origin ? "rgba(255, 240, 200, 0.9)" : "rgba(180, 240, 255, 0.7)";
+        ctx.stroke();
+        ctx.restore();
+
+        // label
+        const label = n.m.title.length > 22 ? n.m.title.slice(0, 20) + "…" : n.m.title;
+        ctx.font = `${n.origin ? "700 12px" : "600 10px"} system-ui, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        ctx.fillStyle = "rgba(230, 240, 255, 0.92)";
+        ctx.shadowColor = "rgba(0,0,0,0.85)";
+        ctx.shadowBlur = 4;
+        ctx.fillText(label, n.x, n.y + n.r + 6);
+        ctx.font = "700 10px system-ui, sans-serif";
+        ctx.fillStyle = n.origin ? "rgba(245, 224, 168, 0.95)" : "rgba(126, 240, 255, 0.9)";
+        ctx.fillText(String(n.m.resonance || 0), n.x, n.y - 5);
+        ctx.shadowBlur = 0;
+      });
+
+      // center caption
+      ctx.font = "700 11px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "rgba(232, 197, 106, 0.75)";
+      ctx.fillText("ORIGIN", cx, cy - nodes[0].r - 14);
+    }
+
+    function bindRelicConstellationClicks() {
+      const canvas = document.getElementById("relicConstellationCanvas");
+      if (!canvas || canvas.dataset.bound === "1") return;
+      canvas.dataset.bound = "1";
+      canvas.addEventListener("click", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * (canvas.clientWidth || rect.width);
+        const y = ((e.clientY - rect.top) / rect.height) * (canvas.clientHeight || rect.height);
+        const hit = (relicViewState.nodes || []).find((n) => {
+          const dx = x - n.x;
+          const dy = y - n.y;
+          return dx * dx + dy * dy <= (n.r + 6) * (n.r + 6);
+        });
+        if (hit) {
+          closeRelicView();
+          launchPlay(hit.id);
+        }
+      });
+    }
+
+    function openRelicView(id) {
+      const relic = allItems().find((i) => i.id === id && isRelic(i));
+      if (!relic) {
+        openDetail(id);
+        return;
+      }
+      recordView(id);
+      markCardSeen(id);
+      relicViewState.id = id;
+      const members = relicMembers(relic);
+      const origin = members.find((m) => m.id === relic.originId) || members[0];
+
+      document.getElementById("relicTitle").textContent = relic.title;
+      const hero = document.getElementById("relicHero");
+      hero.innerHTML = mediaHtml(relic);
+
+      const rows = members.map((m) => {
+        const isOrigin = m.id === relic.originId;
+        return `
+          <div class="relic-member ${isOrigin ? "is-origin" : ""}" data-relic-play="${m.id}" role="button" tabindex="0">
+            <div class="relic-member__thumb">${mediaHtml(m)}</div>
+            <div class="relic-member__meta">
+              <b>${escapeHtml(m.title)}${isOrigin ? " · Origin" : ""}</b>
+              <span>${escapeHtml(typeLabel(m.type))} · by ${escapeHtml(m.creator)}</span>
+            </div>
+            <div class="relic-member__res" title="Artifact Resonance">${m.resonance}</div>
+          </div>`;
+      }).join("");
+
+      document.getElementById("relicContent").innerHTML = `
+        <div class="detail-tags">
+          <span class="badge badge-relic">Relic</span>
+          <span class="badge badge-origin">${members.length} Artifacts</span>
+          ${relic.featured ? '<span class="badge badge-featured">Featured</span>' : ""}
+        </div>
+        <p>${escapeHtml(relic.description || "A living lineage of Artifacts that grew into a Relic of the Hall.")}</p>
+        <div class="detail-meta-grid">
+          <div><b>Relic Resonance</b>${relic.resonance}</div>
+          <div><b>Linked</b>${members.length}</div>
+          <div><b>Origin</b>${escapeHtml(relic.originTitle || (origin && origin.title) || "—")}</div>
+          <div><b>Keeper</b>${escapeHtml(relic.creator)}</div>
+          <div><b>Howls (sum)</b>${formatCount(relic.howls)}</div>
+          <div><b>Views (sum)</b>${formatCount(relic.views)}</div>
+        </div>
+        <h3 style="margin:1rem 0 0.35rem;font-size:0.95rem;color:var(--gold-soft)">Lineage</h3>
+        <p style="font-size:0.78rem;color:var(--text-dim);margin:0 0 0.5rem">Tap any Artifact to play. Origin is marked. Or open the Constellation tab to see the graph.</p>
+        <div class="relic-members">${rows || "<p>No linked Artifacts yet.</p>"}</div>
+        <p style="font-size:0.78rem;color:var(--text-dim);margin-top:0.85rem">Relics rise inside the Hall — denser nodes in the same feed, not a second world.</p>
+      `;
+
+      document.getElementById("relicContent").querySelectorAll("[data-relic-play]").forEach((row) => {
+        row.addEventListener("click", () => {
+          const mid = row.dataset.relicPlay;
+          closeRelicView();
+          launchPlay(mid);
+        });
+        row.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            row.click();
+          }
+        });
+      });
+
+      const originId = relic.originId || (origin && origin.id);
+      const playBtn = document.getElementById("relicPlayOrigin");
+      if (playBtn) {
+        playBtn.onclick = () => {
+          if (!originId) return;
+          closeRelicView();
+          flashPlayEnergy(playBtn, hero);
+          window.setTimeout(() => launchPlay(originId), prefersReducedMotion() ? 0 : 120);
+        };
+        playBtn.disabled = !originId;
+      }
+
+      bindRelicConstellationClicks();
+      setRelicTab("overview");
+
+      const modal = document.getElementById("relicModal");
+      modal.classList.remove("open");
+      void modal.offsetWidth;
+      modal.classList.add("open");
+    }
+
     function openDetail(id, opts = {}) {
       const item = allItems().find((i) => i.id === id);
       if (!item) return;
+      if (isRelic(item) && !opts.forceArtifact) {
+        openRelicView(id);
+        return;
+      }
       if (item.locked) {
         toast("Coming soon · fog still holds this spark");
         return;
@@ -14470,6 +15164,15 @@
       render();
     });
 
+    document.getElementById("vesselFilters")?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-vessel]");
+      if (!btn) return;
+      state.vessel = btn.dataset.vessel;
+      resetFeedPage();
+      document.querySelectorAll("#vesselFilters .chip").forEach((c) => c.classList.toggle("active", c === btn));
+      render();
+    });
+
     document.getElementById("typeFilters").addEventListener("click", (e) => {
       const btn = e.target.closest("[data-type]");
       if (!btn) return;
@@ -14477,6 +15180,23 @@
       resetFeedPage();
       document.querySelectorAll("#typeFilters .chip").forEach((c) => c.classList.toggle("active", c === btn));
       render();
+    });
+
+    document.querySelectorAll("[data-close-relic]").forEach((el) => {
+      el.addEventListener("click", closeRelicView);
+    });
+    document.getElementById("relicModal")?.addEventListener("click", (e) => {
+      if (e.target.id === "relicModal") closeRelicView();
+    });
+    document.getElementById("relicTabs")?.addEventListener("click", (e) => {
+      const tab = e.target.closest("[data-relic-tab]");
+      if (!tab) return;
+      setRelicTab(tab.dataset.relicTab);
+    });
+    window.addEventListener("resize", () => {
+      if (relicViewState.tab === "constellation" && relicViewState.id) {
+        drawRelicConstellation(relicViewState.id);
+      }
     });
 
     document.getElementById("pgPrev")?.addEventListener("click", () => {
@@ -15735,6 +16455,7 @@
       // Note: if focus is deep inside a cross-origin iframe, the browser may not
       // deliver Esc here — use “Back to Citadel” on the gate bar in that case.
       if (e.key === "Escape") {
+        closeRelicView();
         const playOpen = document.getElementById("playModal").classList.contains("open");
         const joinOpen = document.getElementById("joinModal")?.classList.contains("open");
         const submitOpen = document.getElementById("submitModal").classList.contains("open");

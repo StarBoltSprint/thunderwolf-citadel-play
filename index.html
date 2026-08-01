@@ -4660,29 +4660,105 @@
     .relic-panel[hidden] { display: none !important; }
     .relic-panel.is-active { display: block; }
     .constellation-wrap {
-      padding: 0.5rem 1rem 0.75rem;
+      padding: 0.35rem 0.85rem 0.9rem;
+      position: relative;
+    }
+    .constellation-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.55rem;
+    }
+    .constellation-toolbar__meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      min-width: 0;
+    }
+    .constellation-kicker {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.85);
+    }
+    .constellation-sub {
+      font-size: 0.8rem;
+      color: rgba(180, 210, 240, 0.7);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .constellation-canvas-shell {
+      position: relative;
+      border-radius: 20px;
+      padding: 2px;
+      background:
+        linear-gradient(135deg, rgba(232, 197, 106, 0.55), rgba(46, 230, 255, 0.35), rgba(160, 90, 255, 0.35));
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(46, 230, 255, 0.14),
+        0 0 64px rgba(232, 197, 106, 0.12);
     }
     .constellation-wrap canvas {
       width: 100%;
       height: auto;
+      min-height: 400px;
       display: block;
-      border-radius: 14px;
-      border: 1px solid rgba(232, 197, 106, 0.28);
-      background:
-        radial-gradient(ellipse 70% 60% at 50% 45%, rgba(30, 40, 80, 0.45), transparent 65%),
-        radial-gradient(ellipse 100% 100% at 50% 50%, #060a14, #02040a);
-      box-shadow:
-        inset 0 0 40px rgba(0, 0, 0, 0.45),
-        0 0 28px rgba(46, 230, 255, 0.08);
+      border-radius: 18px;
+      background: #02040a;
       cursor: pointer;
       touch-action: manipulation;
+      vertical-align: top;
     }
     .constellation-hint {
-      margin: 0.55rem 0 0;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      line-height: 1.45;
+      margin: 0.7rem 0 0;
+      font-size: 0.72rem;
+      color: rgba(180, 200, 230, 0.72);
+      line-height: 1.5;
       text-align: center;
+      letter-spacing: 0.02em;
+    }
+    .constellation-hint strong {
+      color: rgba(245, 224, 168, 0.9);
+      font-weight: 750;
+    }
+    /* Fullscreen constellation stage */
+    .constellation-wrap:fullscreen,
+    .constellation-wrap:-webkit-full-screen {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      padding: 1.25rem 1.5rem 1.5rem;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 40%, rgba(20, 30, 70, 0.9), transparent 70%),
+        #02040a;
+    }
+    .constellation-wrap:fullscreen .constellation-canvas-shell,
+    .constellation-wrap:-webkit-full-screen .constellation-canvas-shell {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+    }
+    .constellation-wrap:fullscreen canvas,
+    .constellation-wrap:-webkit-full-screen canvas {
+      flex: 1 1 auto;
+      min-height: 0;
+      height: 100% !important;
+      max-height: calc(100vh - 7.5rem);
+      object-fit: contain;
+    }
+    .constellation-wrap:fullscreen .constellation-hint,
+    .constellation-wrap:-webkit-full-screen .constellation-hint {
+      font-size: 0.85rem;
+      margin-top: 0.85rem;
+    }
+    .modal-relic:has(.constellation-wrap:fullscreen) {
+      /* keep modal structure stable while stage is FS */
     }
     .relic-hero {
       position: relative;
@@ -9240,9 +9316,21 @@
         <div id="relicContent" class="detail-body"></div>
       </div>
       <div class="relic-panel" id="relicPanelConstellation" role="tabpanel" aria-labelledby="relicTabConstellation" hidden>
-        <div class="constellation-wrap">
-          <canvas id="relicConstellationCanvas" width="640" height="420" aria-label="Relic constellation graph"></canvas>
-          <p class="constellation-hint">Nodes = Artifacts · lines = lineage · size &amp; glow = Resonance · Origin sits at the center. Click a node to play.</p>
+        <div class="constellation-wrap" id="constellationStage">
+          <div class="constellation-toolbar">
+            <div class="constellation-toolbar__meta">
+              <span class="constellation-kicker">Citadel Constellation</span>
+              <span class="constellation-sub" id="constellationSub">Lineage map</span>
+            </div>
+            <button type="button" class="btn-fs" id="btnConstellationFs" aria-label="Fullscreen constellation" title="Fullscreen">
+              <span class="fs-ico" aria-hidden="true">⛶</span>
+              <span class="fs-label">Fullscreen</span>
+            </button>
+          </div>
+          <div class="constellation-canvas-shell">
+            <canvas id="relicConstellationCanvas" width="900" height="560" aria-label="Relic constellation graph"></canvas>
+          </div>
+          <p class="constellation-hint"><strong>Constellation</strong> — gold hub is Origin · cyan stars are linked Artifacts · arcs are lineage · size &amp; glow = Resonance. Click a star to play.</p>
         </div>
       </div>
       <div class="form-actions">
@@ -11605,37 +11693,65 @@
         id: "relic-storm-lineage",
         vessel: "relic",
         title: "Storm Orbs Relic",
-        description: "The first lightning Mini-Quest grew into a living lineage — sprints, wings, and howls that share the storm.",
+        description: "The first lightning Mini-Quest grew into a living lineage — rings, canyons, wings, and howls that share the storm.",
         creator: "Forge Hero · SmiR",
         originId: "seed-1",
-        childIds: ["seed-7", "seed-3", "seed-4"],
+        childIds: [
+          "seed-7", "seed-3", "seed-4", "seed-11", "seed-13",
+          "seed-17", "seed-8", "howl-2", "seed-12",
+        ],
         image: null,
         createdAt: Date.now() - 1000 * 60 * 60 * 5,
         tags: ["storm", "lineage", "relic"],
+        featured: true,
       },
       {
         id: "relic-silent-seed",
         vessel: "relic",
         title: "Silent Seed Relic",
-        description: "From one dormant Guardian seed — codex, crystal ladders, and story branches under ice.",
+        description: "From one dormant Guardian seed — codex, crystal ladders, hourglass stories, and bridges under ice.",
         creator: "Lore Weaver · Ara",
         originId: "seed-2",
-        childIds: ["seed-5", "seed-6", "seed-8"],
+        childIds: [
+          "seed-5", "seed-6", "seed-8", "seed-9", "seed-10",
+          "seed-14", "seed-15", "seed-18", "seed-16",
+        ],
         image: null,
         createdAt: Date.now() - 1000 * 60 * 60 * 18,
         tags: ["seed", "guardian", "relic"],
+        featured: true,
       },
       {
         id: "relic-decree-chain",
         vessel: "relic",
         title: "Decree Chain Relic",
-        description: "Official law that grew: torch, sky laws, and the council orb bind as one living decree lineage.",
+        description: "Official law that grew into a crown of seals — sky laws, torch pass, haven circle, and the council orb.",
         creator: "Thread Keeper · SmiR",
         originId: "decree-23",
-        childIds: ["decree-24", "decree-25", "decree-26"],
+        childIds: [
+          "decree-24", "decree-25", "decree-26", "decree-17", "decree-18",
+          "decree-19", "decree-20", "decree-21", "decree-22",
+        ],
         image: null,
         createdAt: Date.now() - 1000 * 60 * 12,
         tags: ["decree", "law", "relic"],
+        featured: true,
+      },
+      {
+        id: "relic-pack-howl",
+        vessel: "relic",
+        title: "Pack Howl Relic",
+        description: "The synchronized Core Charge howl branched into dawn sprints, cub cheers, void calls, and heart vigils.",
+        creator: "Citadel Official",
+        originId: "seed-3",
+        childIds: [
+          "howl-1", "howl-2", "howl-3", "howl-4", "howl-5",
+          "howl-6", "seed-12", "seed-15", "howl-jenolet-space",
+        ],
+        image: null,
+        createdAt: Date.now() - 1000 * 60 * 60 * 8,
+        tags: ["howl", "pack", "relic"],
+        featured: true,
       },
     ];
 
@@ -13505,11 +13621,19 @@
     }
 
 
-    let relicViewState = { id: null, tab: "overview", nodes: [] };
+    let relicViewState = { id: null, tab: "overview", nodes: [], anim: 0, hoverId: null, raf: 0, stars: null, covers: null };
+
+    function stopConstellationAnim() {
+      if (relicViewState.raf) {
+        cancelAnimationFrame(relicViewState.raf);
+        relicViewState.raf = 0;
+      }
+    }
 
     function closeRelicView() {
+      stopConstellationAnim();
       document.getElementById("relicModal")?.classList.remove("open");
-      relicViewState = { id: null, tab: "overview", nodes: [] };
+      relicViewState = { id: null, tab: "overview", nodes: [], anim: 0, hoverId: null, raf: 0, stars: null };
     }
 
     function setRelicTab(tab) {
@@ -13531,11 +13655,102 @@
         constellation.classList.toggle("is-active", next === "constellation");
       }
       if (next === "constellation" && relicViewState.id) {
-        requestAnimationFrame(() => drawRelicConstellation(relicViewState.id));
+        stopConstellationAnim();
+        requestAnimationFrame(() => startConstellationLoop(relicViewState.id));
+      } else {
+        stopConstellationAnim();
       }
     }
 
-    /** Simple radial constellation: Origin center, children around, size/glow by Resonance. */
+    function buildConstellationStars(W, H, seed) {
+      const stars = [];
+      let s = seed || 42;
+      const rnd = () => {
+        s = (s * 16807 + 11) % 2147483647;
+        return (s - 1) / 2147483646;
+      };
+      for (let i = 0; i < 180; i++) {
+        stars.push({
+          x: rnd() * W,
+          y: rnd() * H,
+          r: rnd() * 1.55 + 0.2,
+          a: rnd() * 0.6 + 0.12,
+          tw: rnd() * Math.PI * 2,
+          sp: rnd() * 1.6 + 0.4,
+        });
+      }
+      return stars;
+    }
+
+    function isConstellationFullscreen() {
+      const stage = document.getElementById("constellationStage");
+      const fs = document.fullscreenElement || document.webkitFullscreenElement;
+      return !!(stage && fs === stage);
+    }
+
+    function updateConstellationFsButton() {
+      const btn = document.getElementById("btnConstellationFs");
+      if (!btn) return;
+      const on = isConstellationFullscreen();
+      btn.setAttribute("aria-label", on ? "Exit fullscreen" : "Fullscreen constellation");
+      btn.title = on ? "Exit fullscreen" : "Fullscreen";
+      const label = btn.querySelector(".fs-label");
+      if (label) label.textContent = on ? "Exit" : "Fullscreen";
+    }
+
+    async function toggleConstellationFullscreen() {
+      const stage = document.getElementById("constellationStage");
+      if (!stage) return;
+      try {
+        const fs = document.fullscreenElement || document.webkitFullscreenElement;
+        if (fs === stage) {
+          if (document.exitFullscreen) await document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } else {
+          if (stage.requestFullscreen) await stage.requestFullscreen();
+          else if (stage.webkitRequestFullscreen) stage.webkitRequestFullscreen();
+        }
+      } catch (err) {
+        toast("Fullscreen unavailable in this browser");
+      }
+      window.setTimeout(() => {
+        updateConstellationFsButton();
+        relicViewState.stars = null;
+        if (relicViewState.id && relicViewState.tab === "constellation") {
+          startConstellationLoop(relicViewState.id);
+        }
+      }, 80);
+    }
+
+    function ensureNodeCover(url) {
+      if (!url) return null;
+      if (!relicViewState.covers) relicViewState.covers = {};
+      if (relicViewState.covers[url]) return relicViewState.covers[url];
+      const img = new Image();
+      img.decoding = "async";
+      img.src = url;
+      relicViewState.covers[url] = img;
+      return img;
+    }
+
+    function startConstellationLoop(relicId) {
+      stopConstellationAnim();
+      const sub = document.getElementById("constellationSub");
+      const relic = allItems().find((i) => i.id === relicId && isRelic(i));
+      if (sub && relic) sub.textContent = `${relic.title} · ${relicMembers(relic).length} linked stars`;
+      const tick = (ts) => {
+        if (relicViewState.tab !== "constellation" || relicViewState.id !== relicId) return;
+        relicViewState.anim = ts * 0.001;
+        drawRelicConstellation(relicId);
+        relicViewState.raf = requestAnimationFrame(tick);
+      };
+      relicViewState.raf = requestAnimationFrame(tick);
+    }
+
+    /**
+     * Cinematic Citadel constellation:
+     * deep space, multi-nebulae, dust, energy arcs, cover-art nodes, Origin hub.
+     */
     function drawRelicConstellation(relicId) {
       const relic = allItems().find((i) => i.id === relicId && isRelic(i));
       const canvas = document.getElementById("relicConstellationCanvas");
@@ -13544,131 +13759,399 @@
       if (!members.length) return;
 
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const cssW = canvas.clientWidth || 640;
-      const cssH = Math.max(320, Math.round(cssW * 0.62));
-      canvas.width = Math.round(cssW * dpr);
-      canvas.height = Math.round(cssH * dpr);
+      const fs = isConstellationFullscreen();
+      const cssW = canvas.clientWidth || 720;
+      let cssH = canvas.clientHeight || Math.max(400, Math.round(cssW * 0.66));
+      if (fs) {
+        cssH = Math.max(cssH, Math.round((window.innerHeight || 800) * 0.78));
+      } else {
+        cssH = Math.max(400, Math.round(cssW * 0.68));
+      }
+      const wantW = Math.round(cssW * dpr);
+      const wantH = Math.round(cssH * dpr);
+      if (canvas.width !== wantW || canvas.height !== wantH) {
+        canvas.width = wantW;
+        canvas.height = wantH;
+        relicViewState.stars = null;
+      }
       const ctx = canvas.getContext("2d");
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const W = cssW;
       const H = cssH;
       const cx = W / 2;
-      const cy = H / 2;
+      const cy = H / 2 + (fs ? 8 : 4);
+      const t = relicViewState.anim || 0;
 
-      // starfield
-      ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = "rgba(180, 220, 255, 0.35)";
-      for (let i = 0; i < 48; i++) {
-        const x = (Math.sin(i * 12.7 + W) * 0.5 + 0.5) * W;
-        const y = (Math.cos(i * 9.3 + H) * 0.5 + 0.5) * H;
-        const r = (i % 3) * 0.4 + 0.4;
+      // preload covers
+      members.forEach((m) => { if (m.image) ensureNodeCover(m.image); });
+
+      // ── deep space ──
+      const sky = ctx.createRadialGradient(cx, cy * 0.8, 8, cx, cy, Math.max(W, H) * 0.78);
+      sky.addColorStop(0, "#182448");
+      sky.addColorStop(0.28, "#0c1430");
+      sky.addColorStop(0.62, "#070c1a");
+      sky.addColorStop(1, "#02040a");
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+
+      // multi-lobe nebulae
+      const nebulae = [
+        { x: cx * 0.45, y: cy * 0.65, rx: 0.48, ry: 0.32, rot: 0.4, c0: "rgba(40, 110, 255, 0.2)", c1: "rgba(40, 110, 255, 0)" },
+        { x: cx * 1.4, y: cy * 1.2, rx: 0.42, ry: 0.3, rot: -0.6, c0: "rgba(150, 70, 255, 0.16)", c1: "rgba(150, 70, 255, 0)" },
+        { x: cx * 1.05, y: cy * 0.4, rx: 0.38, ry: 0.26, rot: 0.2, c0: "rgba(232, 180, 90, 0.12)", c1: "rgba(232, 180, 90, 0)" },
+        { x: cx * 0.7, y: cy * 1.25, rx: 0.35, ry: 0.22, rot: 0.9, c0: "rgba(46, 230, 255, 0.1)", c1: "rgba(46, 230, 255, 0)" },
+      ];
+      nebulae.forEach((n, i) => {
+        const pulse = 1 + Math.sin(t * 0.55 + i * 1.3) * 0.1;
+        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, Math.min(W, H) * n.rx * pulse);
+        g.addColorStop(0, n.c0);
+        g.addColorStop(1, n.c1);
+        ctx.save();
+        ctx.translate(n.x, n.y);
+        ctx.rotate(n.rot + Math.sin(t * 0.2 + i) * 0.05);
+        ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, Math.min(W, H) * n.rx * pulse, Math.min(W, H) * n.ry * pulse, 0, 0, Math.PI * 2);
         ctx.fill();
+        ctx.restore();
+      });
+
+      // dust motes
+      if (!relicViewState.stars || relicViewState.stars.length < 80) {
+        relicViewState.stars = buildConstellationStars(W, H, (relicId.length + 3) * 131);
       }
+      relicViewState.stars.forEach((s, i) => {
+        const tw = 0.5 + 0.5 * Math.sin(t * s.sp + s.tw);
+        const drift = Math.sin(t * 0.15 + i) * 2;
+        ctx.beginPath();
+        ctx.fillStyle = i % 7 === 0
+          ? `rgba(255, 220, 150, ${s.a * tw * 0.85})`
+          : `rgba(200, 230, 255, ${s.a * tw})`;
+        ctx.arc(s.x + drift, s.y + drift * 0.4, s.r * (0.8 + 0.35 * tw), 0, Math.PI * 2);
+        ctx.fill();
+        if (i % 11 === 0) {
+          ctx.strokeStyle = `rgba(180, 220, 255, ${0.15 * tw})`;
+          ctx.lineWidth = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(s.x - s.r * 3, s.y);
+          ctx.lineTo(s.x + s.r * 3, s.y);
+          ctx.moveTo(s.x, s.y - s.r * 3);
+          ctx.lineTo(s.x, s.y + s.r * 3);
+          ctx.stroke();
+        }
+      });
+
+      // vignette
+      const vig = ctx.createRadialGradient(cx, cy, Math.min(W, H) * 0.15, cx, cy, Math.max(W, H) * 0.7);
+      vig.addColorStop(0, "rgba(0,0,0,0)");
+      vig.addColorStop(0.7, "rgba(0,0,0,0.25)");
+      vig.addColorStop(1, "rgba(0,0,0,0.7)");
+      ctx.fillStyle = vig;
+      ctx.fillRect(0, 0, W, H);
 
       const origin = members.find((m) => m.id === relic.originId) || members[0];
       const children = members.filter((m) => m.id !== origin.id);
       const maxRes = Math.max(1, ...members.map((m) => m.resonance || 1));
       const minRes = Math.min(...members.map((m) => m.resonance || 1));
+      const resT = (m) => (maxRes === minRes ? 1 : ((m.resonance || 0) - minRes) / (maxRes - minRes));
+      const scale = fs ? 1.08 : 1;
+      const nChild = children.length;
+      // denser maps: slightly smaller nodes so many stars fit
+      const nodeRadius = (m, isOrigin) => {
+        const dense = nChild > 6 ? 0.82 : 1;
+        const base = (isOrigin ? 34 : 17) * dense;
+        return (base + resT(m) * (isOrigin ? 16 : 12)) * scale;
+      };
 
-      function nodeRadius(m, isOrigin) {
-        const t = maxRes === minRes ? 1 : ((m.resonance || 0) - minRes) / (maxRes - minRes);
-        const base = isOrigin ? 28 : 16;
-        return base + t * (isOrigin ? 14 : 12);
-      }
-
-      const ringR = Math.min(W, H) * 0.32;
-      const nodes = [];
-      nodes.push({
-        id: origin.id,
-        m: origin,
-        x: cx,
-        y: cy,
-        r: nodeRadius(origin, true),
-        origin: true,
-      });
+      // Multi-ring layout for richer constellations
+      const useDouble = nChild > 5;
+      const ringInner = Math.min(W, H) * (fs ? 0.22 : 0.24);
+      const ringOuter = Math.min(W, H) * (fs ? 0.34 : 0.36);
+      const nodes = [{
+        id: origin.id, m: origin, x: cx, y: cy,
+        r: nodeRadius(origin, true), origin: true, ring: 0,
+      }];
       children.forEach((m, i) => {
-        const ang = -Math.PI / 2 + (i / Math.max(1, children.length)) * Math.PI * 2;
+        const onOuter = useDouble ? (i % 2 === 1) : false;
+        const ringR = onOuter ? ringOuter : (useDouble ? ringInner : ringOuter * 0.88);
+        // even spacing within each ring
+        const cohort = useDouble
+          ? children.filter((_, j) => (j % 2 === 1) === onOuter)
+          : children;
+        const idxInRing = useDouble
+          ? cohort.findIndex((c) => c.id === m.id)
+          : i;
+        const countInRing = Math.max(1, cohort.length);
+        const ang = -Math.PI / 2 + (idxInRing / countInRing) * Math.PI * 2
+          + t * (onOuter ? 0.035 : 0.055)
+          + (onOuter ? 0.22 : 0);
+        const breathe = 1 + Math.sin(t * 1.05 + i * 0.9) * 0.02;
         nodes.push({
-          id: m.id,
-          m,
-          x: cx + Math.cos(ang) * ringR,
-          y: cy + Math.sin(ang) * ringR,
+          id: m.id, m,
+          x: cx + Math.cos(ang) * ringR * breathe,
+          y: cy + Math.sin(ang) * ringR * breathe,
           r: nodeRadius(m, false),
-          origin: false,
+          origin: false, ang, ring: onOuter ? 2 : 1,
         });
       });
       relicViewState.nodes = nodes.map((n) => ({ id: n.id, x: n.x, y: n.y, r: n.r }));
-
-      // edges: origin → each child
       const originNode = nodes[0];
-      ctx.lineWidth = 1.5;
-      children.forEach((_, i) => {
-        const n = nodes[i + 1];
-        const grad = ctx.createLinearGradient(originNode.x, originNode.y, n.x, n.y);
-        grad.addColorStop(0, "rgba(232, 197, 106, 0.55)");
-        grad.addColorStop(1, "rgba(46, 230, 255, 0.35)");
-        ctx.strokeStyle = grad;
+      const hoverId = relicViewState.hoverId;
+      const childNodes = nodes.filter((n) => !n.origin);
+
+      // orbital rings (inner + outer when dense)
+      const ringMuls = useDouble ? [ringInner / ringOuter, 1, 1.18] : [0.72, 1, 1.22];
+      ringMuls.forEach((mul, ri) => {
+        const radius = ringOuter * mul;
+        ctx.save();
+        ctx.strokeStyle = ri === 1 ? "rgba(46, 230, 255, 0.16)" : "rgba(232, 197, 106, 0.09)";
+        ctx.lineWidth = ri === 1 ? 1.25 : 0.85;
+        ctx.setLineDash(ri === 1 ? [6, 12] : [2, 14]);
+        ctx.lineDashOffset = -t * (12 + ri * 8);
         ctx.beginPath();
-        ctx.moveTo(originNode.x, originNode.y);
-        ctx.lineTo(n.x, n.y);
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.stroke();
+        ctx.restore();
       });
 
-      // nodes
-      nodes.forEach((n) => {
-        const glow = n.origin ? "rgba(232, 197, 106, 0.55)" : "rgba(46, 230, 255, 0.4)";
-        const fill = n.origin
-          ? "rgba(232, 197, 106, 0.95)"
-          : `rgba(${80 + (n.m.resonance || 0)}, ${180 + Math.min(60, (n.m.resonance || 0) / 2)}, 255, 0.92)`;
+      // faint sibling web (richer graph)
+      if (childNodes.length > 2) {
         ctx.save();
-        ctx.shadowColor = glow;
-        ctx.shadowBlur = n.origin ? 28 : 14 + ((n.m.resonance || 0) / 99) * 16;
+        ctx.strokeStyle = "rgba(126, 200, 255, 0.1)";
+        ctx.lineWidth = 1;
+        for (let i = 0; i < childNodes.length; i++) {
+          const a = childNodes[i];
+          const b = childNodes[(i + 1) % childNodes.length];
+          if (a.ring !== b.ring && useDouble) continue;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // energy links origin → each child
+      childNodes.forEach((n, i) => {
+        const midX = (originNode.x + n.x) / 2;
+        const midY = (originNode.y + n.y) / 2;
+        const nx = -(n.y - originNode.y);
+        const ny = n.x - originNode.x;
+        const len = Math.hypot(nx, ny) || 1;
+        const bulge = (fs ? 26 : 18) * Math.sin(t * 1.15 + i * 0.8);
+        const cpx = midX + (nx / len) * bulge;
+        const cpy = midY + (ny / len) * bulge;
+
+        ctx.save();
+        ctx.strokeStyle = "rgba(46, 230, 255, 0.1)";
+        ctx.lineWidth = 5;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = fill;
-        ctx.fill();
-        ctx.lineWidth = n.origin ? 2.5 : 1.5;
-        ctx.strokeStyle = n.origin ? "rgba(255, 240, 200, 0.9)" : "rgba(180, 240, 255, 0.7)";
+        ctx.moveTo(originNode.x, originNode.y);
+        ctx.quadraticCurveTo(cpx, cpy, n.x, n.y);
         ctx.stroke();
         ctx.restore();
 
-        // label
-        const label = n.m.title.length > 22 ? n.m.title.slice(0, 20) + "…" : n.m.title;
-        ctx.font = `${n.origin ? "700 12px" : "600 10px"} system-ui, sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "top";
-        ctx.fillStyle = "rgba(230, 240, 255, 0.92)";
-        ctx.shadowColor = "rgba(0,0,0,0.85)";
-        ctx.shadowBlur = 4;
-        ctx.fillText(label, n.x, n.y + n.r + 6);
-        ctx.font = "700 10px system-ui, sans-serif";
-        ctx.fillStyle = n.origin ? "rgba(245, 224, 168, 0.95)" : "rgba(126, 240, 255, 0.9)";
-        ctx.fillText(String(n.m.resonance || 0), n.x, n.y - 5);
-        ctx.shadowBlur = 0;
+        const grad = ctx.createLinearGradient(originNode.x, originNode.y, n.x, n.y);
+        grad.addColorStop(0, "rgba(255, 220, 140, 0.85)");
+        grad.addColorStop(0.45, "rgba(126, 240, 255, 0.5)");
+        grad.addColorStop(1, "rgba(80, 200, 255, 0.7)");
+        ctx.save();
+        ctx.shadowColor = "rgba(100, 220, 255, 0.4)";
+        ctx.shadowBlur = 9;
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = n.ring === 2 ? 1.6 : 2.15;
+        ctx.beginPath();
+        ctx.moveTo(originNode.x, originNode.y);
+        ctx.quadraticCurveTo(cpx, cpy, n.x, n.y);
+        ctx.stroke();
+        ctx.restore();
+
+        [0, 0.5].forEach((phase) => {
+          const u = (t * 0.4 + i * 0.17 + phase) % 1;
+          const sx = (1 - u) * (1 - u) * originNode.x + 2 * (1 - u) * u * cpx + u * u * n.x;
+          const sy = (1 - u) * (1 - u) * originNode.y + 2 * (1 - u) * u * cpy + u * u * n.y;
+          const spark = ctx.createRadialGradient(sx, sy, 0, sx, sy, 7);
+          spark.addColorStop(0, "rgba(255,255,255,0.95)");
+          spark.addColorStop(0.35, phase ? "rgba(255,220,140,0.75)" : "rgba(120,240,255,0.75)");
+          spark.addColorStop(1, "rgba(120,240,255,0)");
+          ctx.fillStyle = spark;
+          ctx.beginPath();
+          ctx.arc(sx, sy, 7, 0, Math.PI * 2);
+          ctx.fill();
+        });
       });
 
-      // center caption
-      ctx.font = "700 11px system-ui, sans-serif";
+      const drawNode = (n) => {
+        const hovered = hoverId === n.id;
+        const pulse = 1 + Math.sin(t * 2.1 + (n.origin ? 0 : n.ang || 0)) * (n.origin ? 0.045 : 0.07);
+        const R = n.r * pulse * (hovered ? 1.1 : 1);
+
+        // outer bloom
+        const halo = ctx.createRadialGradient(n.x, n.y, R * 0.15, n.x, n.y, R * 2.8);
+        if (n.origin) {
+          halo.addColorStop(0, "rgba(255, 236, 180, 0.65)");
+          halo.addColorStop(0.4, "rgba(232, 197, 106, 0.22)");
+          halo.addColorStop(1, "rgba(232, 197, 106, 0)");
+        } else {
+          halo.addColorStop(0, "rgba(170, 245, 255, 0.5)");
+          halo.addColorStop(0.4, "rgba(46, 230, 255, 0.16)");
+          halo.addColorStop(1, "rgba(46, 230, 255, 0)");
+        }
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, R * 2.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // rotating dashed ring
+        ctx.save();
+        ctx.translate(n.x, n.y);
+        ctx.rotate(t * (n.origin ? 0.35 : 0.55) + (n.ang || 0));
+        ctx.strokeStyle = n.origin ? "rgba(255, 230, 160, 0.4)" : "rgba(126, 240, 255, 0.32)";
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([3, 6]);
+        ctx.beginPath();
+        ctx.arc(0, 0, R + 8, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+
+        // cover art disk
+        const cover = n.m.image ? ensureNodeCover(n.m.image) : null;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, R, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        if (cover && cover.complete && cover.naturalWidth > 0) {
+          const size = R * 2.2;
+          ctx.drawImage(cover, n.x - size / 2, n.y - size / 2, size, size);
+          // darken for text
+          const shade = ctx.createRadialGradient(n.x, n.y, R * 0.2, n.x, n.y, R);
+          shade.addColorStop(0, "rgba(0,0,0,0.15)");
+          shade.addColorStop(0.65, "rgba(0,0,0,0.35)");
+          shade.addColorStop(1, "rgba(0,0,0,0.55)");
+          ctx.fillStyle = shade;
+          ctx.fillRect(n.x - R, n.y - R, R * 2, R * 2);
+        } else {
+          const core = ctx.createRadialGradient(n.x - R * 0.25, n.y - R * 0.3, R * 0.1, n.x, n.y, R);
+          if (n.origin) {
+            core.addColorStop(0, "#fff8e0");
+            core.addColorStop(0.4, "#f0d078");
+            core.addColorStop(1, "#8a6420");
+          } else {
+            core.addColorStop(0, "rgba(230,250,255,0.95)");
+            core.addColorStop(0.5, "rgba(80,210,255,0.9)");
+            core.addColorStop(1, "rgba(15,50,100,0.95)");
+          }
+          ctx.fillStyle = core;
+          ctx.fillRect(n.x - R, n.y - R, R * 2, R * 2);
+        }
+        ctx.restore();
+
+        // rim stroke
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, R, 0, Math.PI * 2);
+        ctx.lineWidth = n.origin ? 3 : 2;
+        ctx.strokeStyle = n.origin ? "rgba(255, 248, 210, 0.95)" : "rgba(180, 245, 255, 0.9)";
+        ctx.stroke();
+        if (n.origin) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, R + 3, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(232, 197, 106, 0.45)";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+
+        // resonance badge
+        const badgeR = n.origin ? 14 : 11;
+        ctx.beginPath();
+        ctx.arc(n.x + R * 0.62, n.y - R * 0.62, badgeR, 0, Math.PI * 2);
+        ctx.fillStyle = n.origin ? "rgba(40, 28, 6, 0.92)" : "rgba(4, 16, 28, 0.92)";
+        ctx.fill();
+        ctx.strokeStyle = n.origin ? "rgba(245, 224, 168, 0.85)" : "rgba(126, 240, 255, 0.75)";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.font = `800 ${n.origin ? 11 : 9}px system-ui, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = n.origin ? "rgba(255, 236, 180, 0.98)" : "rgba(180, 245, 255, 0.98)";
+        ctx.fillText(String(n.m.resonance || 0), n.x + R * 0.62, n.y - R * 0.62 + 0.5);
+
+        // label pill
+        const label = n.m.title.length > 22 ? n.m.title.slice(0, 20) + "…" : n.m.title;
+        ctx.font = `${n.origin ? "700 12px" : "600 11px"} system-ui, sans-serif`;
+        const tw = ctx.measureText(label).width;
+        const lx = n.x;
+        const ly = n.y + R + 18;
+        const bw = tw + 16;
+        const bh = 20;
+        const bx = lx - bw / 2;
+        const by = ly - bh / 2;
+        const rr = 10;
+        ctx.beginPath();
+        ctx.moveTo(bx + rr, by);
+        ctx.arcTo(bx + bw, by, bx + bw, by + bh, rr);
+        ctx.arcTo(bx + bw, by + bh, bx, by + bh, rr);
+        ctx.arcTo(bx, by + bh, bx, by, rr);
+        ctx.arcTo(bx, by, bx + bw, by, rr);
+        ctx.closePath();
+        ctx.fillStyle = n.origin ? "rgba(36, 24, 6, 0.88)" : "rgba(4, 12, 24, 0.88)";
+        ctx.fill();
+        ctx.strokeStyle = n.origin ? "rgba(232, 197, 106, 0.5)" : "rgba(46, 230, 255, 0.35)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = n.origin ? "rgba(255, 240, 190, 0.98)" : "rgba(220, 240, 255, 0.95)";
+        ctx.textBaseline = "middle";
+        ctx.fillText(label, lx, ly);
+
+        if (n.origin) {
+          ctx.font = "800 10px system-ui, sans-serif";
+          ctx.fillStyle = "rgba(232, 197, 106, 0.92)";
+          ctx.fillText("ORIGIN", n.x, n.y - R - 16);
+        }
+      };
+
+      nodes.filter((n) => !n.origin).forEach(drawNode);
+      drawNode(originNode);
+
+      // bottom caption
+      ctx.font = "600 11px system-ui, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillStyle = "rgba(232, 197, 106, 0.75)";
-      ctx.fillText("ORIGIN", cx, cy - nodes[0].r - 14);
+      ctx.fillStyle = "rgba(160, 190, 230, 0.5)";
+      ctx.fillText(fs ? "Fullscreen Constellation · click a star to enter" : "Living lineage of the Hall", cx, H - 14);
     }
 
     function bindRelicConstellationClicks() {
       const canvas = document.getElementById("relicConstellationCanvas");
       if (!canvas || canvas.dataset.bound === "1") return;
       canvas.dataset.bound = "1";
-      canvas.addEventListener("click", (e) => {
+      const pos = (e) => {
         const rect = canvas.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * (canvas.clientWidth || rect.width);
-        const y = ((e.clientY - rect.top) / rect.height) * (canvas.clientHeight || rect.height);
-        const hit = (relicViewState.nodes || []).find((n) => {
+        return {
+          x: ((e.clientX - rect.left) / rect.width) * (canvas.clientWidth || rect.width),
+          y: ((e.clientY - rect.top) / rect.height) * (canvas.clientHeight || rect.height),
+        };
+      };
+      const hitTest = (x, y) =>
+        (relicViewState.nodes || []).find((n) => {
           const dx = x - n.x;
           const dy = y - n.y;
-          return dx * dx + dy * dy <= (n.r + 6) * (n.r + 6);
+          return dx * dx + dy * dy <= (n.r + 10) * (n.r + 10);
         });
+      canvas.addEventListener("mousemove", (e) => {
+        const { x, y } = pos(e);
+        const hit = hitTest(x, y);
+        const next = hit ? hit.id : null;
+        if (next !== relicViewState.hoverId) {
+          relicViewState.hoverId = next;
+          canvas.style.cursor = next ? "pointer" : "default";
+        }
+      });
+      canvas.addEventListener("mouseleave", () => {
+        relicViewState.hoverId = null;
+      });
+      canvas.addEventListener("click", (e) => {
+        const { x, y } = pos(e);
+        const hit = hitTest(x, y);
         if (hit) {
           closeRelicView();
           launchPlay(hit.id);
@@ -15193,9 +15676,29 @@
       if (!tab) return;
       setRelicTab(tab.dataset.relicTab);
     });
+    document.getElementById("btnConstellationFs")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleConstellationFullscreen();
+    });
+    document.addEventListener("fullscreenchange", () => {
+      updateConstellationFsButton();
+      if (relicViewState.tab === "constellation" && relicViewState.id) {
+        relicViewState.stars = null;
+        startConstellationLoop(relicViewState.id);
+      }
+    });
+    document.addEventListener("webkitfullscreenchange", () => {
+      updateConstellationFsButton();
+      if (relicViewState.tab === "constellation" && relicViewState.id) {
+        relicViewState.stars = null;
+        startConstellationLoop(relicViewState.id);
+      }
+    });
     window.addEventListener("resize", () => {
       if (relicViewState.tab === "constellation" && relicViewState.id) {
-        drawRelicConstellation(relicViewState.id);
+        relicViewState.stars = null;
+        startConstellationLoop(relicViewState.id);
       }
     });
 

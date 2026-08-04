@@ -47,6 +47,15 @@ Full algorithm + layout: **[docs/ARTIFACT_IDENTITY.md](docs/ARTIFACT_IDENTITY.md
 
 Aligned with Pack scaffolding around @StarBoltSprint / SMiR decrees: one place, soul for creators, Wrapper for the whole, everything feeds the Star Core.
 
+## Play live
+
+Public playable hall (GitHub Pages):
+
+**https://starboltsprint.github.io/thunderwolf-citadel-play/**
+
+Private source: `StarBoltSprint/thunderwolf-citadel`  
+Public host: `StarBoltSprint/thunderwolf-citadel-play`
+
 ## Privacy
 
-This repository is **private** — only the owner can see it unless collaborators are invited.
+The main repository is **private** — only the owner can see it unless collaborators are invited. The **play** repo is the public static host for the live link.

@@ -469,6 +469,18 @@
       background:
         radial-gradient(ellipse 80% 75% at calc(50% + var(--side-w) / 4) 42%, transparent 22%, transparent 50%, rgba(1, 4, 12, 0.42) 82%, rgba(0, 2, 8, 0.7) 100%);
     }
+    .forges-atmosphere__canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.85;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .forges-atmosphere__canvas { display: none; }
+    }
     body.view-forges .view-panel-forges .panel-hero,
     body.view-forges .view-panel-forges .panel-card,
     body.view-forges .view-panel-forges .forge-hub-section,
@@ -488,9 +500,42 @@
       border-color: rgba(46, 230, 255, 0.2);
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
     }
+    /* Lighter glass for Forges hub — chamber art shows through */
+    body.view-forges .view-panel-forges .panel-hero.panel-hero--forges-actions {
+      background:
+        radial-gradient(ellipse 85% 70% at 50% 35%, rgba(46, 230, 255, 0.12), transparent 58%),
+        radial-gradient(ellipse 55% 45% at 80% 90%, rgba(232, 197, 106, 0.06), transparent 55%),
+        rgba(6, 14, 28, 0.42);
+      backdrop-filter: blur(18px) saturate(1.15);
+      -webkit-backdrop-filter: blur(18px) saturate(1.15);
+      border: 1px solid rgba(126, 240, 255, 0.22);
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 0 48px rgba(46, 230, 255, 0.1),
+        0 0 80px rgba(46, 230, 255, 0.05);
+    }
     body.view-create .view-panel-create .create-mode-btn.is-active {
       border-color: rgba(126, 240, 255, 0.55);
       background: linear-gradient(145deg, rgba(46, 230, 255, 0.16), rgba(8, 16, 32, 0.9));
+    }
+    /* Game create: tab bar overrides (Spark cyan / Deep gold) */
+    body.view-create .view-panel-create .create-mode-row--game .create-mode-btn {
+      background: rgba(4, 12, 24, 0.4);
+    }
+    body.view-create .view-panel-create .create-mode-row--game .create-mode-btn.is-active[data-create-mode="spark"] {
+      border-color: rgba(46, 230, 255, 0.55);
+      background: rgba(6, 16, 30, 0.55);
+      box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.45),
+        0 0 36px rgba(46, 230, 255, 0.28);
+    }
+    body.view-create .view-panel-create .create-mode-row--game .create-mode-btn.is-active[data-create-mode="deep"] {
+      border-color: rgba(232, 197, 106, 0.5);
+      background: rgba(18, 14, 8, 0.55);
+      box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.45),
+        0 0 36px rgba(232, 197, 106, 0.24);
     }
 
     /* Create page (Spark + Deep + Publish) */
@@ -506,75 +551,746 @@
       box-sizing: border-box;
       padding: 0 0.25rem;
     }
-    /* Game quest chrome — larger type & hit targets */
+    /* Game quest chrome — luminous Artifact forge header */
     .create-quest-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.85rem 1.15rem;
-      padding: 1rem 1.25rem;
-      border-radius: 18px;
-      border: 1px solid rgba(46, 230, 255, 0.22);
+      gap: 0.95rem 1.25rem;
+      padding: 1.2rem 1.4rem 1.25rem;
+      border-radius: 22px;
+      border: 1px solid rgba(126, 240, 255, 0.28);
+      position: relative;
+      overflow: hidden;
       background:
-        radial-gradient(ellipse 70% 120% at 0% 50%, rgba(46, 230, 255, 0.12), transparent 55%),
-        linear-gradient(135deg, rgba(10, 18, 36, 0.95), rgba(6, 12, 24, 0.98));
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.38);
+        radial-gradient(ellipse 90% 140% at 8% 40%, rgba(46, 230, 255, 0.16), transparent 52%),
+        radial-gradient(ellipse 70% 100% at 95% 20%, rgba(232, 197, 106, 0.1), transparent 48%),
+        radial-gradient(ellipse 60% 80% at 50% 120%, rgba(46, 230, 255, 0.06), transparent 55%),
+        linear-gradient(145deg, rgba(8, 18, 36, 0.72), rgba(4, 12, 24, 0.58));
+      backdrop-filter: blur(18px) saturate(1.15);
+      -webkit-backdrop-filter: blur(18px) saturate(1.15);
+      box-shadow:
+        0 20px 56px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+        0 0 40px rgba(46, 230, 255, 0.1),
+        0 0 72px rgba(232, 197, 106, 0.05);
+    }
+    .create-quest-bar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.04) 50%, transparent 60%);
+      opacity: 0.7;
+    }
+    .create-quest-bar::after {
+      content: "";
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(46, 230, 255, 0.45), rgba(232, 197, 106, 0.4), transparent);
+      pointer-events: none;
     }
     .create-quest-back {
       appearance: none;
-      border: 1px solid rgba(46, 230, 255, 0.32);
-      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(46, 230, 255, 0.38);
+      background: linear-gradient(180deg, rgba(12, 28, 44, 0.75), rgba(4, 12, 22, 0.85));
       color: var(--cyan-soft);
       font: inherit;
       font-size: 0.92rem;
       font-weight: 750;
-      padding: 0.55rem 0.95rem;
+      padding: 0.6rem 1.05rem;
       border-radius: 999px;
       cursor: pointer;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 16px rgba(46, 230, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.12s;
     }
     .create-quest-back:hover {
-      border-color: rgba(126, 240, 255, 0.55);
-      background: rgba(46, 230, 255, 0.1);
+      border-color: rgba(126, 240, 255, 0.65);
+      background: linear-gradient(180deg, rgba(20, 48, 72, 0.85), rgba(8, 22, 38, 0.9));
+      box-shadow: 0 0 24px rgba(46, 230, 255, 0.25);
+      transform: translateY(-1px);
     }
     .create-quest-bar__title {
       flex: 1 1 auto;
-      min-width: 9rem;
+      min-width: 10rem;
+      position: relative;
+      z-index: 1;
     }
     .create-quest-kicker {
       display: block;
       font-size: 0.72rem;
       font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.95);
+      text-shadow: 0 0 16px rgba(232, 197, 106, 0.35);
+    }
+    .create-quest-bar h2 {
+      margin: 0.2rem 0 0;
+      font-family: var(--font-display);
+      font-size: clamp(1.65rem, 2.8vw, 2.05rem);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: 0.01em;
+      color: rgba(240, 248, 255, 0.96);
+      text-shadow: 0 0 28px rgba(46, 230, 255, 0.18);
+    }
+    .create-quest-bar h2 span {
+      background: linear-gradient(100deg, #7ee8ff 0%, #2ee6ff 40%, #e8c56a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 12px rgba(46, 230, 255, 0.25));
+    }
+    .create-quest-sub {
+      margin: 0.35rem 0 0;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      color: rgba(180, 210, 230, 0.72);
+      max-width: 28rem;
+    }
+    /* Empty Hall artifact vessel: frame only, pure black inside */
+    .create-quest-void {
+      flex: 0 0 auto;
+      position: relative;
+      z-index: 1;
+      width: clamp(7.5rem, 15vw, 10.5rem);
+      aspect-ratio: 3 / 4;
+      border-radius: 8px;
+      background: #000;
+      box-shadow:
+        0 14px 36px rgba(0, 0, 0, 0.6),
+        0 0 32px rgba(46, 230, 255, 0.14),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.8),
+        inset 0 0 24px rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+    }
+    .create-quest-void__black {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      z-index: 0;
+    }
+    .create-quest-void__frame {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: url("assets/artifact-frame-mask.png") center / 100% 100% no-repeat;
+      filter: brightness(1.05) saturate(1.08);
+    }
+    @media (max-width: 640px) {
+      .create-quest-void {
+        width: 6.25rem;
+      }
+    }
+    /* Page 1 — path pick: only header + Spark/Deep cards */
+    .create-page--game:not(.is-path-picked) .create-quest-steps {
+      display: none !important;
+    }
+    .create-page--game:not(.is-path-picked) .create-forge-workspace,
+    .create-forge-workspace[hidden] {
+      display: none !important;
+    }
+    .create-mode-row--game[hidden] {
+      display: none !important;
+    }
+    .create-page--game:not(.is-path-picked) {
+      max-width: min(920px, 100%);
+    }
+    /* Path pick: hero header — void centered, title under it */
+    .create-page--game:not(.is-path-picked) .create-quest-bar {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+      padding: 1.65rem 1.5rem 1.55rem;
+      border-radius: 24px;
+      background:
+        radial-gradient(ellipse 70% 90% at 50% 0%, rgba(46, 230, 255, 0.14), transparent 55%),
+        radial-gradient(ellipse 55% 70% at 50% 100%, rgba(232, 197, 106, 0.08), transparent 50%),
+        linear-gradient(165deg, rgba(8, 18, 36, 0.55), rgba(4, 12, 24, 0.42));
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.42),
+        0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+        0 0 56px rgba(46, 230, 255, 0.12),
+        0 0 90px rgba(232, 197, 106, 0.05);
+    }
+    .create-page--game:not(.is-path-picked) .create-quest-bar::before {
+      background:
+        radial-gradient(ellipse 50% 40% at 50% 30%, rgba(46, 230, 255, 0.1), transparent 70%);
+      opacity: 1;
+    }
+    .create-page--game:not(.is-path-picked) .create-quest-back {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+    }
+    .create-page--game:not(.is-path-picked) .create-quest-void {
+      width: clamp(8.5rem, 18vw, 12rem);
+      margin: 0.35rem auto 0.15rem;
+      box-shadow:
+        0 18px 48px rgba(0, 0, 0, 0.65),
+        0 0 40px rgba(46, 230, 255, 0.18),
+        0 0 64px rgba(232, 197, 106, 0.08),
+        inset 0 0 28px rgba(0, 0, 0, 0.95);
+    }
+    .create-page--game:not(.is-path-picked) .create-quest-bar__title {
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 28rem;
+    }
+    .create-page--game:not(.is-path-picked) .create-quest-sub {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 26rem;
+    }
+    .create-page--game:not(.is-path-picked) .create-mode-row--game {
+      gap: 1.15rem 1.35rem;
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .create-page--game:not(.is-path-picked) .create-mode-media {
+      aspect-ratio: 16 / 10;
+      min-height: clamp(8.5rem, 18vh, 12.5rem);
+    }
+    .create-page--game:not(.is-path-picked) .create-mode-row--game .create-mode-btn {
+      border-radius: 20px;
+      border: 1px solid rgba(126, 240, 255, 0.18);
+      background: rgba(4, 12, 24, 0.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow:
+        0 18px 44px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 0 28px rgba(46, 230, 255, 0.08);
+    }
+    .create-page--game:not(.is-path-picked) .create-mode-row--game .create-mode-btn[data-create-mode="spark"]:hover {
+      border-color: rgba(46, 230, 255, 0.5);
+      box-shadow:
+        0 22px 52px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(46, 230, 255, 0.28);
+    }
+    .create-page--game:not(.is-path-picked) .create-mode-row--game .create-mode-btn[data-create-mode="deep"]:hover {
+      border-color: rgba(232, 197, 106, 0.5);
+      box-shadow:
+        0 22px 52px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(232, 197, 106, 0.24);
+    }
+    .create-page--game:not(.is-path-picked) .create-mode-caption {
+      padding: 0.95rem 1rem 1.05rem;
+      background: linear-gradient(180deg, rgba(6, 16, 30, 0.88), rgba(3, 10, 20, 0.96));
+    }
+    /* soft “choose path” glow under cards on path page */
+    .create-page--game:not(.is-path-picked)::after {
+      content: "Choose your forge path";
+      display: block;
+      order: 2;
+      text-align: center;
+      margin-top: -0.15rem;
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 750;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.75);
+      text-shadow: 0 0 18px rgba(232, 197, 106, 0.3);
+    }
+    /* Page 2 — intent pick (New vs Remix): hide path cards + Forge an Artifact header */
+    .create-page--game.is-path-picked .create-mode-row--game {
+      display: none !important;
+    }
+    .create-page--game.is-path-picked .create-quest-bar {
+      display: none !important;
+    }
+    .create-page--game.is-path-picked::after {
+      display: none;
+    }
+    /* Page 2 only shows intent cards until intent chosen */
+    .create-page--game.is-path-picked:not(.is-intent-picked) .create-forge-workspace,
+    .create-page--game.is-path-picked:not(.is-intent-picked) .create-forge-workspace[hidden] {
+      display: none !important;
+    }
+    .create-page--game:not(.is-path-picked) .create-intent-stage,
+    .create-page--game.is-intent-picked .create-intent-stage,
+    .create-intent-stage[hidden] {
+      display: none !important;
+    }
+    .create-page--game.is-path-picked:not(.is-intent-picked) .create-intent-stage:not([hidden]) {
+      display: flex !important;
+    }
+    .create-intent-bar--forge {
+      margin-bottom: 0.85rem;
+      padding: 0.85rem 1rem;
+      border-radius: 16px;
+      border: 1px solid rgba(46, 230, 255, 0.18);
+      background: rgba(6, 14, 28, 0.55);
+      backdrop-filter: blur(12px);
+    }
+    .create-intent-bar--forge .create-quest-steps {
+      margin-left: auto;
+    }
+    .create-page--game.is-path-picked:not(.is-intent-picked) {
+      max-width: min(900px, 100%);
+      margin: auto;
+      gap: 1.15rem;
+      justify-content: center;
+      padding: 1rem 0.5rem 1.5rem;
+    }
+    /* Intent stage: full-center glass panel over chamber */
+    .create-intent-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.15rem;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem 1.35rem 1.45rem;
+      box-sizing: border-box;
+      border-radius: 24px;
+      border: 1px solid rgba(126, 240, 255, 0.24);
+      position: relative;
+      background:
+        radial-gradient(ellipse 75% 90% at 50% 0%, rgba(46, 230, 255, 0.12), transparent 55%),
+        radial-gradient(ellipse 55% 70% at 80% 100%, rgba(232, 197, 106, 0.08), transparent 50%),
+        linear-gradient(165deg, rgba(8, 18, 36, 0.52), rgba(4, 12, 24, 0.4));
+      backdrop-filter: blur(18px) saturate(1.12);
+      -webkit-backdrop-filter: blur(18px) saturate(1.12);
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.42),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 0 56px rgba(46, 230, 255, 0.1),
+        0 0 88px rgba(232, 197, 106, 0.05);
+    }
+    .create-intent-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(ellipse 50% 40% at 50% 25%, rgba(46, 230, 255, 0.08), transparent 70%);
+    }
+    .create-intent-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.65rem;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    .create-intent-bar .create-quest-back {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .create-intent-bar__title {
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 28rem;
+      margin: 0.15rem auto 0.25rem;
+    }
+    .create-intent-bar__kicker {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.95);
+      text-shadow: 0 0 16px rgba(232, 197, 106, 0.35);
+    }
+    .create-intent-bar__h {
+      margin: 0.25rem 0 0;
+      font-family: var(--font-display);
+      font-size: clamp(1.55rem, 2.8vw, 2rem);
+      font-weight: 800;
+      color: rgba(240, 248, 255, 0.96);
+      text-shadow: 0 0 28px rgba(46, 230, 255, 0.18);
+    }
+    .create-intent-bar__h span {
+      background: linear-gradient(100deg, #7ee8ff 0%, #2ee6ff 45%, #e8c56a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 12px rgba(46, 230, 255, 0.22));
+    }
+    .create-intent-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem 1.4rem;
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    @media (max-width: 640px) {
+      .create-intent-row {
+        grid-template-columns: 1fr;
+        max-width: 22rem;
+      }
+      .create-intent-bar .create-quest-back {
+        position: static;
+        align-self: flex-start;
+      }
+    }
+    .create-intent-card {
+      appearance: none;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      margin: 0;
+      border: 1px solid rgba(126, 240, 255, 0.22);
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      background: rgba(4, 12, 24, 0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: inherit;
+      font: inherit;
+      text-align: center;
+      box-shadow:
+        0 18px 44px rgba(0, 0, 0, 0.48),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 0 32px rgba(46, 230, 255, 0.1);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.2s ease, filter 0.2s ease;
+    }
+    .create-intent-card:hover {
+      transform: translateY(-5px) scale(1.012);
+      filter: brightness(1.06);
+    }
+    .create-intent-card:focus-visible {
+      outline: 2px solid rgba(46, 230, 255, 0.75);
+      outline-offset: 3px;
+    }
+    .create-intent-card--new:hover {
+      border-color: rgba(46, 230, 255, 0.6);
+      box-shadow:
+        0 24px 56px rgba(0, 0, 0, 0.52),
+        0 0 44px rgba(46, 230, 255, 0.32);
+    }
+    .create-intent-card--remix:hover {
+      border-color: rgba(232, 197, 106, 0.6);
+      box-shadow:
+        0 24px 56px rgba(0, 0, 0, 0.52),
+        0 0 44px rgba(232, 197, 106, 0.3);
+    }
+    .create-intent-card__media {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      min-height: clamp(8.5rem, 18vh, 13rem);
+      overflow: hidden;
+      background: #061018;
+    }
+    .create-intent-card__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.45s ease;
+    }
+    .create-intent-card:hover .create-intent-card__media img {
+      transform: scale(1.06);
+    }
+    .create-intent-card__media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 38%, rgba(2, 8, 16, 0.72) 100%);
+      pointer-events: none;
+    }
+    .create-intent-card__cap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem 0.7rem;
+      padding: 1rem 1.05rem 1.1rem;
+      background: linear-gradient(180deg, rgba(6, 16, 30, 0.92), rgba(3, 10, 20, 0.98));
+    }
+    .create-intent-card__cap strong {
+      font-family: var(--font-display);
+      font-size: 1.08rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+    .create-intent-card--new .create-intent-card__cap strong {
+      color: #e8fbff;
+      text-shadow: 0 0 16px rgba(46, 230, 255, 0.3);
+    }
+    .create-intent-card--remix .create-intent-card__cap strong {
+      color: #fff6dc;
+      text-shadow: 0 0 16px rgba(232, 197, 106, 0.28);
+    }
+    .create-intent-card__cap span {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.24rem 0.58rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.35);
+      background: linear-gradient(135deg, rgba(46, 230, 255, 0.16), rgba(46, 230, 255, 0.06));
+      color: var(--cyan-soft);
+      box-shadow: 0 0 12px rgba(46, 230, 255, 0.15);
+    }
+    .create-intent-card--remix .create-intent-card__cap span {
+      border-color: rgba(232, 197, 106, 0.5);
+      background: linear-gradient(135deg, rgba(232, 197, 106, 0.18), rgba(232, 197, 106, 0.06));
+      color: #f0d48a;
+      box-shadow: 0 0 12px rgba(232, 197, 106, 0.15);
+    }
+    .create-intent-card-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      isolation: isolate;
+    }
+    .create-intent-card-wrap .forge-help-btn {
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 20;
+      width: 1.85rem;
+      height: 1.85rem;
+      font-size: 1.05rem;
+      pointer-events: auto;
+    }
+    .create-intent-card-wrap[data-help-tone="new"] .forge-help-btn {
+      border-color: rgba(120, 240, 255, 0.85);
+      color: #e8fcff;
+      background: linear-gradient(145deg, rgba(12, 48, 72, 0.96), rgba(4, 18, 36, 0.98));
+      box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(46, 230, 255, 0.35) inset,
+        0 0 22px rgba(46, 230, 255, 0.55);
+    }
+    .create-intent-card-wrap[data-help-tone="remix"] .forge-help-btn {
+      border-color: rgba(255, 220, 120, 0.9);
+      color: #fff8e0;
+      background: linear-gradient(145deg, rgba(56, 40, 12, 0.96), rgba(18, 12, 4, 0.98));
+      box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(232, 197, 106, 0.4) inset,
+        0 0 22px rgba(232, 197, 106, 0.55);
+    }
+    .create-page--game.is-path-picked:not(.is-intent-picked)::after {
+      content: "New vessel or branch the bloodline";
+      display: block;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 750;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.78);
+      text-shadow: 0 0 18px rgba(232, 197, 106, 0.32);
+      margin-top: 0.1rem;
+    }
+
+    /* ── Forge path help (!) ── */
+    .forge-help-btn {
+      appearance: none;
+      position: absolute;
+      z-index: 6;
+      width: 1.55rem;
+      height: 1.55rem;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(232, 197, 106, 0.55);
+      background: linear-gradient(145deg, rgba(20, 28, 48, 0.92), rgba(8, 14, 28, 0.95));
+      color: #f5e0a8;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.45),
+        0 0 14px rgba(232, 197, 106, 0.25);
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .forge-help-btn:hover {
+      transform: scale(1.08);
+      border-color: rgba(255, 230, 160, 0.85);
+      color: #fff6dc;
+      box-shadow: 0 0 22px rgba(232, 197, 106, 0.45);
+    }
+    .forge-help-btn:focus-visible {
+      outline: 2px solid rgba(46, 230, 255, 0.75);
+      outline-offset: 2px;
+    }
+    .create-quest-void {
+      /* ensure help sits on the vessel */
+    }
+    .create-quest-void .forge-help-btn {
+      top: 0.35rem;
+      right: 0.35rem;
+    }
+    .create-mode-card-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .create-mode-card-wrap .forge-help-btn {
+      top: 0.55rem;
+      right: 0.55rem;
+    }
+    .create-mode-card-wrap[data-help-tone="spark"] .forge-help-btn {
+      border-color: rgba(46, 230, 255, 0.5);
+      color: #9ef0ff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 12px rgba(46, 230, 255, 0.25);
+    }
+    .create-mode-card-wrap[data-help-tone="deep"] .forge-help-btn {
+      border-color: rgba(232, 197, 106, 0.55);
+      color: #f5e0a8;
+    }
+
+    #forgeHelpModal .modal {
+      width: min(520px, 100%);
+      max-height: min(90vh, 720px);
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border-color: rgba(46, 230, 255, 0.28);
+    }
+    #forgeHelpModal .forge-help-hero {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #050a14;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+    #forgeHelpModal .forge-help-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+    /* Portrait empty-vessel art: upright tablet, not stretched landscape */
+    #forgeHelpModal.is-help-portrait .forge-help-hero {
+      aspect-ratio: 3 / 4;
+      max-height: min(42vh, 340px);
+      margin: 0 auto;
+      width: min(100%, 280px);
+      border-radius: 0 0 0 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(46, 230, 255, 0.08), transparent 60%),
+        #050a14;
+    }
+    #forgeHelpModal.is-help-portrait .forge-help-hero img {
+      object-fit: contain;
+      object-position: center center;
+    }
+    #forgeHelpModal.is-help-portrait .modal {
+      width: min(420px, 100%);
+    }
+    #forgeHelpModal .forge-help-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(6, 10, 20, 0.92) 100%);
+      pointer-events: none;
+    }
+    #forgeHelpModal.is-help-portrait .forge-help-hero::after {
+      background: linear-gradient(180deg, transparent 55%, rgba(6, 10, 20, 0.75) 100%);
+    }
+    #forgeHelpModal .forge-help-body {
+      padding: 1.15rem 1.3rem 1.35rem;
+      overflow-y: auto;
+    }
+    #forgeHelpModal .forge-help-kicker {
+      margin: 0 0 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 800;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: rgba(232, 197, 106, 0.9);
     }
-    .create-quest-bar h2 {
-      margin: 0.15rem 0 0;
+    #forgeHelpModal .forge-help-title {
+      margin: 0 0 0.65rem;
       font-family: var(--font-display);
-      font-size: clamp(1.55rem, 2.5vw, 1.85rem);
+      font-size: 1.35rem;
       font-weight: 800;
-      line-height: 1.12;
+      line-height: 1.2;
+      background: linear-gradient(100deg, #7ee8ff, #e8c56a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
-    .create-quest-bar h2 span { color: var(--cyan-soft); }
+    #forgeHelpModal .forge-help-text {
+      margin: 0 0 0.85rem;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: rgba(200, 220, 235, 0.88);
+    }
+    #forgeHelpModal .forge-help-text strong {
+      color: rgba(230, 245, 255, 0.98);
+    }
+    #forgeHelpModal .forge-help-close {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 4;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 1.15rem;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      backdrop-filter: blur(6px);
+    }
+    #forgeHelpModal .forge-help-close:hover {
+      border-color: rgba(46, 230, 255, 0.5);
+      background: rgba(8, 24, 40, 0.75);
+    }
+    #forgeHelpModal .modal {
+      position: relative;
+    }
+
     .create-quest-steps {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.45rem;
+      gap: 0.5rem;
       list-style: none;
       margin: 0;
       padding: 0;
+      position: relative;
+      z-index: 1;
     }
     .create-quest-steps li {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      padding: 0.42rem 0.75rem;
+      padding: 0.48rem 0.85rem;
       border-radius: 999px;
-      border: 1px solid rgba(46, 230, 255, 0.18);
-      background: rgba(0, 0, 0, 0.32);
+      border: 1px solid rgba(46, 230, 255, 0.2);
+      background: rgba(0, 8, 18, 0.45);
       font-size: 0.82rem;
       font-weight: 700;
       color: var(--text-dim);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
     .create-quest-steps li b {
       display: grid;
@@ -607,6 +1323,32 @@
       .create-mode-row { grid-template-columns: 1fr; }
       .create-quest-steps { width: 100%; }
     }
+
+    /* ── Image path cards under Create an Artifact: Spark Benches | Deep Forges ── */
+    .create-mode-row--game {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 1.15rem;
+      padding: 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      overflow: visible;
+      position: relative;
+    }
+    .create-mode-row--game::before { display: none; }
+    @media (max-width: 640px) {
+      .create-mode-row--game {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+        max-width: 22rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
     .create-mode-btn {
       display: flex;
       flex-direction: row;
@@ -623,13 +1365,79 @@
       font-family: inherit;
       text-align: left;
       cursor: pointer;
-      transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+      transition: border-color 0.18s, box-shadow 0.18s, transform 0.14s, background 0.18s, color 0.18s;
       width: 100%;
       box-sizing: border-box;
+    }
+    .create-mode-row--game .create-mode-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 0;
+      padding: 0;
+      min-height: 0;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(4, 12, 24, 0.35);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.22s ease, border-color 0.2s ease, filter 0.2s ease;
+    }
+    .create-mode-row--game .create-mode-btn:hover {
+      transform: translateY(-4px);
+      filter: brightness(1.05);
+      border-color: rgba(126, 240, 255, 0.35);
+    }
+    .create-mode-row--game .create-mode-btn[data-create-mode="deep"]:hover {
+      border-color: rgba(232, 197, 106, 0.4);
+    }
+    .create-mode-media {
+      position: relative;
+      display: block;
+      aspect-ratio: 16 / 9;
+      min-height: clamp(7.5rem, 16vh, 11rem);
+      overflow: hidden;
+      background: #061018;
+    }
+    .create-mode-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .create-mode-row--game .create-mode-btn:hover .create-mode-media img {
+      transform: scale(1.05);
+    }
+    .create-mode-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent 35%, rgba(2, 8, 16, 0.55) 100%);
+    }
+    .create-mode-caption {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem 0.65rem;
+      padding: 0.85rem 1rem 0.95rem;
+      position: relative;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(6, 14, 28, 0.92), rgba(4, 10, 20, 0.96));
     }
     .create-mode-ico {
       font-size: 1.45rem;
       line-height: 1;
+    }
+    .create-mode-row--game .create-mode-ico {
+      font-size: 1.2rem;
+      filter: drop-shadow(0 0 8px rgba(46, 230, 255, 0.3));
     }
     .create-mode-btn:hover {
       border-color: rgba(46, 230, 255, 0.45);
@@ -640,10 +1448,49 @@
       box-shadow: 0 0 28px rgba(46, 230, 255, 0.22);
       background: linear-gradient(145deg, rgba(46, 230, 255, 0.16), rgba(8, 16, 32, 0.92));
     }
+    .create-mode-row--game .create-mode-btn.is-active {
+      transform: none;
+    }
+    .create-mode-row--game .create-mode-btn.is-active[data-create-mode="spark"] {
+      border-color: rgba(46, 230, 255, 0.55);
+      box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.45),
+        0 0 36px rgba(46, 230, 255, 0.28),
+        0 0 0 1px rgba(126, 240, 255, 0.12) inset;
+    }
+    .create-mode-row--game .create-mode-btn.is-active[data-create-mode="deep"] {
+      border-color: rgba(232, 197, 106, 0.5);
+      box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.45),
+        0 0 36px rgba(232, 197, 106, 0.24),
+        0 0 0 1px rgba(255, 220, 140, 0.1) inset;
+    }
+    .create-mode-row--game .create-mode-btn.is-active[data-create-mode="spark"] .create-mode-ico {
+      filter: drop-shadow(0 0 10px rgba(46, 230, 255, 0.55));
+    }
+    .create-mode-row--game .create-mode-btn.is-active[data-create-mode="deep"] .create-mode-ico {
+      filter: drop-shadow(0 0 10px rgba(232, 197, 106, 0.5));
+    }
     .create-mode-btn strong {
       font-size: 1.12rem;
       font-weight: 800;
       color: var(--text);
+    }
+    .create-mode-row--game .create-mode-btn strong {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+    }
+    .create-mode-row--game .create-mode-btn:not(.is-active) strong {
+      color: rgba(200, 220, 235, 0.78);
+    }
+    .create-mode-row--game .create-mode-btn.is-active[data-create-mode="spark"] strong {
+      color: #e8fbff;
+      text-shadow: 0 0 18px rgba(46, 230, 255, 0.35);
+    }
+    .create-mode-row--game .create-mode-btn.is-active[data-create-mode="deep"] strong {
+      color: #fff6dc;
+      text-shadow: 0 0 18px rgba(232, 197, 106, 0.3);
     }
     .create-mode-btn .create-mode-tag {
       font-size: 0.7rem;
@@ -657,10 +1504,32 @@
       border: 1px solid rgba(46, 230, 255, 0.3);
       background: rgba(46, 230, 255, 0.1);
     }
+    .create-mode-row--game .create-mode-btn .create-mode-tag {
+      margin-left: 0;
+      font-size: 0.62rem;
+      padding: 0.22rem 0.55rem;
+    }
+    .create-mode-row--game .create-mode-btn:not(.is-active) .create-mode-tag {
+      color: rgba(160, 190, 210, 0.7);
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.3);
+    }
     .create-mode-btn.is-active .create-mode-tag {
       color: #1a1204;
       border-color: rgba(232, 197, 106, 0.55);
       background: linear-gradient(135deg, #f5e0a8, #e8c56a);
+    }
+    .create-mode-row--game .create-mode-btn.is-active[data-create-mode="spark"] .create-mode-tag {
+      color: #021018;
+      border-color: rgba(126, 240, 255, 0.45);
+      background: linear-gradient(135deg, #7ee8ff, #2ee6ff);
+      box-shadow: 0 0 12px rgba(46, 230, 255, 0.35);
+    }
+    .create-mode-row--game .create-mode-btn.is-active[data-create-mode="deep"] .create-mode-tag {
+      color: #1a1204;
+      border-color: rgba(255, 220, 140, 0.5);
+      background: linear-gradient(135deg, #f5e0a8, #e8c56a);
+      box-shadow: 0 0 12px rgba(232, 197, 106, 0.35);
     }
     .create-quest-runes {
       display: flex;
@@ -744,93 +1613,842 @@
       font-weight: 800;
     }
     .create-side-tip { display: none !important; }
+    /* ── Forge workspace: image-first, minimal text ── */
     .create-layout--game {
       min-height: 0 !important;
-      gap: 1rem !important;
+      gap: 1.1rem !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      max-width: 920px;
+      margin: 0 auto;
+      width: 100%;
     }
-    .create-layout--game {
-      grid-template-columns: minmax(0, 1fr) minmax(240px, 280px) !important;
+    .create-layout--game .create-side--game {
+      display: none !important;
     }
-    .create-grok-banner--game {
-      padding: 1.1rem 1.25rem !important;
-      min-height: 0 !important;
-      flex-direction: row !important;
-      flex-wrap: wrap;
+    .create-intent-bar--forge {
+      max-width: 920px;
+      margin: 0 auto 0.35rem;
+    }
+    .create-intent-bar--forge .create-quest-steps {
+      display: none !important;
+    }
+    .create-intent-bar--forge .create-intent-bar__h {
+      font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+    }
+
+    /* ── Remix / Fork: search living Artifacts ── */
+    .forge-remix-stage {
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .forge-remix-stage[hidden] { display: none !important; }
+    .forge-remix-hero {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(232, 197, 106, 0.32);
+      box-shadow:
+        0 22px 56px rgba(0, 0, 0, 0.48),
+        0 0 48px rgba(232, 197, 106, 0.12);
+      min-height: clamp(10rem, 22vh, 14rem);
+      background: #061018;
+    }
+    .forge-remix-hero__media {
+      position: absolute;
+      inset: 0;
+    }
+    .forge-remix-hero__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .forge-remix-hero__media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(2, 8, 16, 0.2) 0%, rgba(2, 8, 16, 0.78) 100%),
+        radial-gradient(ellipse 60% 50% at 50% 40%, rgba(232, 197, 106, 0.12), transparent 70%);
+    }
+    .forge-remix-hero__body {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
+      gap: 0.55rem;
+      min-height: clamp(10rem, 22vh, 14rem);
+      padding: 1.35rem 1.2rem 1.4rem;
+      text-align: center;
+    }
+    .forge-remix-hero__kicker {
+      margin: 0;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 230, 160, 0.95);
+      text-shadow: 0 0 16px rgba(232, 197, 106, 0.4);
+    }
+    .forge-remix-hero__title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(1.35rem, 2.8vw, 1.85rem);
+      font-weight: 800;
+      color: #fff8e8;
+      text-shadow: 0 0 24px rgba(232, 197, 106, 0.35);
+    }
+    .forge-remix-hero__title span {
+      background: linear-gradient(100deg, #f5e0a8 0%, #e8c56a 50%, #7ee8ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .forge-remix-search-box {
+      position: relative;
+      display: flex;
+      flex-direction: column;
       gap: 0.85rem;
-      border-radius: 16px !important;
+      padding: 1.15rem 1.15rem 1.2rem;
+      border-radius: 20px;
+      border: 1px solid rgba(232, 197, 106, 0.28);
+      background:
+        radial-gradient(ellipse 70% 80% at 50% 0%, rgba(232, 197, 106, 0.1), transparent 55%),
+        linear-gradient(165deg, rgba(12, 18, 32, 0.72), rgba(4, 10, 20, 0.55));
+      backdrop-filter: blur(16px) saturate(1.12);
+      -webkit-backdrop-filter: blur(16px) saturate(1.12);
+      box-shadow:
+        0 18px 48px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 0 40px rgba(232, 197, 106, 0.08);
     }
-    .create-grok-banner--game .create-grok-banner__actions {
-      margin-top: 0;
-      padding-top: 0;
-      border-top: none;
-      gap: 0.55rem;
+    .forge-remix-search-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.35rem 0.45rem 0.35rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(232, 197, 106, 0.4);
+      background: rgba(0, 6, 14, 0.65);
+      box-shadow: 0 0 22px rgba(232, 197, 106, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
-    .create-grok-banner--game .btn {
-      font-size: 0.95rem !important;
-      padding: 0.7rem 1.2rem !important;
-      min-height: 2.75rem;
+    .forge-remix-search-row:focus-within {
+      border-color: rgba(255, 220, 140, 0.7);
+      box-shadow: 0 0 28px rgba(232, 197, 106, 0.22), 0 0 0 1px rgba(46, 230, 255, 0.15);
     }
-    .create-panel--game {
-      min-height: 0 !important;
-      padding: 1.45rem 1.5rem 1.5rem !important;
-      border-radius: 18px !important;
+    .forge-remix-search-ico {
+      flex: 0 0 auto;
+      font-size: 1.05rem;
+      opacity: 0.9;
+      filter: drop-shadow(0 0 8px rgba(232, 197, 106, 0.45));
     }
-    .create-panel--game .create-templates {
-      gap: 0.55rem;
+    .forge-remix-search-row input {
+      flex: 1 1 auto;
+      min-width: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: rgba(245, 248, 255, 0.96);
+      font: inherit;
+      font-size: 0.98rem;
+      font-weight: 600;
+      padding: 0.7rem 0.25rem;
     }
-    .create-panel--game .create-template-chip {
+    .forge-remix-search-row input::placeholder {
+      color: rgba(180, 200, 220, 0.45);
+      font-weight: 500;
+    }
+    .forge-remix-search-clear {
+      appearance: none;
+      flex: 0 0 auto;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(220, 230, 245, 0.8);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+    }
+    .forge-remix-search-clear:hover {
+      border-color: rgba(232, 197, 106, 0.45);
+      color: #fff6dc;
+    }
+    .forge-remix-search-meta {
+      margin: 0;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      color: rgba(190, 210, 230, 0.72);
+    }
+    .forge-remix-results {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+      max-height: min(48vh, 28rem);
+      overflow-y: auto;
+      padding: 0.15rem 0.1rem 0.35rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(232, 197, 106, 0.35) transparent;
+    }
+    @media (max-width: 720px) {
+      .forge-remix-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 420px) {
+      .forge-remix-results { grid-template-columns: 1fr; max-height: 40vh; }
+    }
+    .forge-remix-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      color: rgba(180, 200, 220, 0.7);
       font-size: 0.92rem;
-      padding: 0.55rem 1rem;
-      min-height: 2.6rem;
+      font-weight: 600;
     }
-    .create-panel--game .create-nav-row .btn,
-    .create-panel--game #createOpenGrokFromDescribe {
-      font-size: 1.02rem !important;
-      padding: 0.8rem 1.45rem !important;
-      min-height: 3rem !important;
+    .forge-remix-pick {
+      appearance: none;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      margin: 0;
+      border: 1px solid rgba(232, 197, 106, 0.22);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      background: rgba(4, 12, 24, 0.65);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.42);
+      transition: transform 0.18s ease, box-shadow 0.2s ease, border-color 0.18s ease, filter 0.18s ease;
     }
-    .deep-forge-hero--game {
-      padding: 1.45rem 1.5rem !important;
+    .forge-remix-pick:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.06);
+      border-color: rgba(255, 220, 140, 0.55);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 28px rgba(232, 197, 106, 0.2);
     }
-    .deep-forge-hero--game h3 {
-      margin: 0.4rem 0 0.9rem;
-      font-size: 1.55rem;
+    .forge-remix-pick.is-selected {
+      border-color: rgba(126, 240, 255, 0.55);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.48), 0 0 30px rgba(46, 230, 255, 0.28);
     }
-    .deep-forge-hero--game .deep-forge-cli {
-      margin-bottom: 1rem;
-      font-size: 0.95rem;
+    .forge-remix-pick__media {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #061018;
     }
-    .deep-forge-hero--game .btn {
-      font-size: 0.95rem;
-      padding: 0.7rem 1.2rem;
+    .forge-remix-pick__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease;
     }
-    .create-side--game {
-      gap: 0.85rem !important;
-      height: auto !important;
-      min-height: 0 !important;
-      justify-content: flex-start !important;
-      overflow: visible !important;
+    .forge-remix-pick:hover .forge-remix-pick__media img {
+      transform: scale(1.05);
     }
-    .create-side--game .create-side-card {
-      padding: 1.15rem 1.2rem !important;
-      flex: 0 0 auto !important;
-      min-height: 0 !important;
-      border-radius: 16px !important;
+    .forge-remix-pick__media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent 40%, rgba(2, 8, 16, 0.8) 100%);
     }
-    .create-side--game .create-side-card h4 {
-      margin: 0 0 0.65rem;
+    .forge-remix-pick__badge {
+      position: absolute;
+      top: 0.45rem;
+      left: 0.45rem;
+      z-index: 1;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.48rem;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 230, 255, 0.35);
+      background: rgba(0, 10, 20, 0.72);
+      color: #9ef0ff;
+    }
+    .forge-remix-pick__cap {
+      padding: 0.55rem 0.7rem 0.7rem;
+    }
+    .forge-remix-pick__cap strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: rgba(245, 248, 255, 0.95);
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .forge-remix-pick__cap span {
+      display: block;
+      margin-top: 0.2rem;
+      font-size: 0.72rem;
+      font-weight: 650;
+      color: rgba(180, 200, 220, 0.72);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Selected parent vessel (after pick) or empty choose slot */
+    .forge-remix-selected {
+      padding: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(232, 197, 106, 0.35);
+      background: rgba(6, 12, 24, 0.7);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45), 0 0 36px rgba(232, 197, 106, 0.12);
+    }
+    .forge-remix-selected[hidden] { display: none !important; }
+    .forge-remix-selected__filled {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 0;
+      align-items: stretch;
+    }
+    .forge-remix-selected__filled[hidden] { display: none !important; }
+    @media (max-width: 640px) {
+      .forge-remix-selected__filled { grid-template-columns: 1fr; }
+    }
+    .forge-remix-selected__media {
+      position: relative;
+      min-height: clamp(9rem, 20vh, 12rem);
+      background: #061018;
+    }
+    .forge-remix-selected__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      min-height: clamp(9rem, 20vh, 12rem);
+    }
+    .forge-remix-selected__media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 40%, rgba(4, 10, 20, 0.55) 100%);
+      pointer-events: none;
+    }
+    @media (max-width: 640px) {
+      .forge-remix-selected__media::after {
+        background: linear-gradient(180deg, transparent 30%, rgba(4, 10, 20, 0.75) 100%);
+      }
+    }
+    .forge-remix-selected__body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 1.1rem 1.15rem 1.2rem;
+    }
+    .forge-remix-selected__kicker {
+      margin: 0;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.95);
+    }
+    .forge-remix-selected__body h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff8e8;
+      line-height: 1.25;
+    }
+    .forge-remix-selected__meta {
+      margin: 0;
       font-size: 0.82rem;
-      letter-spacing: 0.1em;
+      font-weight: 650;
+      color: rgba(190, 210, 230, 0.8);
+    }
+    .forge-remix-selected__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.45rem;
+    }
+    .forge-remix-selected__actions .btn {
+      font-size: 0.88rem;
+      padding: 0.55rem 0.95rem;
+      min-height: 2.4rem;
+    }
+
+    /* Remix forge tools only after parent picked */
+    .create-page--game.is-intent-picked[data-forge-intent="remix"]:not(.is-remix-parent) .forge-new-tools {
+      display: none !important;
+    }
+    .create-page--game.is-intent-picked[data-forge-intent="remix"] .forge-class-panel {
+      display: none !important;
+    }
+    .create-page--game.is-intent-picked[data-forge-intent="remix"] #forgeDraftBanner {
+      display: none !important;
+    }
+    .create-page--game.is-intent-picked[data-forge-intent="new"] .forge-remix-stage {
+      display: none !important;
+    }
+    .create-page--game.is-intent-picked[data-forge-intent="remix"].is-remix-parent .forge-remix-search-box {
+      display: none !important;
+    }
+    .create-page--game.is-intent-picked[data-forge-intent="remix"]:not(.is-remix-browsing) .forge-remix-search-box {
+      display: none !important;
+    }
+    .create-page--game.is-intent-picked[data-forge-intent="remix"].is-remix-parent .forge-remix-selected__empty {
+      display: none !important;
+    }
+    .create-page--game.is-intent-picked[data-forge-intent="remix"]:not(.is-remix-parent) .forge-remix-selected__filled {
+      display: none !important;
+    }
+    .forge-remix-selected__empty[hidden] { display: none !important; }
+    .forge-remix-selected--empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.85rem;
+      min-height: clamp(9rem, 18vh, 12rem);
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+      background:
+        radial-gradient(ellipse 70% 80% at 50% 40%, rgba(232, 197, 106, 0.08), transparent 60%),
+        linear-gradient(165deg, rgba(8, 14, 28, 0.75), rgba(4, 10, 18, 0.55));
+    }
+    .forge-remix-selected__empty-kicker {
+      margin: 0;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       color: rgba(232, 197, 106, 0.9);
     }
-    .create-side--game .btn {
-      font-size: 0.9rem;
-      padding: 0.6rem 1rem;
+    .forge-remix-selected__empty-hint {
+      margin: 0;
+      font-size: 0.92rem;
+      font-weight: 650;
+      color: rgba(180, 200, 220, 0.72);
+      max-width: 22rem;
+    }
+    .forge-remix-selected--empty .btn {
+      font-size: 1rem;
+      padding: 0.8rem 1.6rem;
+      min-height: 2.85rem;
+      border-radius: 999px;
+    }
+
+    /* Dual action cards: Open Grok | Gate */
+    .forge-action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.95rem 1.1rem;
       width: 100%;
+      margin: 0 0 0.35rem;
+    }
+    @media (max-width: 560px) {
+      .forge-action-row { grid-template-columns: 1fr; max-width: 22rem; margin-left: auto; margin-right: auto; }
+    }
+    .forge-action-card-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      isolation: isolate;
+    }
+    .forge-action-card-wrap .forge-help-btn {
+      top: 0.55rem;
+      right: 0.55rem;
+      z-index: 20;
+      width: 1.75rem;
+      height: 1.75rem;
+      font-size: 1rem;
+    }
+    .forge-action-card-wrap[data-help-tone="grok"] .forge-help-btn {
+      border-color: rgba(120, 240, 255, 0.85);
+      color: #e8fcff;
+      background: linear-gradient(145deg, rgba(12, 48, 72, 0.96), rgba(4, 18, 36, 0.98));
+      box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(46, 230, 255, 0.35) inset,
+        0 0 20px rgba(46, 230, 255, 0.5);
+    }
+    .forge-action-card-wrap[data-help-tone="gate"] .forge-help-btn {
+      border-color: rgba(255, 220, 120, 0.9);
+      color: #fff8e0;
+      background: linear-gradient(145deg, rgba(56, 40, 12, 0.96), rgba(18, 12, 4, 0.98));
+      box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(232, 197, 106, 0.4) inset,
+        0 0 20px rgba(232, 197, 106, 0.5);
+    }
+    .forge-action-card {
+      appearance: none;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      border: 1px solid rgba(126, 240, 255, 0.28);
+      border-radius: 18px;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      font: inherit;
+      text-align: center;
+      background: rgba(4, 12, 24, 0.55);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 28px rgba(46, 230, 255, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.22s ease, border-color 0.2s ease, filter 0.2s ease;
+    }
+    .forge-action-card:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.06);
+      border-color: rgba(126, 240, 255, 0.5);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 0 36px rgba(46, 230, 255, 0.22);
+    }
+    .forge-action-card--gate {
+      border-color: rgba(232, 197, 106, 0.35);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 28px rgba(232, 197, 106, 0.12);
+    }
+    .forge-action-card--gate:hover {
+      border-color: rgba(255, 220, 140, 0.55);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 0 36px rgba(232, 197, 106, 0.28);
+    }
+    .forge-action-card__media {
+      position: relative;
+      display: block;
+      aspect-ratio: 16 / 9;
+      min-height: clamp(7rem, 14vh, 10rem);
+      overflow: hidden;
+      background: #061018;
+    }
+    .forge-action-card__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .forge-action-card:hover .forge-action-card__media img {
+      transform: scale(1.05);
+    }
+    .forge-action-card__media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent 30%, rgba(2, 8, 16, 0.72) 100%);
+    }
+    .forge-action-card__cap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
       justify-content: center;
+      gap: 0.45rem;
+      padding: 0.85rem 1rem 1rem;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #e8fbff;
+      text-shadow: 0 0 18px rgba(46, 230, 255, 0.4);
+    }
+    .forge-action-card--gate .forge-action-card__cap {
+      color: #fff6dc;
+      text-shadow: 0 0 18px rgba(232, 197, 106, 0.4);
+    }
+
+    /* Class image grid */
+    .forge-class-panel {
+      margin: 0;
+      padding: 1.15rem 1.15rem 1.25rem;
+      border-radius: 20px;
+      border: 1px solid rgba(126, 240, 255, 0.18);
+      background:
+        radial-gradient(ellipse 70% 80% at 50% 0%, rgba(46, 230, 255, 0.08), transparent 55%),
+        linear-gradient(165deg, rgba(8, 18, 36, 0.5), rgba(4, 12, 24, 0.38));
+      backdrop-filter: blur(14px) saturate(1.1);
+      -webkit-backdrop-filter: blur(14px) saturate(1.1);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+    }
+    .forge-class-kicker {
+      margin: 0 0 0.85rem;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.9);
+      text-shadow: 0 0 14px rgba(232, 197, 106, 0.28);
+    }
+    .forge-class-grid,
+    .create-panel--game .create-templates.forge-class-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.75rem 0.85rem;
+    }
+    @media (max-width: 720px) {
+      .forge-class-grid,
+      .create-panel--game .create-templates.forge-class-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 480px) {
+      .forge-class-grid,
+      .create-panel--game .create-templates.forge-class-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    .forge-class-card-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      isolation: isolate;
+    }
+    .forge-class-card-wrap .forge-help-btn {
+      top: 0.4rem;
+      right: 0.4rem;
+      z-index: 20;
+      width: 1.55rem;
+      height: 1.55rem;
+      font-size: 0.9rem;
+      border-color: rgba(255, 220, 120, 0.75);
+      color: #fff8e0;
+      background: linear-gradient(145deg, rgba(40, 30, 12, 0.95), rgba(12, 10, 4, 0.97));
+      box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.5),
+        0 0 14px rgba(232, 197, 106, 0.35);
+    }
+    .forge-class-card {
+      appearance: none;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      border: 1px solid rgba(126, 240, 255, 0.18);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      background: rgba(4, 12, 24, 0.55);
+      color: inherit;
+      font: inherit;
+      text-align: center;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+      transition: transform 0.18s ease, box-shadow 0.2s ease, border-color 0.18s ease, filter 0.18s ease;
+    }
+    .forge-class-card:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.06);
+      border-color: rgba(126, 240, 255, 0.4);
+    }
+    .forge-class-card.is-active {
+      border-color: rgba(126, 240, 255, 0.65);
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.45),
+        0 0 28px rgba(46, 230, 255, 0.3),
+        0 0 0 1px rgba(126, 240, 255, 0.15) inset;
+    }
+    .forge-class-card__media {
+      position: relative;
+      display: block;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #061018;
+    }
+    .forge-class-card__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+    .forge-class-card:hover .forge-class-card__media img,
+    .forge-class-card.is-active .forge-class-card__media img {
+      transform: scale(1.06);
+    }
+    .forge-class-card__media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent 45%, rgba(2, 8, 16, 0.75) 100%);
+    }
+    .forge-class-card strong {
+      display: block;
+      padding: 0.45rem 0.35rem 0.55rem;
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: rgba(200, 220, 235, 0.85);
+      line-height: 1.2;
+    }
+    .forge-class-card.is-active strong {
+      color: #e8fbff;
+      text-shadow: 0 0 12px rgba(46, 230, 255, 0.35);
+    }
+
+    /* Compact loadout strip — panel itself is the glass class tray */
+    .create-panel--game.forge-class-panel {
+      min-height: 0 !important;
+      display: flex;
+      flex-direction: column;
+    }
+    .create-panel--game .create-panel-head { display: none !important; }
+    .create-templates.forge-class-grid {
+      display: grid !important;
+      margin-bottom: 0 !important;
+      flex-wrap: unset !important;
+    }
+    .create-selected-prompt {
+      margin-top: 0.95rem;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(46, 230, 255, 0.22);
+      background: rgba(4, 14, 28, 0.72);
+    }
+    .create-selected-prompt__tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.9);
+    }
+    .create-selected-prompt strong {
+      display: block;
+      margin: 0.25rem 0 0.35rem;
+      font-size: 0.98rem;
+    }
+    .create-selected-prompt p {
+      margin: 0 0 0.65rem;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      color: var(--text-dim);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .create-panel--game .create-nav-row {
+      margin-top: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+    }
+    .create-panel--game .create-draft-pill { display: none; }
+    .create-panel--game .create-nav-row .btn,
+    .create-panel--game #createOpenGrokFromDescribe {
+      font-size: 1rem !important;
+      padding: 0.85rem 1.6rem !important;
+      min-height: 3rem !important;
+      border-radius: 999px;
+    }
+
+    /* Deep forge — image hero */
+    .deep-forge-hero--game {
+      position: relative;
+      padding: 0 !important;
+      overflow: hidden;
+      border-radius: 20px !important;
+      border: 1px solid rgba(232, 197, 106, 0.3);
+      min-height: clamp(16rem, 38vh, 22rem);
+      background: #061018;
+    }
+    .deep-forge-hero--game .deep-forge-hero__media {
+      position: absolute;
+      inset: 0;
+    }
+    .deep-forge-hero--game .deep-forge-hero__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .deep-forge-hero--game .deep-forge-hero__media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(2, 8, 16, 0.25) 0%, rgba(2, 8, 16, 0.82) 100%);
+    }
+    .deep-forge-hero--game .deep-forge-hero__body {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      min-height: clamp(16rem, 38vh, 22rem);
+      padding: 1.5rem 1.25rem 1.6rem;
+      text-align: center;
+    }
+    .deep-forge-hero--game .deep-forge-hero__badge {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #1a1204;
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #f5e0a8, #e8c56a);
+    }
+    .deep-forge-hero--game h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 1.85rem);
+      color: #fff6dc;
+      text-shadow: 0 0 22px rgba(232, 197, 106, 0.35);
+    }
+    .deep-forge-hero--game h3 span {
+      background: linear-gradient(100deg, #f5e0a8, #e8c56a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .deep-forge-hero--game .deep-forge-cli {
+      margin: 0;
+      max-width: 100%;
+      padding: 0.55rem 0.85rem;
+      border-radius: 10px;
+      border: 1px solid rgba(232, 197, 106, 0.25);
+      background: rgba(0, 0, 0, 0.45);
+      font-size: 0.78rem;
+      color: rgba(230, 220, 190, 0.9);
+      overflow-x: auto;
+    }
+    .deep-forge-hero--game .deep-forge-hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      justify-content: center;
+    }
+    .deep-forge-hero--game .btn {
+      font-size: 0.95rem;
+      padding: 0.7rem 1.25rem;
     }
     .forge-draft-banner {
       display: flex;
@@ -915,7 +2533,9 @@
       flex-direction: column;
       gap: 1rem;
     }
-    #createFlowSpark:not([hidden]) .create-grok-banner,
+    #createFlowSpark:not([hidden]) .forge-action-row {
+      display: grid;
+    }
     #createFlowSpark:not([hidden]) .create-panel[data-create-panel="1"] {
       display: flex;
       flex-direction: column;
@@ -1549,45 +3169,314 @@
       text-decoration: underline;
     }
 
-    /* Creator Forges Hub */
+    /* Creator Forges Hub — centered on chamber art */
     .forge-hub {
-      max-width: 1100px;
-      margin: 0 auto 2rem;
+      max-width: min(1080px, 100%);
+      width: 100%;
+      margin: 0 auto;
     }
     .forge-hub .panel-hero {
       text-align: center;
       max-width: none;
       padding: 2.75rem 2rem 2.5rem;
-      margin-bottom: 1.35rem;
+      margin-bottom: 0;
       min-height: 12rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
+    .forge-hub .panel-hero--forges-actions {
+      min-height: 0;
+      padding: 1.75rem 1.5rem 1.65rem;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 22px;
+      position: relative;
+    }
+    .forge-hub .panel-hero--forges-actions::before {
+      content: "";
+      position: absolute;
+      inset: -18% -8% -12%;
+      border-radius: 40%;
+      background: radial-gradient(ellipse 55% 50% at 50% 48%, rgba(46, 230, 255, 0.14), transparent 68%);
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(2px);
+    }
     .forge-hub .panel-hero h2 {
-      font-size: clamp(1.85rem, 3.6vw, 2.45rem);
-      margin-bottom: 0.7rem;
+      font-size: clamp(1.75rem, 3.4vw, 2.35rem);
+      margin-bottom: 0.45rem;
+      text-shadow: 0 0 28px rgba(46, 230, 255, 0.25);
+    }
+    .forge-hub .panel-hero--forges-actions h2 span {
+      background: linear-gradient(90deg, #7ee8ff, #e8c56a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
     .forge-hub .panel-hero p {
-      margin: 0 auto 1.55rem;
-      max-width: 40rem;
-      font-size: 1.05rem;
-      line-height: 1.65;
+      margin: 0 auto 0.55rem;
+      max-width: 36rem;
+      font-size: 0.98rem;
+      line-height: 1.55;
+      opacity: 0.92;
+    }
+    .forge-path-kicker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 0 auto 1.25rem;
+    }
+    .forge-path-kicker__line {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 750;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(232, 197, 106, 0.92);
+      text-shadow: 0 0 18px rgba(232, 197, 106, 0.35);
+    }
+    .forge-path-kicker__hint {
+      margin: 0;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      color: rgba(180, 210, 230, 0.55);
+    }
+    .forge-path-kicker__hint kbd {
+      display: inline-block;
+      min-width: 1.15rem;
+      padding: 0.08rem 0.32rem;
+      margin: 0 0.08rem;
+      border-radius: 5px;
+      border: 1px solid rgba(46, 230, 255, 0.28);
+      background: rgba(4, 14, 28, 0.65);
+      color: rgba(126, 240, 255, 0.9);
+      font-size: 0.68rem;
+      font-weight: 700;
+      font-family: inherit;
+      box-shadow: 0 0 10px rgba(46, 230, 255, 0.12);
     }
     .forge-hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.85rem;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.2rem 1.4rem;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      justify-items: stretch;
     }
-    .forge-hub .forge-hero-actions .btn {
-      min-height: 3.25rem;
-      padding: 0.9rem 1.75rem;
-      font-size: 1.05rem;
-      font-weight: 780;
+    @media (max-width: 820px) {
+      .forge-hero-actions {
+        grid-template-columns: 1fr;
+        max-width: 16.5rem;
+      }
+      .forge-path-kicker__hint { display: none; }
+    }
+    .forge-action-card {
+      display: block;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      text-align: center;
+      font: inherit;
+      color: inherit;
+      border-radius: 18px;
+      transition: transform 0.22s ease, filter 0.22s ease;
+    }
+    .forge-action-card:hover {
+      transform: translateY(-6px) scale(1.015);
+      filter: brightness(1.05);
+    }
+    .forge-action-card:focus-visible {
+      outline: 2px solid rgba(46, 230, 255, 0.8);
+      outline-offset: 5px;
+    }
+    .forge-action-card__art {
+      position: relative;
+      display: block;
+      border-radius: 16px;
+      overflow: hidden;
+      /* Even taller cards */
+      aspect-ratio: 2 / 3;
+      min-height: clamp(13.5rem, 34vh, 22rem);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #061018;
+      transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .forge-action-card__key {
+      position: absolute;
+      top: 0.55rem;
+      right: 0.55rem;
+      z-index: 3;
+      min-width: 1.35rem;
+      height: 1.35rem;
+      padding: 0 0.28rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: rgba(230, 245, 255, 0.92);
+      background: rgba(4, 12, 24, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      pointer-events: none;
+    }
+    .forge-action-card--create .forge-action-card__key {
+      border-color: rgba(46, 230, 255, 0.4);
+      color: #9ef0ff;
+      box-shadow: 0 0 12px rgba(46, 230, 255, 0.2);
+    }
+    .forge-action-card--mine .forge-action-card__key {
+      border-color: rgba(120, 190, 240, 0.4);
+      color: #c8e8ff;
+    }
+    .forge-action-card--gate .forge-action-card__key {
+      border-color: rgba(232, 197, 106, 0.45);
+      color: #f5e2a8;
+      box-shadow: 0 0 12px rgba(232, 197, 106, 0.2);
+    }
+    @media (max-width: 820px) {
+      .forge-action-card__key { display: none; }
+    }
+    .forge-action-card__art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      display: block;
+      transition: transform 0.45s ease;
+    }
+    .forge-action-card:hover .forge-action-card__art img {
+      transform: scale(1.055);
+    }
+    /* Bottom fade for label readability */
+    .forge-action-card__art::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(
+        180deg,
+        transparent 42%,
+        rgba(2, 8, 16, 0.35) 68%,
+        rgba(2, 6, 14, 0.82) 100%
+      );
+      z-index: 1;
+    }
+    /* Button sits on the art */
+    .forge-action-card__btn {
+      position: absolute;
+      left: 0.7rem;
+      right: 0.7rem;
+      bottom: 0.75rem;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.85rem;
+      padding: 0.7rem 1rem;
+      font-size: 0.98rem;
+      font-weight: 800;
       border-radius: 999px;
-      min-width: 10.5rem;
+      pointer-events: none;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
+    }
+    .forge-action-card:hover .forge-action-card__btn {
+      transform: translateY(-1px);
+    }
+
+    /* Create New — cyan glow */
+    .forge-action-card--create .forge-action-card__art {
+      border-color: rgba(46, 230, 255, 0.38);
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(126, 240, 255, 0.08) inset,
+        0 0 32px rgba(46, 230, 255, 0.22),
+        0 0 56px rgba(46, 230, 255, 0.1);
+    }
+    .forge-action-card--create:hover .forge-action-card__art {
+      border-color: rgba(126, 240, 255, 0.55);
+      box-shadow:
+        0 22px 48px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(46, 230, 255, 0.35),
+        0 0 72px rgba(46, 230, 255, 0.16);
+    }
+    .forge-action-card--create .forge-action-card__btn {
+      color: #021018;
+      background: linear-gradient(135deg, #1ad4f0, #0ea5c9 55%, #7ee8ff);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 22px rgba(46, 230, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    .forge-action-card--create:hover .forge-action-card__btn {
+      box-shadow: 0 0 34px rgba(46, 230, 255, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    /* My Creations — cool cyan ghost */
+    .forge-action-card--mine .forge-action-card__art {
+      border-color: rgba(90, 170, 220, 0.32);
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(140, 200, 240, 0.06) inset,
+        0 0 28px rgba(70, 160, 220, 0.16),
+        0 0 50px rgba(40, 100, 180, 0.08);
+    }
+    .forge-action-card--mine:hover .forge-action-card__art {
+      border-color: rgba(140, 210, 255, 0.5);
+      box-shadow:
+        0 22px 48px rgba(0, 0, 0, 0.5),
+        0 0 36px rgba(90, 180, 240, 0.28),
+        0 0 64px rgba(50, 120, 200, 0.14);
+    }
+    .forge-action-card--mine .forge-action-card__btn {
+      color: #dff6ff;
+      background: linear-gradient(180deg, rgba(12, 36, 56, 0.82), rgba(4, 16, 28, 0.9));
+      border: 1px solid rgba(126, 220, 255, 0.5);
+      box-shadow: 0 0 18px rgba(70, 180, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      text-shadow: 0 0 12px rgba(46, 230, 255, 0.35);
+    }
+    .forge-action-card--mine:hover .forge-action-card__btn {
+      border-color: rgba(160, 235, 255, 0.75);
+      background: linear-gradient(180deg, rgba(16, 48, 72, 0.88), rgba(6, 22, 38, 0.94));
+      box-shadow: 0 0 28px rgba(90, 200, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    }
+
+    /* Publishing Gate — warm gold */
+    .forge-action-card--gate .forge-action-card__art {
+      border-color: rgba(232, 197, 106, 0.4);
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 220, 140, 0.08) inset,
+        0 0 32px rgba(232, 197, 106, 0.22),
+        0 0 56px rgba(200, 150, 50, 0.1);
+    }
+    .forge-action-card--gate:hover .forge-action-card__art {
+      border-color: rgba(255, 220, 140, 0.6);
+      box-shadow:
+        0 22px 48px rgba(0, 0, 0, 0.5),
+        0 0 42px rgba(232, 197, 106, 0.38),
+        0 0 76px rgba(232, 197, 106, 0.16);
+    }
+    .forge-action-card--gate .forge-action-card__btn {
+      color: #1a1204;
+      background: linear-gradient(135deg, #f0d48a, #c9a44a 50%, #e8c56a);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 22px rgba(232, 197, 106, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+    .forge-action-card--gate:hover .forge-action-card__btn {
+      box-shadow: 0 0 36px rgba(255, 210, 120, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.55);
     }
     .forge-hub-section {
       margin: 0 0 1.1rem;
@@ -2609,6 +4498,64 @@
     .shell[data-view="pack-grounds"] .view-panel-pack-grounds,
     .shell[data-view="outer-spires"] .view-panel-outer-spires {
       display: block;
+    }
+
+    /* Creator Forges hub: vertically center the panel over the chamber */
+    .shell[data-view="forges"] .view-panel-forges {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 2.4rem);
+      min-height: calc(100dvh - 2.4rem);
+      box-sizing: border-box;
+      padding: 0.5rem 0 1rem;
+    }
+    .shell[data-view="forges"] .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-height: 100dvh;
+      box-sizing: border-box;
+    }
+
+    /* Create path-pick: center the whole stage on the chamber (like Forges hub) */
+    .shell[data-view="create"] .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-height: 100dvh;
+      box-sizing: border-box;
+    }
+    .shell[data-view="create"] .view-panel-create {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: calc(100vh - 2.4rem);
+      min-height: calc(100dvh - 2.4rem);
+      box-sizing: border-box;
+    }
+    .shell[data-view="create"] .create-page--game:not(.is-path-picked) {
+      margin: auto;
+      width: 100%;
+      max-width: min(920px, 100%);
+      padding: 1rem 0.5rem 1.5rem;
+      gap: 1.15rem;
+      justify-content: center;
+    }
+    .shell[data-view="create"] .create-page--game.is-path-picked:not(.is-intent-picked) {
+      margin: auto;
+      max-width: min(900px, 100%);
+      padding: 1rem 0.5rem 1.5rem;
+      gap: 1.15rem;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+    .shell[data-view="create"] .create-page--game.is-intent-picked {
+      margin: 0 auto 2rem;
+      max-width: min(1120px, 100%);
+      padding: 0.35rem 0.25rem 2rem;
     }
 
     .zone-panel .panel-hero { margin-bottom: 1rem; }
@@ -15130,6 +17077,7 @@
   <div class="forges-atmosphere" id="forgesAtmosphere" aria-hidden="true">
     <div class="forges-atmosphere__art"></div>
     <div class="forges-atmosphere__veil"></div>
+    <canvas class="forges-atmosphere__canvas" id="forgesParticleCanvas" aria-hidden="true"></canvas>
     <div class="forges-atmosphere__vignette"></div>
   </div>
 
@@ -15415,45 +17363,37 @@
     <div class="view-panel-forges" id="forgesView">
       <div class="forge-hub" id="forgeHub">
         <!-- 1. Hero -->
-        <div class="panel-hero">
+        <div class="panel-hero panel-hero--forges-actions">
           <h2>Creator <span>Forges</span></h2>
           <p>Shape experiences. Publish to the Pack. Leave your mark.</p>
-          <div class="forge-hero-actions">
-            <button type="button" class="btn btn-primary" id="forgeCreateNew">Create New</button>
-            <button type="button" class="btn btn-ghost" id="forgeMyCreations">My Creations</button>
-            <button type="button" class="btn btn-gold" id="forgePublishingGate">Publishing Gate</button>
+          <div class="forge-path-kicker">
+            <p class="forge-path-kicker__line">Choose your path</p>
+            <p class="forge-path-kicker__hint">Press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to step onto a path</p>
+          </div>
+          <div class="forge-hero-actions" role="group" aria-label="Forge actions">
+            <button type="button" class="forge-action-card forge-action-card--create" id="forgeCreateNew" title="Create New (1)">
+              <span class="forge-action-card__art">
+                <span class="forge-action-card__key" aria-hidden="true">1</span>
+                <img src="assets/forges/create-new.jpg" alt="" width="480" height="720" decoding="async" />
+                <span class="forge-action-card__btn">Create New</span>
+              </span>
+            </button>
+            <button type="button" class="forge-action-card forge-action-card--mine" id="forgeMyCreations" title="My Creations (2)">
+              <span class="forge-action-card__art">
+                <span class="forge-action-card__key" aria-hidden="true">2</span>
+                <img src="assets/forges/my-creations.jpg" alt="" width="480" height="720" decoding="async" />
+                <span class="forge-action-card__btn">My Creations</span>
+              </span>
+            </button>
+            <button type="button" class="forge-action-card forge-action-card--gate" id="forgePublishingGate" title="Publishing Gate (3)">
+              <span class="forge-action-card__art">
+                <span class="forge-action-card__key" aria-hidden="true">3</span>
+                <img src="assets/forges/publishing-gate.jpg" alt="" width="480" height="720" decoding="async" />
+                <span class="forge-action-card__btn">Publishing Gate</span>
+              </span>
+            </button>
           </div>
         </div>
-
-        <!-- 2. Your status -->
-        <section class="forge-hub-section" aria-labelledby="forgeStatusTitle">
-          <h3 id="forgeStatusTitle">Your <span>Status</span></h3>
-          <div class="forge-status">
-            <div class="forge-status__cell">
-              <b>Published</b>
-              <span id="forgeStatPublished">0</span>
-            </div>
-            <div class="forge-status__cell">
-              <b>Influence</b>
-              <span id="forgeStatInfluence">0</span>
-            </div>
-            <div class="forge-status__cell">
-              <b>Howls earned</b>
-              <span id="forgeStatHowls">0</span>
-            </div>
-            <div class="forge-status__cell">
-              <b>Top honor</b>
-              <span id="forgeStatHonor">—</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- 3. Workshop drafts (remix / version) -->
-        <section class="forge-hub-section" aria-labelledby="forgeDraftsTitle">
-          <h3 id="forgeDraftsTitle">Workshop <span>Drafts</span></h3>
-          <p class="forge-tip" style="margin:0 0 0.65rem">Remix forks and version ships live here until you seal them at the Gate.</p>
-          <div class="forge-drafts" id="forgeDraftsList" role="list"></div>
-        </section>
       </div>
     </div>
 
@@ -15462,9 +17402,21 @@
       <div class="create-page create-page--game" id="createPage">
         <header class="create-quest-bar">
           <button type="button" class="create-quest-back" id="createBackHub" title="Creator Forges hub">← Hub</button>
+          <div class="create-quest-void" title="Empty Artifact vessel">
+            <span class="create-quest-void__black"></span>
+            <span class="create-quest-void__frame"></span>
+            <button
+              type="button"
+              class="forge-help-btn"
+              data-forge-help="artifact"
+              aria-label="What is Forge an Artifact?"
+              title="What is this?"
+            >!</button>
+          </div>
           <div class="create-quest-bar__title">
             <span class="create-quest-kicker">Forge quest</span>
-            <h2>Create a <span>Spark</span></h2>
+            <h2>Forge an <span>Artifact</span></h2>
+            <p class="create-quest-sub">Empty vessel of the Hall — fill the black seal, then pass the Gate.</p>
           </div>
           <ol class="create-quest-steps" aria-label="How to forge">
             <li class="is-on"><b>1</b><span>Pick type</span></li>
@@ -15473,61 +17425,293 @@
           </ol>
         </header>
 
-        <div class="create-mode-row create-mode-row--game" role="group" aria-label="Forge class">
-          <button type="button" class="create-mode-btn is-active" data-create-mode="spark" id="createModeSpark">
-            <span class="create-mode-ico" aria-hidden="true">⚡</span>
-            <strong>Spark Benches</strong>
-            <span class="create-mode-tag">Recommended</span>
-          </button>
-          <button type="button" class="create-mode-btn" data-create-mode="deep" id="createModeDeep">
-            <span class="create-mode-ico" aria-hidden="true">⚒️</span>
-            <strong>Deep Forges</strong>
-            <span class="create-mode-tag">Advanced</span>
-          </button>
+        <div class="create-mode-row create-mode-row--game" role="tablist" aria-label="Forge class">
+          <div class="create-mode-card-wrap" data-help-tone="spark">
+            <button
+              type="button"
+              class="forge-help-btn"
+              data-forge-help="spark"
+              aria-label="What are Spark Benches?"
+              title="What is this?"
+            >!</button>
+            <button
+              type="button"
+              class="create-mode-btn"
+              data-create-mode="spark"
+              id="createModeSpark"
+              role="tab"
+              aria-selected="false"
+              aria-controls="createFlowSpark"
+            >
+              <span class="create-mode-media">
+                <img src="assets/forges/spark-benches.jpg" alt="" width="960" height="540" decoding="async" />
+              </span>
+              <span class="create-mode-caption">
+                <span class="create-mode-ico" aria-hidden="true">⚡</span>
+                <strong>Spark Benches</strong>
+                <span class="create-mode-tag">Recommended</span>
+              </span>
+            </button>
+          </div>
+          <div class="create-mode-card-wrap" data-help-tone="deep">
+            <button
+              type="button"
+              class="forge-help-btn"
+              data-forge-help="deep"
+              aria-label="What are Deep Forges?"
+              title="What is this?"
+            >!</button>
+            <button
+              type="button"
+              class="create-mode-btn"
+              data-create-mode="deep"
+              id="createModeDeep"
+              role="tab"
+              aria-selected="false"
+              aria-controls="createFlowDeep"
+            >
+              <span class="create-mode-media">
+                <img src="assets/forges/deep-forges.jpg" alt="" width="960" height="540" decoding="async" />
+              </span>
+              <span class="create-mode-caption">
+                <span class="create-mode-ico" aria-hidden="true">⚒️</span>
+                <strong>Deep Forges</strong>
+                <span class="create-mode-tag">Advanced</span>
+              </span>
+            </button>
+          </div>
         </div>
 
+        <!-- Intent pick: New Artifact vs Remix / Fork (after Spark/Deep) -->
+        <div class="create-intent-stage" id="createIntentStage">
+          <div class="create-intent-bar">
+            <button type="button" class="create-quest-back" id="createBackPaths" title="Back to Spark Benches / Deep Forges">← Paths</button>
+            <div class="create-intent-bar__title">
+              <p class="create-intent-bar__kicker" id="createIntentPathLabel">Spark Benches</p>
+              <h2 class="create-intent-bar__h">Choose your <span>intent</span></h2>
+            </div>
+          </div>
+          <div class="create-intent-row" role="group" aria-label="Artifact intent">
+            <div class="create-intent-card-wrap" data-help-tone="new">
+              <button type="button" class="create-intent-card create-intent-card--new" data-create-intent="new" id="createIntentNew">
+                <span class="create-intent-card__media">
+                  <img src="assets/forges/intent-new.jpg" alt="" width="960" height="540" decoding="async" />
+                </span>
+                <span class="create-intent-card__cap">
+                  <strong>New Artifact</strong>
+                  <span>Fresh vessel</span>
+                </span>
+              </button>
+              <button
+                type="button"
+                class="forge-help-btn"
+                data-forge-help="intent-new"
+                aria-label="What is New Artifact?"
+                title="What is New Artifact?"
+              >!</button>
+            </div>
+            <div class="create-intent-card-wrap" data-help-tone="remix">
+              <button type="button" class="create-intent-card create-intent-card--remix" data-create-intent="remix" id="createIntentRemix">
+                <span class="create-intent-card__media">
+                  <img src="assets/forges/intent-remix.jpg" alt="" width="960" height="540" decoding="async" />
+                </span>
+                <span class="create-intent-card__cap">
+                  <strong>Remix / Fork</strong>
+                  <span>Branch lineage</span>
+                </span>
+              </button>
+              <button
+                type="button"
+                class="forge-help-btn"
+                data-forge-help="intent-remix"
+                aria-label="What is Remix / Fork?"
+                title="What is Remix / Fork?"
+              >!</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="create-forge-workspace" id="createForgeWorkspace">
+        <div class="create-intent-bar create-intent-bar--forge" id="createForgeTopBar">
+          <button type="button" class="create-quest-back" id="createBackIntent" title="Back to New / Remix">← Intent</button>
+          <div class="create-intent-bar__title">
+            <p class="create-intent-bar__kicker" id="createForgePathLabel">Spark Benches · New Artifact</p>
+            <h2 class="create-intent-bar__h"><span>Forge</span></h2>
+          </div>
+          <ol class="create-quest-steps" aria-label="How to forge" id="createForgeSteps" hidden>
+            <li class="is-on"><b>1</b><span>Pick type</span></li>
+            <li><b>2</b><span>Build in Grok</span></li>
+            <li><b>3</b><span>Gate publish</span></li>
+          </ol>
+        </div>
         <div class="forge-draft-banner" id="forgeDraftBanner" hidden>
           <span class="forge-draft-banner__ico" aria-hidden="true">🧭</span>
           <p id="forgeDraftBannerBody">Parent link prefilled from a bright node.</p>
         </div>
 
-        <div class="create-layout create-layout--game">
-          <div class="create-main">
-            <div class="create-flow" id="createFlowSpark">
-              <div class="create-grok-banner create-grok-banner--game" id="createSparkGrokBanner">
-                <div class="create-quest-runes" aria-hidden="true">
-                  <span>① Open Grok</span>
-                  <span>→</span>
-                  <span>② Grok Build</span>
-                  <span>→</span>
-                  <span>③ Publish</span>
-                  <span>→</span>
-                  <span>④ Paste link</span>
-                </div>
-                <div class="create-grok-banner__actions">
-                  <a class="btn btn-primary" href="https://grok.com" target="_blank" rel="noopener noreferrer">Open Grok ⚡</a>
-                  <button type="button" class="btn btn-gold" id="createGoPublishGate" title="Open Publishing Gate">Gate ⚡</button>
+        <!-- Remix / Fork: search a living Artifact to branch -->
+        <div class="forge-remix-stage" id="createRemixStage" hidden>
+          <div class="forge-remix-hero" id="createRemixHero">
+            <div class="forge-remix-hero__media" aria-hidden="true">
+              <img id="createRemixHeroImg" src="assets/forges/remix-search-hero.jpg" alt="" width="960" height="540" decoding="async" />
+            </div>
+            <div class="forge-remix-hero__body">
+              <p class="forge-remix-hero__kicker" id="createRemixHeroKicker">Branch the bloodline</p>
+              <h2 class="forge-remix-hero__title" id="createRemixHeroTitle">Find a <span>vessel</span> to fork</h2>
+            </div>
+          </div>
+
+          <div class="forge-remix-selected" id="createRemixSelected">
+            <div class="forge-remix-selected__empty forge-remix-selected--empty" id="createRemixSelectedEmpty">
+              <p class="forge-remix-selected__empty-kicker">Parent vessel</p>
+              <p class="forge-remix-selected__empty-hint">Empty slot — pick a living Artifact from the Hall to fork.</p>
+              <button type="button" class="btn btn-gold" id="createRemixChooseBtn">Choose vessel</button>
+            </div>
+            <div class="forge-remix-selected__filled" id="createRemixSelectedFilled" hidden>
+              <div class="forge-remix-selected__media">
+                <img id="createRemixSelectedImg" src="assets/forges/remix-selected-hero.jpg" alt="" width="960" height="540" decoding="async" />
+              </div>
+              <div class="forge-remix-selected__body">
+                <p class="forge-remix-selected__kicker" id="createRemixSelectedKicker">Parent vessel</p>
+                <h3 id="createRemixSelectedTitle">—</h3>
+                <p class="forge-remix-selected__meta" id="createRemixSelectedMeta">—</p>
+                <div class="forge-remix-selected__actions">
+                  <button type="button" class="btn btn-ghost" id="createRemixChangeParent">Change vessel</button>
+                  <button type="button" class="btn btn-gold" id="createRemixCopyBrief">Copy Grok brief</button>
                 </div>
               </div>
-              <div class="create-panel create-panel--game" data-create-panel="1">
-                <div class="create-panel-head">
-                  <h3>Choose your Spark</h3>
-                  <span class="create-panel-hint">Tap a class → grab a prompt → forge</span>
+            </div>
+          </div>
+
+          <div class="forge-remix-search-box" id="createRemixSearchBox">
+            <div class="forge-remix-search-row">
+              <span class="forge-remix-search-ico" aria-hidden="true">🔍</span>
+              <input
+                type="search"
+                id="createRemixSearch"
+                placeholder="Search Artifacts by name, creator, or class…"
+                autocomplete="off"
+                spellcheck="false"
+                aria-label="Search Artifacts to remix"
+              />
+              <button type="button" class="forge-remix-search-clear" id="createRemixSearchClear" title="Clear search" aria-label="Clear search" hidden>×</button>
+            </div>
+            <p class="forge-remix-search-meta" id="createRemixSearchMeta">Living vessels of the Hall</p>
+            <div class="forge-remix-results" id="createRemixResults" role="listbox" aria-label="Artifacts to remix"></div>
+          </div>
+        </div>
+
+        <div class="create-layout create-layout--game forge-new-tools" id="createForgeTools">
+          <div class="create-main">
+            <div class="create-flow" id="createFlowSpark">
+              <!-- Visual actions: Open Grok | Gate -->
+              <div class="forge-action-row" id="createSparkGrokBanner">
+                <div class="forge-action-card-wrap" data-help-tone="grok">
+                  <a
+                    class="forge-action-card"
+                    href="https://grok.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Open Grok"
+                  >
+                    <span class="forge-action-card__media">
+                      <img src="assets/forges/action-open-grok.jpg" alt="" width="960" height="540" decoding="async" />
+                    </span>
+                    <span class="forge-action-card__cap">Open Grok</span>
+                  </a>
+                  <button
+                    type="button"
+                    class="forge-help-btn"
+                    data-forge-help="action-open-grok"
+                    aria-label="What is Open Grok?"
+                    title="What is Open Grok?"
+                  >!</button>
                 </div>
-                <div class="create-templates" id="createTemplates">
-                  <button type="button" class="create-template-chip is-active" data-create-type="mini-quest">Mini-Quest</button>
-                  <button type="button" class="create-template-chip" data-create-type="story-branch">Story Branch</button>
-                  <button type="button" class="create-template-chip" data-create-type="bolt-story">Echo</button>
-                  <button type="button" class="create-template-chip" data-create-type="ar-portal">AR Portal</button>
-                  <button type="button" class="create-template-chip" data-create-type="puzzle">Puzzle</button>
-                  <button type="button" class="create-template-chip" data-create-type="howl">Howl</button>
-                  <button type="button" class="create-template-chip" data-create-type="remix">Remix</button>
+                <div class="forge-action-card-wrap" data-help-tone="gate">
+                  <button
+                    type="button"
+                    class="forge-action-card forge-action-card--gate"
+                    id="createGoPublishGate"
+                    title="Open Publishing Gate"
+                  >
+                    <span class="forge-action-card__media">
+                      <img src="assets/forges/publishing-gate.jpg" alt="" width="960" height="540" decoding="async" />
+                    </span>
+                    <span class="forge-action-card__cap">Gate</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="forge-help-btn"
+                    data-forge-help="action-gate"
+                    aria-label="What is the Publishing Gate?"
+                    title="What is the Gate?"
+                  >!</button>
+                </div>
+              </div>
+
+              <div class="create-panel create-panel--game forge-class-panel" data-create-panel="1">
+                <p class="forge-class-kicker">Class</p>
+                <div class="create-templates forge-class-grid" id="createTemplates" role="listbox" aria-label="Artifact class">
+                  <div class="forge-class-card-wrap">
+                    <button type="button" class="forge-class-card is-active" data-create-type="mini-quest" role="option" aria-selected="true">
+                      <span class="forge-class-card__media">
+                        <img src="assets/forges/class-mini-quest.jpg" alt="" width="512" height="512" decoding="async" />
+                      </span>
+                      <strong>Mini-Quest</strong>
+                    </button>
+                    <button type="button" class="forge-help-btn" data-forge-help="class-mini-quest" aria-label="What is Mini-Quest?" title="What is Mini-Quest?">!</button>
+                  </div>
+                  <div class="forge-class-card-wrap">
+                    <button type="button" class="forge-class-card" data-create-type="story-branch" role="option" aria-selected="false">
+                      <span class="forge-class-card__media">
+                        <img src="assets/forges/class-story.jpg" alt="" width="512" height="512" decoding="async" />
+                      </span>
+                      <strong>Story</strong>
+                    </button>
+                    <button type="button" class="forge-help-btn" data-forge-help="class-story" aria-label="What is Story?" title="What is Story?">!</button>
+                  </div>
+                  <div class="forge-class-card-wrap">
+                    <button type="button" class="forge-class-card" data-create-type="bolt-story" role="option" aria-selected="false">
+                      <span class="forge-class-card__media">
+                        <img src="assets/forges/class-echo.jpg" alt="" width="512" height="512" decoding="async" />
+                      </span>
+                      <strong>Echo</strong>
+                    </button>
+                    <button type="button" class="forge-help-btn" data-forge-help="class-echo" aria-label="What is Echo?" title="What is Echo?">!</button>
+                  </div>
+                  <div class="forge-class-card-wrap">
+                    <button type="button" class="forge-class-card" data-create-type="ar-portal" role="option" aria-selected="false">
+                      <span class="forge-class-card__media">
+                        <img src="assets/forges/class-ar-portal.jpg" alt="" width="512" height="512" decoding="async" />
+                      </span>
+                      <strong>AR Portal</strong>
+                    </button>
+                    <button type="button" class="forge-help-btn" data-forge-help="class-ar-portal" aria-label="What is AR Portal?" title="What is AR Portal?">!</button>
+                  </div>
+                  <div class="forge-class-card-wrap">
+                    <button type="button" class="forge-class-card" data-create-type="puzzle" role="option" aria-selected="false">
+                      <span class="forge-class-card__media">
+                        <img src="assets/forges/class-puzzle.jpg" alt="" width="512" height="512" decoding="async" />
+                      </span>
+                      <strong>Puzzle</strong>
+                    </button>
+                    <button type="button" class="forge-help-btn" data-forge-help="class-puzzle" aria-label="What is Puzzle?" title="What is Puzzle?">!</button>
+                  </div>
+                  <div class="forge-class-card-wrap">
+                    <button type="button" class="forge-class-card" data-create-type="howl" role="option" aria-selected="false">
+                      <span class="forge-class-card__media">
+                        <img src="assets/forges/class-howl.jpg" alt="" width="512" height="512" decoding="async" />
+                      </span>
+                      <strong>Howl</strong>
+                    </button>
+                    <button type="button" class="forge-help-btn" data-forge-help="class-howl" aria-label="What is Howl?" title="What is Howl?">!</button>
+                  </div>
                 </div>
                 <div class="create-selected-prompt" id="createSelectedPromptBox" hidden>
                   <span class="create-selected-prompt__tag">Loadout</span>
                   <strong id="createSelectedPromptTitle">—</strong>
                   <p id="createSelectedPromptBody"></p>
-                  <button type="button" class="btn btn-ghost" id="createChangePrompt">Swap prompt</button>
+                  <button type="button" class="btn btn-ghost" id="createChangePrompt">Swap</button>
                 </div>
                 <input type="hidden" id="createTitle" value="" />
                 <input type="hidden" id="createDescribe" value="" />
@@ -15542,46 +17726,36 @@
 
             <div class="create-flow" id="createFlowDeep" hidden>
               <div class="create-panel deep-forge-hero deep-forge-hero--game" data-create-panel="1">
-                <div class="deep-forge-hero__badge">CLI · Power path</div>
-                <h3>Deep <span>Forges</span></h3>
-                <div class="deep-forge-cli" aria-label="Install command">
-                  <code>$ curl -fsSL https://x.ai/cli/install.sh | bash</code>
+                <div class="deep-forge-hero__media" aria-hidden="true">
+                  <img src="assets/forges/deep-forges.jpg" alt="" width="960" height="540" decoding="async" />
                 </div>
-                <div class="deep-forge-hero__actions">
-                  <a class="btn btn-primary" href="https://x.ai/cli" target="_blank" rel="noopener noreferrer">x.ai/cli →</a>
-                  <button type="button" class="btn btn-gold" id="createDeepPublishBtn">Gate ⚡</button>
+                <div class="deep-forge-hero__body">
+                  <div class="deep-forge-hero__badge">CLI</div>
+                  <h3>Deep <span>Forges</span></h3>
+                  <div class="deep-forge-cli" aria-label="Install command">
+                    <code>$ curl -fsSL https://x.ai/cli/install.sh | bash</code>
+                  </div>
+                  <div class="deep-forge-hero__actions">
+                    <a class="btn btn-primary" href="https://x.ai/cli" target="_blank" rel="noopener noreferrer">x.ai/cli →</a>
+                    <button type="button" class="btn btn-gold" id="createDeepPublishBtn">Gate ⚡</button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <aside class="create-side create-side--game">
+          <!-- Side text panels kept for legacy JS; hidden via CSS in game forge -->
+          <aside class="create-side create-side--game" hidden>
             <div class="create-side-card create-side-card--quest" id="createSideGrokCard">
               <h4>Quest log</h4>
-              <ol class="create-side-steps create-side-steps--icons">
-                <li><span class="q">1</span> Grok app</li>
-                <li><span class="q">2</span> Grok Build</li>
-                <li><span class="q">3</span> Publish there</li>
-                <li><span class="q">4</span> Paste link @ Gate</li>
-              </ol>
               <a class="btn btn-ghost" href="https://grok.com" target="_blank" rel="noopener noreferrer">Open Grok</a>
             </div>
-            <div class="create-side-card" id="createSideTemplatesCard">
-              <h4>Classes</h4>
-              <ul class="create-class-list">
-                <li>⚡ Mini-Quest</li>
-                <li>📖 Story</li>
-                <li>▶ Echo</li>
-                <li>🐺 Howl</li>
-              </ul>
-            </div>
-            <div class="create-side-card" id="createSideDeepCliCard" hidden>
-              <h4>Deep CLI</h4>
-              <p class="create-side-one-line"><a href="https://x.ai/cli" target="_blank" rel="noopener noreferrer">x.ai/cli</a> → install → forge → Gate</p>
-            </div>
-            <p class="create-side-tip" id="createSideTipsText" hidden>Grok Build → publish → paste sandbox link.</p>
+            <div class="create-side-card" id="createSideTemplatesCard"></div>
+            <div class="create-side-card" id="createSideDeepCliCard" hidden></div>
+            <p class="create-side-tip" id="createSideTipsText" hidden></p>
           </aside>
         </div>
+        </div><!-- /.create-forge-workspace -->
       </div>
     </div>
 
@@ -16685,6 +18859,24 @@
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-ghost" data-close-create-prompts>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forge path help (Imagine illustrated) -->
+  <div class="modal-overlay" id="forgeHelpModal" role="dialog" aria-modal="true" aria-labelledby="forgeHelpTitle">
+    <div class="modal">
+      <button type="button" class="forge-help-close" id="forgeHelpClose" aria-label="Close">&times;</button>
+      <div class="forge-help-hero">
+        <img id="forgeHelpImg" src="assets/forges/help-artifact.jpg" alt="" width="960" height="540" decoding="async" />
+      </div>
+      <div class="forge-help-body">
+        <p class="forge-help-kicker" id="forgeHelpKicker">Forge guide</p>
+        <h2 class="forge-help-title" id="forgeHelpTitle">Forge an Artifact</h2>
+        <p class="forge-help-text" id="forgeHelpText"></p>
+        <div class="form-actions" style="margin:0;padding:0;justify-content:flex-end">
+          <button type="button" class="btn btn-primary" id="forgeHelpGotIt">Got it</button>
+        </div>
       </div>
     </div>
   </div>
@@ -24271,12 +26463,13 @@
       if (!draft) return;
       createState.forgeDraft = draft;
       createState.versionOf = draft.mode === "version" ? draft.versionOf : null;
-      createState.type = draft.suggestedType || createState.type || "mini-quest";
+      createState.type = draft.suggestedType === "remix" ? "mini-quest" : (draft.suggestedType || createState.type || "mini-quest");
       createState.mode = "spark";
       createState.promptIndex = 0;
+      createState.remixSearchOpen = false;
       try { localStorage.setItem(FORGE_DRAFT_KEY, JSON.stringify(draft)); } catch { /* ok */ }
       upsertForgeDraft(draft);
-      openCreatePage({ mode: "spark", resetPrompt: false });
+      openCreatePage({ mode: "spark", resetPrompt: false, pathPicked: true, intent: "remix", resumeDraft: true });
       applyForgeDraftToCreateUI(draft);
     }
 
@@ -25049,9 +27242,29 @@
       }
       createState.forgeDraft = draft;
       createState.versionOf = draft.mode === "version" ? draft.versionOf : null;
-      createState.type = draft.suggestedType || createState.type;
+      createState.type = draft.suggestedType === "remix" ? "mini-quest" : (draft.suggestedType || createState.type);
+      if (createState.intent === "remix" || draft.mode === "remix" || draft.parentId) {
+        createState.intent = createState.intent || "remix";
+        createState.pathPicked = true;
+      }
       const parent = draft.parentId ? findItemById(draft.parentId) : null;
       const brief = buildRemixGrokBrief(draft, parent);
+      // Remix path uses the visual selected card + search stage (not the text banner)
+      if (createState.intent === "remix" || draft.mode === "remix") {
+        if (banner) banner.hidden = true;
+        const box = document.getElementById("createSelectedPromptBox");
+        if (box) box.hidden = true;
+        const briefTitle = draft.mode === "version"
+          ? `Version v${draft.versionNumber}: ${draft.parentTitle || draft.versionOf}`
+          : `Fork: ${draft.parentTitle || "parent"}`;
+        const titleIn = document.getElementById("createTitle");
+        const descIn = document.getElementById("createDescribe");
+        if (titleIn) titleIn.value = draft.prefill?.title || briefTitle;
+        if (descIn) descIn.value = brief;
+        try { syncCreateUI(); } catch { /* ok */ }
+        try { renderRemixArtifactSearch(); } catch { /* ok */ }
+        return;
+      }
       if (banner && body) {
         banner.hidden = false;
         const modeLine = draft.mode === "version"
@@ -25082,6 +27295,7 @@
           createState.versionOf = null;
           if (banner) banner.hidden = true;
           toast("Draft cleared");
+          try { syncCreateUI(); } catch { /* ok */ }
           renderForgesHub();
         });
       }
@@ -30164,11 +32378,14 @@
 
     let createState = {
       mode: "spark", // spark | deep
+      pathPicked: false, // false = only Forge an Artifact + Spark/Deep
+      intent: null, // null | "new" | "remix" — after path pick
       step: 1,
       type: "mini-quest",
       promptIndex: -1,
       forgeDraft: null, // remix / version / constellation draft
       versionOf: null,  // artifact id when shipping a new version
+      remixSearchOpen: false, // remix path: show search only after Choose vessel
     };
 
     /** Two ready-to-use Grok Build example prompts per Spark type — long, web-game only (2D or 3D Three.js) */
@@ -30249,12 +32466,437 @@
       if (opts.mode === "deep" || opts.mode === "spark") createState.mode = opts.mode;
       createState.step = 1;
       if (opts.resetPrompt !== false) createState.promptIndex = -1;
+      const hasDraft = !!(createState.forgeDraft || localStorage.getItem(FORGE_DRAFT_KEY));
+      // Fresh open: path pick only. Draft resume jumps to intent=remix workspace.
+      if (opts.pathPicked === true || opts.skipPathPick === true || (opts.resumeDraft === true && hasDraft)) {
+        createState.pathPicked = true;
+        createState.intent = opts.intent || (hasDraft ? "remix" : "new");
+      } else {
+        createState.pathPicked = false;
+        createState.intent = null;
+      }
       setNavView("create");
-      syncCreateUI();
-      // Restore constellation forge draft if any
-      if (createState.forgeDraft || localStorage.getItem(FORGE_DRAFT_KEY)) {
+      if (createState.pathPicked && createState.intent && hasDraft) {
         applyForgeDraftToCreateUI(createState.forgeDraft);
       }
+      syncCreateUI();
+      try {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch { /* ok */ }
+    }
+
+    function pickCreatePath(mode) {
+      createState.mode = mode === "deep" ? "deep" : "spark";
+      createState.pathPicked = true;
+      createState.intent = null; // next: New vs Remix
+      createState.step = 1;
+      syncCreateUI();
+      try { playHallSfx("click"); } catch { /* ok */ }
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch { /* ok */ }
+    }
+
+    function pickCreateIntent(intent) {
+      createState.intent = intent === "remix" ? "remix" : "new";
+      createState.step = 1;
+      // Remix is an intent path, not a class — never keep "remix" as the type chip
+      if (createState.type === "remix") {
+        createState.type = "mini-quest";
+        createState.promptIndex = -1;
+      }
+      if (createState.intent === "remix") {
+        // Always arrive empty: clear any previous parent so the vessel slot is blank + button only.
+        // (Hall "Remix" actions still prefill via activateForgeDraft / pickRemixParentArtifact.)
+        try {
+          const active = JSON.parse(localStorage.getItem(FORGE_DRAFT_KEY) || "null");
+          if (active && active.draftId) removeForgeDraft(active.draftId);
+        } catch { /* ok */ }
+        try { localStorage.removeItem(FORGE_DRAFT_KEY); } catch { /* ok */ }
+        createState.forgeDraft = null;
+        createState.versionOf = null;
+        createState.remixSearchOpen = false;
+        const banner = document.getElementById("forgeDraftBanner");
+        if (banner) banner.hidden = true;
+        const box = document.getElementById("createSelectedPromptBox");
+        if (box) box.hidden = true;
+        const search = document.getElementById("createRemixSearch");
+        if (search) search.value = "";
+      } else {
+        createState.remixSearchOpen = false;
+        // New artifact: keep optional draft out of the way unless user wants it
+        const banner = document.getElementById("forgeDraftBanner");
+        if (banner && !createState.forgeDraft) banner.hidden = true;
+      }
+      syncCreateUI();
+      try { playHallSfx("click"); } catch { /* ok */ }
+      try {
+        document.getElementById("createForgeWorkspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch {
+        try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch { /* ok */ }
+      }
+    }
+
+    function remixParentDraft() {
+      let draft = createState.forgeDraft;
+      if (!draft) {
+        try { draft = JSON.parse(localStorage.getItem(FORGE_DRAFT_KEY) || "null"); } catch { draft = null; }
+      }
+      return draft && draft.parentId ? draft : null;
+    }
+
+    function listRemixableArtifacts(query) {
+      const q = String(query || "").trim().toLowerCase();
+      let list = [];
+      try {
+        list = allItemsRaw().filter((item) => {
+          if (!item || isRelic(item)) return false;
+          if (item.locked) return false;
+          return true;
+        });
+      } catch {
+        list = [];
+      }
+      if (q) {
+        list = list.filter((item) => {
+          const hay = [
+            item.title,
+            item.creator,
+            item.type,
+            typeLabel(item.type),
+            item.id,
+            item.description,
+          ].map((x) => String(x || "").toLowerCase()).join(" ");
+          return hay.includes(q);
+        });
+      }
+      list.sort((a, b) => {
+        const ra = Number(b.resonance || 0) - Number(a.resonance || 0);
+        if (ra) return ra;
+        return String(a.title || "").localeCompare(String(b.title || ""));
+      });
+      return list.slice(0, 48);
+    }
+
+    function renderRemixArtifactSearch(query) {
+      const results = document.getElementById("createRemixResults");
+      const meta = document.getElementById("createRemixSearchMeta");
+      const input = document.getElementById("createRemixSearch");
+      const clearBtn = document.getElementById("createRemixSearchClear");
+      if (!results) return;
+      const q = query != null ? query : (input?.value || "");
+      if (clearBtn) clearBtn.hidden = !String(q).trim();
+      const items = listRemixableArtifacts(q);
+      const parentId = remixParentDraft()?.parentId || null;
+      if (meta) {
+        meta.textContent = q.trim()
+          ? `${items.length} vessel${items.length === 1 ? "" : "s"} match “${String(q).trim()}”`
+          : `${items.length} living vessel${items.length === 1 ? "" : "s"} · pick one to fork`;
+      }
+      if (!items.length) {
+        results.innerHTML = `<p class="forge-remix-empty">No vessels match. Try another name, creator, or class.</p>`;
+        return;
+      }
+      results.innerHTML = items.map((item) => {
+        const img = item.image
+          ? `<img src="${escapeAttr(item.image)}" alt="" loading="lazy" onerror="this.style.opacity=0" />`
+          : `<img src="assets/forges/remix-selected-hero.jpg" alt="" loading="lazy" />`;
+        const sel = parentId && item.id === parentId ? " is-selected" : "";
+        const type = escapeHtml(typeLabel(item.type) || item.type || "Artifact");
+        const creator = escapeHtml(item.creator || "Unknown forger");
+        const title = escapeHtml(item.title || "Untitled");
+        return `<button type="button" class="forge-remix-pick${sel}" data-remix-pick="${escapeAttr(item.id)}" role="option" aria-selected="${parentId === item.id ? "true" : "false"}">
+          <span class="forge-remix-pick__media">
+            ${img}
+            <span class="forge-remix-pick__badge">${type}</span>
+          </span>
+          <span class="forge-remix-pick__cap">
+            <strong>${title}</strong>
+            <span>by ${creator}</span>
+          </span>
+        </button>`;
+      }).join("");
+    }
+
+    function syncRemixSelectedUI(draft) {
+      const d = draft || remixParentDraft();
+      const selected = document.getElementById("createRemixSelected");
+      const empty = document.getElementById("createRemixSelectedEmpty");
+      const filled = document.getElementById("createRemixSelectedFilled");
+      const heroImg = document.getElementById("createRemixHeroImg");
+      const heroKicker = document.getElementById("createRemixHeroKicker");
+      const heroTitle = document.getElementById("createRemixHeroTitle");
+      if (selected) selected.hidden = false;
+      if (!d || !d.parentId) {
+        if (empty) empty.hidden = false;
+        if (filled) filled.hidden = true;
+        if (heroImg) heroImg.src = "assets/forges/remix-search-hero.jpg";
+        if (heroKicker) heroKicker.textContent = "Branch the bloodline";
+        if (heroTitle) heroTitle.innerHTML = createState.remixSearchOpen
+          ? 'Find a <span>vessel</span> to fork'
+          : 'Choose a <span>vessel</span>';
+        return;
+      }
+      const parent = findItemById(d.parentId);
+      if (empty) empty.hidden = true;
+      if (filled) filled.hidden = false;
+      const img = document.getElementById("createRemixSelectedImg");
+      const title = document.getElementById("createRemixSelectedTitle");
+      const meta = document.getElementById("createRemixSelectedMeta");
+      const kicker = document.getElementById("createRemixSelectedKicker");
+      if (img) {
+        img.src = (parent && parent.image) || "assets/forges/remix-selected-hero.jpg";
+        img.alt = d.parentTitle || parent?.title || "Parent Artifact";
+      }
+      if (title) title.textContent = d.parentTitle || parent?.title || "Parent Artifact";
+      if (kicker) kicker.textContent = d.allowPackage ? "Open fork · parent vessel" : "Honor-link · parent vessel";
+      if (meta) {
+        const type = parent ? typeLabel(parent.type) : (d.suggestedType || "Artifact");
+        const creator = parent?.creator || "—";
+        const policy = parent ? remixPolicyLabel(parent) : (d.allowPackage ? "Open vessel" : "Link-only");
+        meta.textContent = `${type} · by ${creator} · ${policy}`;
+      }
+      if (heroImg) heroImg.src = "assets/forges/remix-selected-hero.jpg";
+      if (heroKicker) heroKicker.textContent = "Lineage locked";
+      if (heroTitle) heroTitle.innerHTML = 'Fork this <span>vessel</span>';
+    }
+
+    function openRemixVesselSearch() {
+      createState.remixSearchOpen = true;
+      syncCreateUI();
+      try { renderRemixArtifactSearch(); } catch { /* ok */ }
+      try {
+        document.getElementById("createRemixSearchBox")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } catch { /* ok */ }
+      try { document.getElementById("createRemixSearch")?.focus(); } catch { /* ok */ }
+      try { playHallSfx("click"); } catch { /* ok */ }
+    }
+
+    function clearRemixParentDraft() {
+      const draft = remixParentDraft();
+      if (draft?.draftId) removeForgeDraft(draft.draftId);
+      try { localStorage.removeItem(FORGE_DRAFT_KEY); } catch { /* ok */ }
+      createState.forgeDraft = null;
+      createState.versionOf = null;
+      createState.remixSearchOpen = false;
+      const banner = document.getElementById("forgeDraftBanner");
+      if (banner) banner.hidden = true;
+      const box = document.getElementById("createSelectedPromptBox");
+      if (box) box.hidden = true;
+      const search = document.getElementById("createRemixSearch");
+      if (search) search.value = "";
+      syncCreateUI();
+      toast("Vessel cleared");
+    }
+
+    function pickRemixParentArtifact(id) {
+      const item = findItemById(id);
+      if (!item || isRelic(item)) {
+        toast("That vessel could not be found");
+        return;
+      }
+      if (item.locked) {
+        toast("Locked vessels cannot be remixed yet");
+        return;
+      }
+      // Stay on forge remix path (do not re-open create page from hall)
+      try { trackQuestProgress("remix"); } catch { /* ok */ }
+      const allow = artifactAllowFork(item);
+      const draftId = "draft_" + Date.now().toString(36);
+      const draft = {
+        draftId,
+        mode: "remix",
+        parentId: item.id,
+        parentTitle: item.title,
+        parentBand: (getResonancePulse(item).label || ""),
+        linkType: allow ? "remix_of" : "sequel_of",
+        recType: allow ? "open" : "build_near",
+        suggestedType: allow
+          ? (item.type === "remix" ? "mini-quest" : (item.type || "mini-quest"))
+          : (item.type || "mini-quest"),
+        allowPackage: allow,
+        packageFork: allow ? packageForkSnapshot(item) : null,
+        goal: allow
+          ? `Remix of “${item.title}” — same destination, new angle. Credit the original.`
+          : `Sequel / expansion linked to “${item.title}”.`,
+        why: allow
+          ? "Open vessel · package context enters your Forge as a new draft. Origin stays theirs."
+          : "Link-only · forge original work and honor-link. No code fork.",
+        kicker: allow ? "Fork / Remix" : "Sequel / Inspired",
+        at: Date.now(),
+        status: "building",
+      };
+      createState.forgeDraft = draft;
+      createState.versionOf = null;
+      createState.type = draft.suggestedType || "mini-quest";
+      createState.promptIndex = -1;
+      createState.intent = "remix";
+      createState.pathPicked = true;
+      createState.remixSearchOpen = false;
+      try { localStorage.setItem(FORGE_DRAFT_KEY, JSON.stringify(draft)); } catch { /* ok */ }
+      upsertForgeDraft(draft);
+      // Soft brief into hidden fields for Gate
+      const titleIn = document.getElementById("createTitle");
+      const descIn = document.getElementById("createDescribe");
+      const brief = buildRemixGrokBrief(draft, item);
+      if (titleIn) titleIn.value = `Fork: ${item.title}`;
+      if (descIn) descIn.value = brief;
+      syncCreateUI();
+      try { playHallSfx("chime"); } catch { /* ok */ }
+      toast(allow
+        ? `Fork locked · ${item.title}`
+        : `Honor-link draft · ${item.title}`);
+    }
+
+    const FORGE_HELP = {
+      artifact: {
+        kicker: "Empty vessel",
+        title: "Forge an Artifact",
+        img: "assets/forges/help-artifact.jpg",
+        html:
+          "This is the <strong>Hall vessel</strong> — the same stone-and-bronze border you see on Sparks in the Living Index, with a pure <strong>black seal</strong> inside.<br/><br/>" +
+          "Nothing lives here yet. When you finish forging and pass the <strong>Publishing Gate</strong>, your work fills this void with a <strong>cover image</strong> instead of the black seal, and becomes an <strong>Artifact</strong> with a <strong>true name</strong> for the Pack " +
+          "(for example <code>artifact_yourhandle_a1b2c3</code>).",
+      },
+      spark: {
+        kicker: "Recommended path",
+        title: "Spark Benches",
+        img: "assets/forges/help-spark-benches.jpg",
+        html:
+          "<strong>Spark Benches</strong> is the open worktable of the Citadel — the fastest path to a living Artifact.<br/><br/>" +
+          "You pick a class, take a Grok Build prompt, forge in the <strong>Grok app</strong>, publish a sandbox link, then seal it at the Gate. " +
+          "Best for Mini-Quests, Stories, Echoes, Howls, and most Pack creations.",
+      },
+      deep: {
+        kicker: "Advanced path",
+        title: "Deep Forges",
+        img: "assets/forges/help-deep-forges.jpg",
+        html:
+          "<strong>Deep Forges</strong> is the expert anvil — heavier tools for builders who want CLI depth and long-form craft.<br/><br/>" +
+          "Use this when you work with <strong>Grok CLI / advanced pipelines</strong>, custom packages, or ambitious multi-step builds before you bind them to the Boltverse Gate.",
+      },
+      "intent-new": {
+        kicker: "Fresh vessel",
+        title: "New Artifact",
+        img: "assets/forges/help-intent-new.jpg",
+        html:
+          "<strong>New Artifact</strong> is a brand-new creation — an empty Hall vessel waiting for your soul.<br/><br/>" +
+          "You start from nothing: pick your class, forge in <strong>Grok</strong>, then pass the <strong>Publishing Gate</strong>. " +
+          "The black seal becomes your <strong>cover image</strong>, and the Pack grants a new <strong>true name</strong> " +
+          "(for example <code>artifact_yourhandle_a1b2c3</code>) — original bloodline, not a branch of someone else’s work.",
+      },
+      "intent-remix": {
+        kicker: "Branch lineage",
+        title: "Remix / Fork",
+        img: "assets/forges/help-intent-remix.jpg",
+        html:
+          "<strong>Remix / Fork</strong> grows from a living Artifact already sealed in the Hall.<br/><br/>" +
+          "The origin stays with its creator; your draft carries a lineage link (<code>remix_of</code> / fork). " +
+          "You reshape the spark with a new angle, seal your own true name, and the <strong>Constellation</strong> records the branch — same bloodline, new life.",
+      },
+      "action-open-grok": {
+        kicker: "Forge step",
+        title: "Open Grok",
+        img: "assets/forges/help-action-open-grok.jpg",
+        html:
+          "<strong>Open Grok</strong> sends you to the Grok app — the live workbench of the Citadel.<br/><br/>" +
+          "Pick a class, grab a prompt, then build your playable Artifact with <strong>Grok Build</strong>. " +
+          "When it runs, publish a sandbox link and return here to seal it at the <strong>Gate</strong>.",
+      },
+      "action-gate": {
+        kicker: "Seal step",
+        title: "Publishing Gate",
+        img: "assets/forges/help-action-gate.jpg",
+        html:
+          "The <strong>Publishing Gate</strong> is where a draft becomes a living Artifact for the Pack.<br/><br/>" +
+          "Paste your Grok sandbox link, set cover + true name, and pass the Gate. " +
+          "The Hall vessel’s black seal is replaced by your cover — the Constellation records the spark.",
+      },
+      "class-mini-quest": {
+        kicker: "Artifact class",
+        title: "Mini-Quest",
+        img: "assets/forges/help-class-mini-quest.jpg",
+        html:
+          "<strong>Mini-Quest</strong> is a short playable challenge — a portal into a focused adventure.<br/><br/>" +
+          "Best for quick loops, objectives, and bite-sized games the Pack can finish in one breath. " +
+          "Tap the card to grab example Grok Build prompts.",
+      },
+      "class-story": {
+        kicker: "Artifact class",
+        title: "Story",
+        img: "assets/forges/help-class-story.jpg",
+        html:
+          "<strong>Story</strong> (Story Branch) is a branching narrative path — choices that fork the road.<br/><br/>" +
+          "Forge interactive tales, dialogue trees, and mythic journeys. " +
+          "Tap for example prompts built for Grok Build.",
+      },
+      "class-echo": {
+        kicker: "Artifact class",
+        title: "Echo",
+        img: "assets/forges/help-class-echo.jpg",
+        html:
+          "<strong>Echo</strong> is a resonance piece — sound, motion, and replayable presence in the Hall.<br/><br/>" +
+          "Use it for cinematic clips, sonic howls, and short experiences that ring through the Citadel. " +
+          "Tap for example Grok Build prompts.",
+      },
+      "class-ar-portal": {
+        kicker: "Artifact class",
+        title: "AR Portal",
+        img: "assets/forges/help-class-ar-portal.jpg",
+        html:
+          "<strong>AR Portal</strong> opens a window into another layer of the Boltverse.<br/><br/>" +
+          "Ideal for spatial experiences, camera/world overlays, and portal-style web builds. " +
+          "Tap for example prompts.",
+      },
+      "class-puzzle": {
+        kicker: "Artifact class",
+        title: "Puzzle",
+        img: "assets/forges/help-class-puzzle.jpg",
+        html:
+          "<strong>Puzzle</strong> is a sacred lock — logic, pattern, and aha moments for the Pack.<br/><br/>" +
+          "Craft riddles, crystal locks, and clever interactions. " +
+          "Tap for example Grok Build prompts.",
+      },
+      "class-howl": {
+        kicker: "Artifact class",
+        title: "Howl",
+        img: "assets/forges/help-class-howl.jpg",
+        html:
+          "<strong>Howl</strong> is the Pack’s battle cry — bold, social, and loud with spirit.<br/><br/>" +
+          "Great for call-and-response, challenges, and creations meant to rally others. " +
+          "Tap for example prompts.",
+      },
+      "class-remix": {
+        kicker: "Artifact class",
+        title: "Remix",
+        img: "assets/forges/help-class-remix.jpg",
+        html:
+          "<strong>Remix</strong> as a class means building on lineage — fork energy woven into the design.<br/><br/>" +
+          "Use when your Artifact is about branching, transforming, or re-forging an idea. " +
+          "(To remix a living Hall Artifact, pick <strong>Remix / Fork</strong> on the intent step.) Tap for prompts.",
+      },
+    };
+
+    function openForgeHelp(key) {
+      const info = FORGE_HELP[key] || FORGE_HELP.artifact;
+      const modal = document.getElementById("forgeHelpModal");
+      if (!modal) return;
+      const img = document.getElementById("forgeHelpImg");
+      const kicker = document.getElementById("forgeHelpKicker");
+      const title = document.getElementById("forgeHelpTitle");
+      const text = document.getElementById("forgeHelpText");
+      if (img) {
+        img.src = info.img + (info.img.includes("?") ? "&" : "?") + "v=" + Date.now();
+        img.alt = info.title;
+      }
+      if (kicker) kicker.textContent = info.kicker;
+      if (title) title.textContent = info.title;
+      if (text) text.innerHTML = info.html;
+      modal.classList.toggle("is-help-portrait", key === "artifact");
+      modal.classList.add("open");
+      try { playHallSfx("chime"); } catch { /* ok */ }
+    }
+
+    function closeForgeHelp() {
+      document.getElementById("forgeHelpModal")?.classList.remove("open");
     }
 
     function renderCreatePrompts() {
@@ -30305,7 +32947,9 @@
     function openCreatePromptsModal(type) {
       if (type) createState.type = type;
       document.querySelectorAll("[data-create-type]").forEach((c) => {
-        c.classList.toggle("is-active", c.dataset.createType === createState.type);
+        const on = c.dataset.createType === createState.type;
+        c.classList.toggle("is-active", on);
+        if (c.hasAttribute("aria-selected")) c.setAttribute("aria-selected", on ? "true" : "false");
       });
       renderCreatePrompts();
       document.getElementById("createPromptsModal")?.classList.add("open");
@@ -30318,25 +32962,112 @@
     function syncCreateUI() {
       const mode = createState.mode;
       const step = createState.step;
+      const pathPicked = !!createState.pathPicked;
+      const intentPicked = pathPicked && (createState.intent === "new" || createState.intent === "remix");
+      const isRemix = createState.intent === "remix";
+      const parentDraft = isRemix ? remixParentDraft() : null;
+      const hasRemixParent = !!(parentDraft && parentDraft.parentId);
+      const remixBrowsing = isRemix && !hasRemixParent && !!createState.remixSearchOpen;
+      const page = document.getElementById("createPage");
+      if (page) {
+        page.classList.toggle("is-path-picked", pathPicked);
+        page.classList.toggle("is-intent-picked", intentPicked);
+        page.classList.toggle("is-remix-parent", hasRemixParent);
+        page.classList.toggle("is-remix-browsing", remixBrowsing);
+        page.dataset.createPhase = !pathPicked ? "path" : (intentPicked ? "forge" : "intent");
+        page.dataset.forgeIntent = intentPicked ? (isRemix ? "remix" : "new") : "";
+      }
+      const workspace = document.getElementById("createForgeWorkspace");
+      if (workspace) {
+        if (!intentPicked) workspace.setAttribute("hidden", "");
+        else workspace.removeAttribute("hidden");
+      }
+      const intentStage = document.getElementById("createIntentStage");
+      if (intentStage) {
+        if (pathPicked && !intentPicked) intentStage.removeAttribute("hidden");
+        else intentStage.setAttribute("hidden", "");
+      }
+      const modeRow = document.querySelector(".create-mode-row--game");
+      if (modeRow) {
+        if (pathPicked) modeRow.setAttribute("hidden", "");
+        else modeRow.removeAttribute("hidden");
+      }
       document.querySelectorAll("[data-create-mode]").forEach((btn) => {
-        btn.classList.toggle("is-active", btn.dataset.createMode === mode);
+        const on = pathPicked && btn.dataset.createMode === mode;
+        btn.classList.toggle("is-active", on);
+        if (btn.getAttribute("role") === "tab") btn.setAttribute("aria-selected", on ? "true" : "false");
       });
-      document.getElementById("createFlowSpark")?.toggleAttribute("hidden", mode !== "spark");
-      document.getElementById("createFlowDeep")?.toggleAttribute("hidden", mode !== "deep");
+      const pathName = mode === "deep" ? "Deep Forges" : "Spark Benches";
+      const intentName = isRemix ? "Remix / Fork" : "New Artifact";
+      const pathLabel = document.getElementById("createIntentPathLabel");
+      if (pathLabel) pathLabel.textContent = pathName;
+      const forgeLabel = document.getElementById("createForgePathLabel");
+      if (forgeLabel) forgeLabel.textContent = pathName + " · " + intentName;
+      const forgeH = document.querySelector("#createForgeTopBar .create-intent-bar__h");
+      if (forgeH) {
+        forgeH.innerHTML = isRemix
+          ? (hasRemixParent ? "<span>Fork</span>" : (remixBrowsing ? "Find a <span>vessel</span>" : "<span>Fork</span>"))
+          : "<span>Forge</span>";
+      }
+
+      const backBtn = document.getElementById("createBackHub");
+      if (backBtn) {
+        backBtn.textContent = "← Hub";
+        backBtn.title = "Creator Forges hub";
+      }
+
+      const remixStage = document.getElementById("createRemixStage");
+      if (remixStage) {
+        if (intentPicked && isRemix) remixStage.removeAttribute("hidden");
+        else remixStage.setAttribute("hidden", "");
+      }
+      try { syncRemixSelectedUI(parentDraft); } catch { /* ok */ }
+
+      // Path page only
+      if (!pathPicked) {
+        document.getElementById("createFlowSpark")?.setAttribute("hidden", "");
+        document.getElementById("createFlowDeep")?.setAttribute("hidden", "");
+        const draftBanner = document.getElementById("forgeDraftBanner");
+        if (draftBanner) draftBanner.hidden = true;
+        return;
+      }
+      // Intent page: no forge flows yet
+      if (!intentPicked) {
+        document.getElementById("createFlowSpark")?.setAttribute("hidden", "");
+        document.getElementById("createFlowDeep")?.setAttribute("hidden", "");
+        const draftBanner = document.getElementById("forgeDraftBanner");
+        if (draftBanner) draftBanner.hidden = true;
+        return;
+      }
+
+      // Remix without parent: only search stage (tools hidden via CSS)
+      // Remix with parent or New: spark/deep tools
+      const showSparkTools = mode === "spark" && (!isRemix || hasRemixParent);
+      const showDeepTools = mode === "deep" && (!isRemix || hasRemixParent);
+      document.getElementById("createFlowSpark")?.toggleAttribute("hidden", !showSparkTools);
+      document.getElementById("createFlowDeep")?.toggleAttribute("hidden", !showDeepTools);
       // Grok app banner + side card only for Spark Benches
       const grokBanner = document.getElementById("createSparkGrokBanner");
-      if (grokBanner) grokBanner.hidden = mode !== "spark";
+      if (grokBanner) grokBanner.hidden = !showSparkTools;
       const grokSide = document.getElementById("createSideGrokCard");
       if (grokSide) grokSide.hidden = mode !== "spark";
       const tmplSide = document.getElementById("createSideTemplatesCard");
-      if (tmplSide) tmplSide.hidden = mode !== "spark";
+      if (tmplSide) tmplSide.hidden = mode !== "spark" || isRemix;
       const deepCliSide = document.getElementById("createSideDeepCliCard");
       if (deepCliSide) deepCliSide.hidden = mode !== "deep";
       /* Tips collapsed into quest steps — keep node for legacy callers */
       const tips = document.getElementById("createSideTipsText");
       if (tips) tips.hidden = true;
 
-      if (mode === "spark") {
+      // Hide old text draft banner on remix path (visual selected card replaces it)
+      if (isRemix) {
+        const draftBanner = document.getElementById("forgeDraftBanner");
+        if (draftBanner) draftBanner.hidden = true;
+        const promptBox = document.getElementById("createSelectedPromptBox");
+        if (promptBox) promptBox.hidden = true;
+      }
+
+      if (mode === "spark" && showSparkTools && !isRemix) {
         const flow = document.getElementById("createFlowSpark");
         if (flow) {
           flow.querySelectorAll("[data-create-panel]").forEach((panel) => {
@@ -31397,100 +34128,146 @@
       }
     }
 
+    /** Creator Forges hub: hero actions only (status + workshop drafts removed). */
     function renderForgesHub() {
-      const hub = document.getElementById("forgeHub");
-      if (!hub) return;
+      /* Hub is static now; draft continue still works from create/remix flows. */
+    }
 
-      const mine = myCreations();
-      const published = mine.length;
-      const howls = mine.reduce((s, i) => s + (i.howls || 0), 0);
-      const views = mine.reduce((s, i) => s + (i.views || 0), 0);
-      const plays = mine.reduce((s, i) => s + (i.plays || 0), 0);
-      const influence = Math.round(howls * 3 + plays * 2 + views * 0.05 + published * 12);
-      let honor = "Rising";
-      if (mine.some((i) => i.featured || isActivelyFeatured(i))) honor = "Featured";
-      else if (howls >= 50 || influence >= 200) honor = "Popular";
-      else if (published === 0) honor = "Unforged";
+    /* Soft cyan/gold spark dust over Creator Forges chamber */
+    const forgesFX = {
+      canvas: null,
+      ctx: null,
+      particles: [],
+      raf: 0,
+      active: false,
+      last: 0,
+      w: 0,
+      h: 0,
+      dpr: 1,
+      reduce: false,
+    };
 
-      const set = (id, v) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = typeof v === "number" ? formatCount(v) : v;
+    function makeForgeSpark(partial) {
+      const gold = Math.random() > 0.72;
+      return {
+        x: Math.random() * forgesFX.w,
+        y: partial ? Math.random() * forgesFX.h : forgesFX.h + 6 + Math.random() * 40,
+        r: 0.45 + Math.random() * 1.35,
+        vy: -(0.12 + Math.random() * 0.38),
+        vx: (Math.random() - 0.5) * 0.22,
+        a: 0.15 + Math.random() * 0.45,
+        life: 0.55 + Math.random() * 0.9,
+        age: partial ? Math.random() * 0.8 : 0,
+        gold,
       };
-      set("forgeStatPublished", published);
-      set("forgeStatInfluence", influence);
-      set("forgeStatHowls", howls);
-      set("forgeStatHonor", honor);
+    }
 
-      const draftsEl = document.getElementById("forgeDraftsList");
-      if (draftsEl) {
-        const drafts = loadForgeDrafts();
-        if (!drafts.length) {
-          draftsEl.innerHTML = `<p class="forge-tip" style="margin:0">No workshop drafts yet. Use <strong>Remix</strong> on an Artifact, or constellation “Build near this”.</p>`;
-        } else {
-          draftsEl.innerHTML = drafts.map((d) => {
-            const mode = d.mode === "version"
-              ? `Version v${d.versionNumber || "?"}`
-              : (d.allowPackage ? "Open fork" : (d.linkType || "remix"));
-            const title = d.mode === "version"
-              ? (d.parentTitle || d.versionOf || "Version ship")
-              : (d.parentTitle || d.kicker || "Draft");
-            return `
-              <article class="forge-draft-card" data-draft-id="${escapeAttr(d.draftId)}" role="listitem">
-                <div class="forge-draft-card__body">
-                  <div class="forge-draft-card__kicker">${escapeHtml(mode)}</div>
-                  <div class="forge-draft-card__title">${escapeHtml(title)}</div>
-                  <div class="forge-draft-card__meta">${escapeHtml(d.kicker || d.why || "Forge draft")}</div>
-                </div>
-                <div class="forge-draft-card__actions">
-                  <button type="button" class="btn-mini gold" data-draft-continue="${escapeAttr(d.draftId)}">Continue</button>
-                  <button type="button" class="btn-mini" data-draft-gate="${escapeAttr(d.draftId)}">Gate</button>
-                  <button type="button" class="btn-mini" data-draft-discard="${escapeAttr(d.draftId)}">Discard</button>
-                </div>
-              </article>`;
-          }).join("");
-          draftsEl.querySelectorAll("[data-draft-continue]").forEach((btn) => {
-            btn.addEventListener("click", () => {
-              const d = loadForgeDrafts().find((x) => x.draftId === btn.dataset.draftContinue);
-              if (d) activateForgeDraft(d);
-            });
-          });
-          draftsEl.querySelectorAll("[data-draft-gate]").forEach((btn) => {
-            btn.addEventListener("click", () => {
-              const d = loadForgeDrafts().find((x) => x.draftId === btn.dataset.draftGate);
-              if (d) {
-                createState.forgeDraft = d;
-                createState.versionOf = d.mode === "version" ? d.versionOf : null;
-                try { localStorage.setItem(FORGE_DRAFT_KEY, JSON.stringify(d)); } catch { /* ok */ }
-                openSubmit();
-              }
-            });
-          });
-          draftsEl.querySelectorAll("[data-draft-discard]").forEach((btn) => {
-            btn.addEventListener("click", () => {
-              removeForgeDraft(btn.dataset.draftDiscard);
-              toast("Draft discarded");
-              renderForgesHub();
-            });
-          });
-        }
+    function resizeForgesCanvas() {
+      const c = forgesFX.canvas;
+      if (!c) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      forgesFX.dpr = dpr;
+      forgesFX.w = window.innerWidth;
+      forgesFX.h = window.innerHeight;
+      c.width = Math.floor(forgesFX.w * dpr);
+      c.height = Math.floor(forgesFX.h * dpr);
+      c.style.width = forgesFX.w + "px";
+      c.style.height = forgesFX.h + "px";
+      const ctx = forgesFX.ctx;
+      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function seedForgesParticles() {
+      forgesFX.particles = [];
+      const n = Math.min(48, Math.floor((forgesFX.w * forgesFX.h) / 38000) + 22);
+      for (let i = 0; i < n; i++) forgesFX.particles.push(makeForgeSpark(true));
+    }
+
+    function tickForgesParticles(ts) {
+      if (!forgesFX.active || !forgesFX.ctx) {
+        forgesFX.raf = 0;
+        return;
       }
-
-      const grid = document.getElementById("forgeFeaturedGrid");
-      if (grid) {
-        const feats = featuredItems().slice(0, 6);
-        if (!feats.length) {
-          grid.innerHTML = `<p class="forge-tip" style="grid-column:1/-1">No featured Sparks yet — be the first to light the Hall of Honor.</p>`;
-        } else {
-          grid.innerHTML = feats.map((item) => `
-            <button type="button" class="forge-featured-card" data-forge-open="${escapeAttr(item.id)}" title="${escapeAttr(item.title)}">
-              <div class="forge-featured-card__media">${mediaHtml(item)}</div>
-              <div class="forge-featured-card__body">
-                <div class="forge-featured-card__title">${escapeHtml(item.title)}</div>
-                <div class="forge-featured-card__meta">Res ${item.resonance} · ${escapeHtml(item.creator || "Pack")}</div>
-              </div>
-            </button>
-          `).join("");
+      forgesFX.raf = requestAnimationFrame(tickForgesParticles);
+      if (document.hidden || forgesFX.reduce) return;
+      const last = forgesFX.last || ts;
+      const dt = Math.min(0.05, (ts - last) / 1000);
+      forgesFX.last = ts;
+      const ctx = forgesFX.ctx;
+      ctx.clearRect(0, 0, forgesFX.w, forgesFX.h);
+      for (let i = 0; i < forgesFX.particles.length; i++) {
+        const p = forgesFX.particles[i];
+        p.age += dt;
+        p.x += p.vx * (1 + dt * 20);
+        p.y += p.vy * (1 + dt * 20);
+        p.vx += Math.sin(ts * 0.001 + i) * 0.002;
+        if (p.age > p.life || p.y < -12 || p.x < -20 || p.x > forgesFX.w + 20) {
+          forgesFX.particles[i] = makeForgeSpark(false);
+          continue;
         }
+        const fade = Math.sin((p.age / p.life) * Math.PI);
+        const alpha = p.a * fade;
+        ctx.beginPath();
+        ctx.fillStyle = p.gold
+          ? `rgba(232, 197, 106, ${alpha.toFixed(3)})`
+          : `rgba(126, 240, 255, ${alpha.toFixed(3)})`;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function setForgesParticlesActive(on) {
+      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+        forgesFX.reduce = true;
+        on = false;
+      }
+      if (!on) {
+        forgesFX.active = false;
+        forgesFX.last = 0;
+        if (forgesFX.raf) {
+          cancelAnimationFrame(forgesFX.raf);
+          forgesFX.raf = 0;
+        }
+        if (forgesFX.ctx && forgesFX.w) forgesFX.ctx.clearRect(0, 0, forgesFX.w, forgesFX.h);
+        return;
+      }
+      if (!forgesFX.canvas) {
+        forgesFX.canvas = document.getElementById("forgesParticleCanvas");
+        if (!forgesFX.canvas) return;
+        forgesFX.ctx = forgesFX.canvas.getContext("2d", { alpha: true });
+      }
+      resizeForgesCanvas();
+      if (!forgesFX.particles.length) seedForgesParticles();
+      forgesFX.active = true;
+      forgesFX.last = 0;
+      if (!forgesFX.raf) forgesFX.raf = requestAnimationFrame(tickForgesParticles);
+    }
+
+    function initForgesParticles() {
+      forgesFX.canvas = document.getElementById("forgesParticleCanvas");
+      if (!forgesFX.canvas) return;
+      forgesFX.ctx = forgesFX.canvas.getContext("2d", { alpha: true });
+      let resizeT = 0;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeT);
+        resizeT = setTimeout(() => {
+          if (!forgesFX.active) return;
+          resizeForgesCanvas();
+          seedForgesParticles();
+        }, 120);
+      });
+      if (window.matchMedia) {
+        const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+        forgesFX.reduce = mq.matches;
+        const onChange = () => {
+          forgesFX.reduce = mq.matches;
+          if (mq.matches) setForgesParticlesActive(false);
+          else if (document.body.classList.contains("view-forges") || document.body.classList.contains("view-create")) {
+            setForgesParticlesActive(true);
+          }
+        };
+        if (mq.addEventListener) mq.addEventListener("change", onChange);
+        else if (mq.addListener) mq.addListener(onChange);
       }
     }
 
@@ -31555,6 +34332,8 @@
       } else {
         setChambersParticlesActive(false);
       }
+      /* Soft spark dust on Creator Forges (and create, same chamber art) */
+      setForgesParticlesActive(v === "forges" || v === "create");
 
       if (prev !== v) {
         try { playHallSfx("click"); } catch { /* optional */ }
@@ -31584,12 +34363,24 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeSideNavDrawer();
     });
-    document.getElementById("forgeCreateNew")?.addEventListener("click", () => {
-      openCreatePage({ mode: "spark", step: 1 });
-    });
-    document.getElementById("forgeMyCreations")?.addEventListener("click", () => setNavView("creator"));
-    document.getElementById("forgePublishingGate")?.addEventListener("click", () => {
-      openSubmit();
+    function runForgePath(n) {
+      if (n === 1) openCreatePage({ mode: "spark", step: 1 });
+      else if (n === 2) setNavView("creator");
+      else if (n === 3) openSubmit();
+    }
+    document.getElementById("forgeCreateNew")?.addEventListener("click", () => runForgePath(1));
+    document.getElementById("forgeMyCreations")?.addEventListener("click", () => runForgePath(2));
+    document.getElementById("forgePublishingGate")?.addEventListener("click", () => runForgePath(3));
+    document.addEventListener("keydown", (e) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+      const shell = document.getElementById("shell");
+      if (shell?.dataset.view !== "forges") return;
+      const t = e.target;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable)) return;
+      if (document.querySelector(".modal-overlay.open")) return;
+      if (e.key === "1") { e.preventDefault(); runForgePath(1); }
+      else if (e.key === "2") { e.preventDefault(); runForgePath(2); }
+      else if (e.key === "3") { e.preventDefault(); runForgePath(3); }
     });
     document.getElementById("forgesView")?.addEventListener("click", (e) => {
       const feat = e.target.closest("[data-forge-open]");
@@ -31599,13 +34390,72 @@
         window.setTimeout(() => openDetail(id), 100);
       }
     });
-    document.getElementById("createBackHub")?.addEventListener("click", () => setNavView("forges"));
+    document.getElementById("createBackHub")?.addEventListener("click", () => {
+      setNavView("forges");
+    });
+    document.getElementById("createBackPaths")?.addEventListener("click", () => {
+      createState.pathPicked = false;
+      createState.intent = null;
+      syncCreateUI();
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch { /* ok */ }
+    });
+    document.getElementById("createBackIntent")?.addEventListener("click", () => {
+      createState.intent = null;
+      syncCreateUI();
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch { /* ok */ }
+    });
+    document.getElementById("createRemixSearch")?.addEventListener("input", (e) => {
+      renderRemixArtifactSearch(e.target.value);
+    });
+    document.getElementById("createRemixSearchClear")?.addEventListener("click", () => {
+      const input = document.getElementById("createRemixSearch");
+      if (input) input.value = "";
+      renderRemixArtifactSearch("");
+      try { input?.focus(); } catch { /* ok */ }
+    });
+    document.getElementById("createRemixChangeParent")?.addEventListener("click", () => {
+      clearRemixParentDraft();
+    });
+    document.getElementById("createRemixChooseBtn")?.addEventListener("click", () => {
+      openRemixVesselSearch();
+    });
+    document.getElementById("createRemixCopyBrief")?.addEventListener("click", async () => {
+      const draft = remixParentDraft();
+      if (!draft) {
+        toast("Pick a vessel first");
+        return;
+      }
+      const parent = draft.parentId ? findItemById(draft.parentId) : null;
+      const brief = buildRemixGrokBrief(draft, parent);
+      const ok = await copyTextToClipboard(brief);
+      if (ok) {
+        try { playHallSfx("chime"); } catch { /* ok */ }
+        toast("Grok brief copied · open Grok and paste");
+      } else toast("Could not copy brief");
+    });
     document.getElementById("createView")?.addEventListener("click", (e) => {
+      const helpBtn = e.target.closest("[data-forge-help]");
+      if (helpBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        openForgeHelp(helpBtn.getAttribute("data-forge-help"));
+        return;
+      }
+      const remixPick = e.target.closest("[data-remix-pick]");
+      if (remixPick) {
+        e.preventDefault();
+        pickRemixParentArtifact(remixPick.getAttribute("data-remix-pick"));
+        return;
+      }
+      const intentBtn = e.target.closest("[data-create-intent]");
+      if (intentBtn) {
+        e.preventDefault();
+        pickCreateIntent(intentBtn.getAttribute("data-create-intent"));
+        return;
+      }
       const modeBtn = e.target.closest("[data-create-mode]");
       if (modeBtn) {
-        createState.mode = modeBtn.dataset.createMode === "deep" ? "deep" : "spark";
-        createState.step = 1;
-        syncCreateUI();
+        pickCreatePath(modeBtn.dataset.createMode === "deep" ? "deep" : "spark");
         return;
       }
       const typeChip = e.target.closest("[data-create-type]");
@@ -31659,6 +34509,17 @@
     });
     document.getElementById("createPromptsModal")?.addEventListener("click", (e) => {
       if (e.target.id === "createPromptsModal") closeCreatePromptsModal();
+    });
+    document.getElementById("forgeHelpModal")?.addEventListener("click", (e) => {
+      if (e.target.id === "forgeHelpModal") closeForgeHelp();
+    });
+    document.getElementById("forgeHelpClose")?.addEventListener("click", () => closeForgeHelp());
+    document.getElementById("forgeHelpGotIt")?.addEventListener("click", () => closeForgeHelp());
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      if (document.getElementById("forgeHelpModal")?.classList.contains("open")) {
+        closeForgeHelp();
+      }
     });
     document.getElementById("createDescribe")?.addEventListener("input", () => syncCreateUI());
     document.getElementById("createDeepSpec")?.addEventListener("input", () => syncCreateUI());
@@ -32185,6 +35046,7 @@
     syncMuteButton();
     renderSkeletons();
     initChambersParticles();
+    initForgesParticles();
     updateNavPlayerBrand();
     // Brief Core-listens stage so the hall feels alive on first paint
     setTimeout(() => {

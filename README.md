@@ -51,7 +51,7 @@ Aligned with Pack scaffolding around @StarBoltSprint / SMiR decrees: one place, 
 
 Public playable hall (GitHub Pages):
 
-**https://starboltsprint.github.io/thunderwolf-citadel-play/**
+**https://starboltsprint.github.io/thunderwolf-citadel-play/?v=skyfilm5**
 
 Private source: `StarBoltSprint/thunderwolf-citadel`  
 Public host: `StarBoltSprint/thunderwolf-citadel-play`

@@ -34216,9 +34216,16 @@
       return new THREE.Color(0x5ee0ff);
     }
 
+    // Bust GH Pages / browser cache when Sky vendor stack changes
+    const SKY_VENDOR_CACHE = "skyfilm3";
+
     function skyResolveUrl(rel) {
       try {
-        return new URL(rel, window.location.href).href;
+        const u = new URL(rel, window.location.href);
+        if (rel.indexOf("vendor/three") !== -1) {
+          u.searchParams.set("v", SKY_VENDOR_CACHE);
+        }
+        return u.href;
       } catch {
         return rel;
       }
@@ -34595,7 +34602,8 @@
             vig = max(vig, 0.78);                            // hard floor — edges stay readable
             col *= vig;
 
-            gl_FragColor = vec4(clamp(col, 0.0, 2.5), 1.0);
+            // Keep linear range for OutputPass ACES (do not crush to display LDR here)
+            gl_FragColor = vec4(max(col, 0.0), 1.0);
           }
         `,
       };
@@ -34739,11 +34747,11 @@
       const bloom = skyMode.bloomPass;
       const film = skyMode.filmPass;
       if (bloom) {
-        // High: stronger nuclear bloom. Low: cheap soft glow.
-        // Base values — skyUpdateSunPresence pulses these when looking near a sun
-        const str = high ? 1.18 : 0.36;
-        const rad = high ? 0.64 : 0.28;
-        const thr = high ? 0.13 : 0.38;
+        // Controlled bloom — High is cinematic, never a white wash (GH + desktop match)
+        // Base values — skyUpdateSunPresence pulses gently when looking near a sun
+        const str = high ? 0.68 : 0.32;
+        const rad = high ? 0.48 : 0.26;
+        const thr = high ? 0.28 : 0.42;
         bloom.strength = str;
         bloom.radius = rad;
         bloom.threshold = thr;
@@ -34752,9 +34760,9 @@
       }
       if (film && film.uniforms) {
         // Light vignette; High gets thinner (finer) chromatic fringe
-        const vig = high ? 0.15 : 0.1;
-        const fringe = high ? 0.00075 : 0.0004;
-        const str = high ? 1.0 : 0.5;
+        const vig = high ? 0.14 : 0.1;
+        const fringe = high ? 0.00055 : 0.00035;
+        const str = high ? 0.92 : 0.5;
         film.uniforms.uVignette.value = vig;
         film.uniforms.uFringe.value = fringe;
         film.uniforms.uStrength.value = str;
@@ -34764,9 +34772,9 @@
       if (skyMode.renderer && skyMode.THREE) {
         const THREE = skyMode.THREE;
         if (THREE.ACESFilmicToneMapping != null) {
+          // OutputPass reads these for final ACES + sRGB (matches local calibrated look)
           skyMode.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-          // Slightly lower exposure when bloom is strong so highlights don't wash
-          const exp = high ? 1.18 : 1.34;
+          const exp = high ? 0.98 : 1.12;
           skyMode.renderer.toneMappingExposure = exp;
           skyMode._exposureBase = exp;
         }
@@ -34786,24 +34794,32 @@
 
         const size = new THREE.Vector2();
         renderer.getSize(size);
+        // Resolution in CSS pixels — UnrealBloomPass multiplies by pixel ratio internally via composer
         const bloom = new mods.UnrealBloomPass(
           new THREE.Vector2(Math.max(1, size.x), Math.max(1, size.y)),
-          0.7,
-          0.45,
-          0.22
+          0.55,
+          0.4,
+          0.3
         );
         composer.addPass(bloom);
 
-        // Film look last (renderToScreen via EffectComposer) — vignette + fringe on bloom
-        // Skip OutputPass: renderer already applies ACES; stacking it double-maps
+        // Film grade (vignette / fringe / mood) in linear space
         const filmShader = buildSkyFilmShader(THREE);
         const film = new mods.ShaderPass(filmShader);
         composer.addPass(film);
 
+        // Final ACES + color space — required so GH Pages / all GPUs match desktop
+        // (without this, HDR bloom dumps linear light to the canvas → blown white sky)
+        let output = null;
+        if (mods.OutputPass) {
+          output = new mods.OutputPass();
+          composer.addPass(output);
+        }
+
         skyMode.composer = composer;
         skyMode.bloomPass = bloom;
         skyMode.filmPass = film;
-        skyMode.outputPass = null;
+        skyMode.outputPass = output;
         skyMode.postEnabled = true;
         applySkyPostQuality();
         // Seed mood uniforms for current Hall/Focus/Rising state
@@ -35356,7 +35372,8 @@
         if (h < 120) h = Math.max(440, Math.round(w * 0.62));
       }
 
-      const dpr = Math.min(window.devicePixelRatio || 1, skyMode.quality === "low" ? 1.15 : 1.75);
+      // Cap High DPR — high DPI + strong bloom was blowing the GH Pages look white
+      const dpr = Math.min(window.devicePixelRatio || 1, skyMode.quality === "low" ? 1.15 : 1.5);
       canvas.style.width = "100%";
       canvas.style.height = isConstellationFullscreen() ? "100%" : `${Math.round(h)}px`;
       // setSize needs pixel dimensions of the drawing buffer
@@ -37587,26 +37604,24 @@
       const L = skyMode._sunLookFactor;
       const pulse = reduce ? 1 : (0.94 + Math.sin(t * 2.4) * 0.08);
 
-      // Lens bloom pulse when looking near a sun
+      // Gentle lens bloom when looking near a sun — never wash the whole sky white
       if (skyMode.bloomPass && skyMode._bloomBase) {
         const b = skyMode._bloomBase;
-        skyMode.bloomPass.strength = b.strength * (1 + L * 0.65 * pulse);
-        skyMode.bloomPass.radius = b.radius * (1 + L * 0.25);
-        // Slightly lower threshold so corona blooms more when facing sun
-        skyMode.bloomPass.threshold = Math.max(0.08, b.threshold * (1 - L * 0.35));
+        skyMode.bloomPass.strength = b.strength * (1 + L * 0.28 * pulse);
+        skyMode.bloomPass.radius = b.radius * (1 + L * 0.12);
+        skyMode.bloomPass.threshold = Math.max(0.16, b.threshold * (1 - L * 0.18));
       }
       if (skyMode.filmPass && skyMode.filmPass.uniforms && skyMode._filmBase) {
         const f = skyMode._filmBase;
         if (skyMode.filmPass.uniforms.uFringe) {
-          skyMode.filmPass.uniforms.uFringe.value = f.fringe * (1 + L * 1.1 * pulse);
+          skyMode.filmPass.uniforms.uFringe.value = f.fringe * (1 + L * 0.55 * pulse);
         }
         if (skyMode.filmPass.uniforms.uStrength) {
-          skyMode.filmPass.uniforms.uStrength.value = f.strength * (1 + L * 0.25);
+          skyMode.filmPass.uniforms.uStrength.value = f.strength * (1 + L * 0.12);
         }
       }
       if (skyMode.renderer && skyMode._exposureBase != null) {
-        // Tiny exposure kiss when facing nuclear core
-        skyMode.renderer.toneMappingExposure = skyMode._exposureBase * (1 + L * 0.12 * pulse);
+        skyMode.renderer.toneMappingExposure = skyMode._exposureBase * (1 + L * 0.06 * pulse);
       }
     }
 
@@ -38247,7 +38262,8 @@
         // Cinematic tone — OutputPass applies final mapping when composer is live
         if (THREE.ACESFilmicToneMapping != null) {
           renderer.toneMapping = THREE.ACESFilmicToneMapping;
-          renderer.toneMappingExposure = quality === "high" ? 1.22 : 1.32;
+          // Base exposure; applySkyPostQuality retunes when film stack is live
+          renderer.toneMappingExposure = quality === "high" ? 1.0 : 1.18;
         }
 
         // FPS / WoW free-fly — not orbit-around-target

@@ -4808,48 +4808,64 @@
       z-index: 1;
       display: flex;
       flex-direction: column;
-      gap: 0.08rem;
-      padding: 0.55rem 0.8rem 0.6rem;
+      gap: 0.06rem;
+      padding: 0.5rem 0.7rem 0.55rem;
       width: 100%;
+      min-width: 0;
     }
     .side-nav-cta__lab strong,
     .side-nav-ghost__lab strong {
       font-family: var(--font-display);
-      font-size: 0.92rem;
+      font-size: 0.78rem;
       font-weight: 900;
       letter-spacing: 0.02em;
-      line-height: 1.1;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       text-shadow: 0 1px 8px rgba(0, 0, 0, 0.75), 0 0 12px rgba(46, 230, 255, 0.35);
     }
     .side-nav-cta__lab span,
     .side-nav-ghost__lab span {
-      font-size: 0.62rem;
+      font-size: 0.58rem;
       font-weight: 700;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
       text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
     }
+    /* Side-nav Pass the Gate — secondary (header CTA stays primary gold) */
     .side-nav-cta {
-      border: 1px solid rgba(46, 230, 255, 0.45);
-      color: #e8fbff;
+      border: 1px solid rgba(126, 240, 255, 0.22);
+      color: #d8eef8;
       background: #061018;
-      box-shadow:
-        0 0 22px rgba(46, 230, 255, 0.28),
-        0 8px 20px rgba(0, 0, 0, 0.35),
-        0 0 0 1px rgba(232, 197, 106, 0.12) inset;
+      min-height: 2.85rem;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+    }
+    .side-nav-cta__media {
+      opacity: 0.72;
+    }
+    .side-nav-cta__media::after {
+      background:
+        linear-gradient(100deg, rgba(2, 10, 18, 0.7) 0%, rgba(2, 10, 18, 0.4) 45%, rgba(2, 10, 18, 0.62) 100%),
+        linear-gradient(180deg, transparent 15%, rgba(2, 10, 18, 0.82) 100%) !important;
     }
     .side-nav-cta__lab strong {
-      color: #fff8e0;
-      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8), 0 0 14px rgba(232, 197, 106, 0.4);
+      color: rgba(210, 235, 250, 0.95);
+      font-size: 0.74rem;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
     }
     .side-nav-cta__lab span {
-      color: rgba(180, 245, 255, 0.92);
+      color: rgba(150, 190, 210, 0.78);
     }
     .side-nav-cta:hover {
-      transform: translateY(-2px);
-      border-color: rgba(126, 240, 255, 0.65);
+      transform: translateY(-1px);
+      border-color: rgba(126, 240, 255, 0.42);
       box-shadow:
-        0 0 32px rgba(46, 230, 255, 0.4),
-        0 12px 28px rgba(0, 0, 0, 0.4);
+        0 0 16px rgba(46, 230, 255, 0.16),
+        0 8px 18px rgba(0, 0, 0, 0.35);
+    }
+    .side-nav-cta:hover .side-nav-cta__media {
+      opacity: 0.88;
     }
     .side-nav-ghost {
       border: 1px solid rgba(126, 240, 255, 0.28);
@@ -9316,6 +9332,133 @@
       background: #061018;
       box-shadow: 0 0 26px rgba(46, 230, 255, 0.28), 0 8px 18px rgba(0, 0, 0, 0.35);
     }
+    /* Secondary Join — ghost, smaller than Pass the Gate */
+    .header-actions .btn-header-join {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.35rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(126, 240, 255, 0.22);
+      background: rgba(6, 12, 24, 0.55);
+      color: rgba(180, 220, 240, 0.88);
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      box-shadow: none;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .header-actions .btn-header-join:hover {
+      color: #e8fbff;
+      border-color: rgba(126, 240, 255, 0.45);
+      background: rgba(10, 22, 40, 0.85);
+    }
+    /* Combined Sound menu (SFX + Music) */
+    .header-sound {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .header-sound .btn-sound-menu {
+      min-width: 2.5rem;
+    }
+    .header-sound .btn-sound-menu.is-live {
+      color: rgba(126, 240, 255, 0.95);
+      border-color: rgba(46, 230, 255, 0.45);
+      background: rgba(12, 28, 48, 0.92);
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.18);
+    }
+    .header-sound .btn-sound-menu[aria-expanded="true"] {
+      border-color: rgba(46, 230, 255, 0.55);
+      color: var(--cyan-soft);
+    }
+    .sound-menu {
+      position: absolute;
+      top: calc(100% + 0.4rem);
+      right: 0;
+      z-index: 80;
+      min-width: 11.5rem;
+      padding: 0.35rem;
+      border-radius: 14px;
+      border: 1px solid rgba(46, 230, 255, 0.28);
+      background:
+        linear-gradient(165deg, rgba(10, 18, 34, 0.98), rgba(4, 8, 16, 0.98));
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.5),
+        0 0 24px rgba(46, 230, 255, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .sound-menu[hidden] {
+      display: none !important;
+    }
+    .sound-menu__item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      width: 100%;
+      padding: 0.45rem 0.55rem;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: transparent;
+      color: rgba(200, 220, 240, 0.9);
+      font-family: inherit;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .sound-menu__item:hover {
+      background: rgba(46, 230, 255, 0.08);
+      border-color: rgba(46, 230, 255, 0.18);
+    }
+    .sound-menu__item .mute-ico {
+      font-size: 1rem;
+      width: 1.35rem;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .sound-menu__text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.05rem;
+      flex: 1;
+      min-width: 0;
+    }
+    .sound-menu__text strong {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .sound-menu__text em {
+      font-style: normal;
+      font-size: 0.58rem;
+      color: rgba(150, 180, 200, 0.7);
+      font-weight: 600;
+    }
+    .sound-menu__state {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(150, 180, 200, 0.55);
+      flex-shrink: 0;
+    }
+    .sound-menu__item:not(.is-muted):not(.is-off) .sound-menu__state {
+      color: rgba(100, 230, 180, 0.95);
+    }
+    .sound-menu__item.btn-music:not(.is-off) {
+      color: rgba(180, 245, 255, 0.98);
+    }
+    .sound-menu__item.btn-music:not(.is-off) .music-ico {
+      filter: drop-shadow(0 0 4px rgba(46, 230, 255, 0.55));
+    }
+    .sound-menu__item.is-muted,
+    .sound-menu__item.is-off {
+      opacity: 0.85;
+    }
 
     .btn-gold {
       background: linear-gradient(135deg, #f0d78a, #c9a44a);
@@ -9332,49 +9475,50 @@
 
     /* ── Scry HUD — quest strip under brand (Hall only) ── */
     .intro-strip {
-      margin-bottom: 0.55rem;
+      margin-bottom: 0.35rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 0.65rem 1rem;
-      padding: 0.55rem 0.75rem 0.65rem;
-      border-radius: 14px;
+      gap: 0.35rem 0.75rem;
+      padding: 0.35rem 0.6rem 0.4rem;
+      border-radius: 12px;
       background:
-        linear-gradient(145deg, rgba(6, 14, 28, 0.92), rgba(4, 10, 20, 0.88));
-      border: 1px solid rgba(46, 230, 255, 0.16);
+        linear-gradient(145deg, rgba(6, 14, 28, 0.88), rgba(4, 10, 20, 0.84));
+      border: 1px solid rgba(46, 230, 255, 0.12);
       box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        0 4px 14px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
     .intro-strip .scry-hud-kicker {
       width: 100%;
-      font-size: 0.62rem;
+      font-size: 0.55rem;
       font-weight: 800;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: rgba(126, 240, 255, 0.65);
-      margin: 0 0 -0.15rem;
+      color: rgba(126, 240, 255, 0.55);
+      margin: 0 0 -0.2rem;
+      line-height: 1.1;
     }
 
     .stats {
       display: flex;
-      gap: 0.45rem;
+      gap: 0.32rem;
       flex-wrap: wrap;
     }
 
     .stat-pill {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.32rem 0.7rem 0.32rem 0.45rem;
+      gap: 0.28rem;
+      padding: 0.22rem 0.55rem 0.22rem 0.35rem;
       border-radius: 999px;
       background:
         linear-gradient(145deg, rgba(8, 18, 34, 0.95), rgba(4, 10, 22, 0.9));
-      border: 1px solid rgba(46, 230, 255, 0.18);
-      font-size: 0.72rem;
+      border: 1px solid rgba(46, 230, 255, 0.16);
+      font-size: 0.68rem;
       color: var(--text-muted);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
     .stat-pill b.is-ticking {
       animation: statTick 0.45s ease-out;
@@ -9452,15 +9596,24 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
+    .btn-music:not(.is-off) {
+      color: rgba(126, 240, 255, 0.95);
+      border-color: rgba(46, 230, 255, 0.45);
+      background: rgba(12, 28, 48, 0.92);
+      box-shadow: 0 0 14px rgba(46, 230, 255, 0.18);
+    }
+    .btn-music:not(.is-off) .music-ico {
+      filter: drop-shadow(0 0 4px rgba(46, 230, 255, 0.55));
+    }
     @media (max-width: 640px) {
       .btn-mute .mute-lab { display: none; }
     }
 
     /* ── Trending vs Explore (pump.fun order) ── */
     .trending-block {
-      margin-top: 0.55rem;
-      margin-bottom: 0.75rem;
-      padding: 1rem 1rem 1.15rem;
+      margin-top: 0.35rem;
+      margin-bottom: 0.65rem;
+      padding: 0.9rem 1rem 1.05rem;
       border-radius: 18px;
       position: relative;
       overflow: hidden;
@@ -9965,17 +10118,17 @@
     .search-wrap input {
       width: 100%;
       font-family: inherit;
-      font-size: 0.84rem;
+      font-size: 0.8rem;
       color: var(--text);
       background:
         linear-gradient(180deg, rgba(4, 10, 22, 0.92), rgba(2, 6, 14, 0.96));
-      border: 1px solid rgba(46, 230, 255, 0.2);
+      border: 1px solid rgba(46, 230, 255, 0.18);
       border-radius: 999px;
-      padding: 0.55rem 2.15rem 0.55rem 2.35rem;
+      padding: 0.42rem 2rem 0.42rem 2.15rem;
       outline: none;
       box-shadow:
-        inset 0 2px 8px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(0, 0, 0, 0.2);
+        inset 0 2px 8px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(0, 0, 0, 0.18);
       transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
     }
     .search-wrap input.has-value {
@@ -10362,7 +10515,7 @@
       Ambient gold stronger than the feed so it never reads as another grid row.
     */
     .trending-block.honor-podium {
-      padding: 0.95rem 1rem 1.1rem;
+      padding: 0.85rem 1rem 1rem;
       /* Seat labels sit above cards — must not clip Storm Crown / Silver Howl */
       overflow: visible;
       border-color: rgba(232, 197, 106, 0.48);
@@ -10409,8 +10562,8 @@
     /* Thin crown rail under Honor title only */
     .honor-podium .trending-head {
       position: relative;
-      padding-bottom: 0.55rem;
-      margin-bottom: 1rem;
+      padding-bottom: 0.45rem;
+      margin-bottom: 0.7rem;
     }
     .honor-podium .trending-head::after {
       content: "";
@@ -10816,8 +10969,9 @@
       font-weight: 700;
     }
     .echo-card .play-btn {
-      font-size: 0.65rem;
-      padding: 0.22rem 0.45rem;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.26rem 0.55rem 0.26rem 0.3rem;
     }
     /* legacy selectors — media is now .tile-media */
     .echo-media {
@@ -14922,12 +15076,7 @@
       opacity: 1 !important;
       animation: none !important;
     }
-    /* Play button pulse on hover of card */
-    .tile:hover .play-btn {
-      border-color: rgba(46, 230, 255, 0.55);
-      box-shadow: 0 0 14px rgba(46, 230, 255, 0.28);
-      transform: scale(1.04);
-    }
+    /* Play / Land pulse on card hover — stronger rules live with .play-btn */
 
 
     .tile-badge-row {
@@ -15001,6 +15150,9 @@
       bottom: 0.45rem;
       right: 0.45rem;
       z-index: 8;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.22rem;
       font-family: var(--font-display);
       font-weight: 800;
       font-size: 0.78rem;
@@ -15018,6 +15170,18 @@
         0 2px 10px rgba(0, 0, 0, 0.55),
         0 0 12px rgba(52, 211, 153, 0.35),
         inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    }
+    .tile-resonance__lab {
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.82;
+      line-height: 1;
+    }
+    .tile-resonance__val {
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
     }
     /*
       Band chip — scannable ladder (not loot rarity).
@@ -18117,9 +18281,9 @@
       border-top: 1px solid rgba(176, 138, 69, 0.18);
     }
     .tile .play-btn {
-      font-size: 0.7rem;
-      padding: 0.28rem 0.55rem;
-      gap: 0.28rem;
+      font-size: 0.74rem;
+      padding: 0.3rem 0.62rem 0.3rem 0.32rem;
+      gap: 0.3rem;
       font-weight: 800;
     }
     .tile .play-btn img {
@@ -18215,30 +18379,54 @@
     .play-btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.28rem;
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 0.22rem 0.5rem 0.22rem 0.28rem;
+      gap: 0.32rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      padding: 0.28rem 0.62rem 0.28rem 0.32rem;
       border-radius: 999px;
-      border: 1px solid rgba(46, 230, 255, 0.35);
-      background: linear-gradient(135deg, rgba(26, 212, 240, 0.2), rgba(232, 197, 106, 0.12));
-      color: var(--cyan-soft);
+      border: 1.5px solid rgba(46, 230, 255, 0.55);
+      background: linear-gradient(135deg, rgba(26, 212, 240, 0.38), rgba(14, 165, 201, 0.28) 55%, rgba(232, 197, 106, 0.2));
+      color: #e8fbff;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: transform 0.15s ease, border-color 0.15s, box-shadow 0.15s, background 0.15s, color 0.15s, filter 0.15s;
       font-family: inherit;
+      box-shadow:
+        0 0 12px rgba(46, 230, 255, 0.22),
+        0 2px 8px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
     }
     .play-btn img {
       width: 18px;
       height: 18px;
       border-radius: 50%;
       object-fit: cover;
-      box-shadow: 0 0 8px rgba(46, 230, 255, 0.35);
+      box-shadow: 0 0 10px rgba(46, 230, 255, 0.5);
     }
     .play-btn:hover {
       color: #fff;
-      border-color: rgba(46, 230, 255, 0.55);
-      background: linear-gradient(135deg, rgba(26, 212, 240, 0.35), rgba(232, 197, 106, 0.22));
-      box-shadow: 0 0 14px rgba(46, 230, 255, 0.25);
+      border-color: rgba(126, 240, 255, 0.85);
+      background: linear-gradient(135deg, rgba(46, 230, 255, 0.55), rgba(14, 180, 220, 0.4) 50%, rgba(232, 197, 106, 0.32));
+      box-shadow:
+        0 0 22px rgba(46, 230, 255, 0.45),
+        0 0 12px rgba(232, 197, 106, 0.2),
+        0 4px 12px rgba(0, 0, 0, 0.4);
+      filter: brightness(1.06);
+      transform: scale(1.05);
+    }
+    /* Card hover: Land is the clear primary action */
+    .tile:hover .play-btn,
+    .echo-card:hover .play-btn,
+    .echo-card.honor-seat:hover .play-btn {
+      border-color: rgba(126, 240, 255, 0.9);
+      color: #fff;
+      background: linear-gradient(135deg, rgba(46, 230, 255, 0.52), rgba(14, 180, 220, 0.38) 50%, rgba(232, 197, 106, 0.3));
+      box-shadow:
+        0 0 20px rgba(46, 230, 255, 0.42),
+        0 0 10px rgba(232, 197, 106, 0.18),
+        0 3px 10px rgba(0, 0, 0, 0.4);
+      transform: scale(1.06);
     }
 
     .btn-play {
@@ -20677,13 +20865,13 @@
       </nav>
 
       <div class="side-nav-foot">
-        <button type="button" class="side-nav-cta" id="navSubmit" title="Pass the Publishing Gate">
+        <button type="button" class="side-nav-cta" id="navSubmit" title="Pass the Gate · secondary (header is primary)">
           <span class="side-nav-cta__media" aria-hidden="true">
             <img src="assets/ui/btn-forge.jpg" alt="" width="640" height="360" decoding="async" />
           </span>
           <span class="side-nav-cta__lab">
-            <strong>⚡ Forge</strong>
-            <span>Pass the Gate</span>
+            <strong>Pass the Gate</strong>
+            <span>Publish</span>
           </span>
         </button>
         <button type="button" class="side-nav-ghost" id="navVision" title="Join The Pack">
@@ -20726,27 +20914,44 @@
               <span class="header-res-bar__glow" aria-hidden="true"></span>
               <i id="hdrResFill" style="width:0%"></i>
             </div>
-            <div class="header-res-sub" id="hdrResSub">Play · Howl · Forge — feed the Core</div>
+            <div class="header-res-sub" id="hdrResSub">Land · Howl · Pass the Gate — feed the Core</div>
           </div>
         </div>
       </div>
       <div class="header-actions">
-        <button type="button" class="btn-mute is-muted" id="btnMute" title="Sound off · click to enable Hall SFX" aria-pressed="true" aria-label="Toggle Hall sound">
-          <span class="mute-ico" aria-hidden="true">🔇</span>
-          <span class="mute-lab">SFX</span>
+        <div class="header-sound" id="headerSound">
+          <button type="button" class="btn-mute btn-sound-menu is-muted" id="btnSoundMenu" title="Sound · SFX & music" aria-expanded="false" aria-haspopup="true" aria-controls="soundMenu" aria-label="Sound menu">
+            <span class="mute-ico sound-menu-ico" aria-hidden="true">🔇</span>
+            <span class="mute-lab">Sound</span>
+          </button>
+          <div class="sound-menu" id="soundMenu" role="menu" hidden>
+            <button type="button" class="sound-menu__item is-muted" id="btnMute" role="menuitemcheckbox" title="Sound off · click to enable Hall SFX" aria-pressed="true" aria-label="Toggle Hall SFX">
+              <span class="mute-ico" aria-hidden="true">🔇</span>
+              <span class="sound-menu__text">
+                <strong>SFX</strong>
+                <em class="sound-menu__hint">Hall sounds</em>
+              </span>
+              <span class="sound-menu__state" data-sfx-state>Off</span>
+            </button>
+            <button type="button" class="sound-menu__item btn-music is-off" id="btnMusic" role="menuitemcheckbox" title="Chill space music · off" aria-pressed="false" aria-label="Toggle chill space music">
+              <span class="mute-ico music-ico" aria-hidden="true">🎵</span>
+              <span class="sound-menu__text">
+                <strong>Music</strong>
+                <em class="sound-menu__hint">Ambient loops</em>
+              </span>
+              <span class="sound-menu__state" data-music-state>Off</span>
+            </button>
+          </div>
+        </div>
+        <button type="button" class="btn btn-header-join" id="btnAbout" title="Join The Pack">
+          Join
         </button>
-        <button type="button" class="btn btn-cta-img btn-cta-img--join" id="btnAbout" title="Join The Pack">
-          <span class="btn-cta-img__media" aria-hidden="true">
-            <img src="assets/ui/btn-join-pack.jpg" alt="" width="640" height="360" decoding="async" />
-          </span>
-          <span>Join The Pack</span>
-        </button>
-        <button type="button" class="btn btn-cta-img btn-cta-img--forge" id="btnSubmit" title="Forge · open the Publishing Gate">
+        <button type="button" class="btn btn-cta-img btn-cta-img--forge" id="btnSubmit" title="Pass the Gate · publish a vessel">
           <span class="btn-cta-img__media" aria-hidden="true">
             <img src="assets/ui/btn-forge.jpg" alt="" width="640" height="360" decoding="async" />
           </span>
-          <span class="btn-label-short">⚡ Forge</span>
-          <span class="btn-label-long">⚡ Forge</span>
+          <span class="btn-label-short">Pass the Gate</span>
+          <span class="btn-label-long">Pass the Gate</span>
         </button>
       </div>
     </header>
@@ -20758,7 +20963,7 @@
         <input
           type="search"
           id="searchInput"
-          placeholder="Scry the Hall…  titles, keepers  (/)"
+          placeholder="Scry titles, keepers, true names…"
           autocomplete="off"
           aria-label="Scry the Hall"
         />
@@ -21308,7 +21513,7 @@
       <div class="panel-hero">
         <h2>Citadel <span>Echoes</span></h2>
         <p>
-          Bolt Echoes from the Pack — howls, seeds, and gates. Tap Play on any card in the Hall feed, or open an echo here.
+          Bolt Echoes from the Pack — howls, seeds, and gates. Tap Land on any card in the Hall feed, or open an echo here.
         </p>
       </div>
       <div class="panel-grid">
@@ -21557,7 +21762,7 @@
                   <div>
                     <p class="signal-graph-panel__kicker">Pack pulse ledger</p>
                     <h4 class="signal-graph-panel__title">Total <span>signal</span> over time</h4>
-                    <p class="signal-graph-panel__sub" id="signalGraphSub">Plays across all your Artifacts · last 7 days</p>
+                    <p class="signal-graph-panel__sub" id="signalGraphSub">Lands across all your Artifacts · last 7 days</p>
                   </div>
                   <button type="button" class="forge-help-btn signal-graph-help" data-forge-help="signal-graph" aria-label="What is this graph?" title="What is this graph?">!</button>
                 </div>
@@ -21572,7 +21777,7 @@
                 <div class="signal-graph-metrics" role="tablist" aria-label="Metric">
                   <button type="button" class="signal-graph-metric is-active" data-signal-graph-metric="plays">
                     <img src="assets/creator/metric-plays.jpg" alt="" decoding="async" />
-                    <span>Plays</span>
+                    <span>Lands</span>
                   </button>
                   <button type="button" class="signal-graph-metric" data-signal-graph-metric="howls">
                     <img src="assets/creator/metric-howls.jpg" alt="" decoding="async" />
@@ -21587,7 +21792,7 @@
                   <div class="signal-graph-chart-caption">
                     <span class="signal-graph-chart-caption__label">
                       <span class="signal-graph-chart-caption__dot" aria-hidden="true"></span>
-                      <span id="signalGraphCaption">Plays · 7 days</span>
+                      <span id="signalGraphCaption">Lands · 7 days</span>
                     </span>
                     <strong id="signalGraphPeak">—</strong>
                   </div>
@@ -21699,7 +21904,7 @@
             <div class="rc-contrib-card">
               <h4>How you feed the Core</h4>
               <ul id="rcContribHow">
-                <li>Play Mini-Quests and trials</li>
+                <li>Land Mini-Quests and trials</li>
                 <li>Howl on Sparks that move the Pack</li>
                 <li>Pass the Publishing Gate with new work</li>
                 <li>Explore Echoes, stories, and events</li>
@@ -21708,7 +21913,7 @@
             <div class="rc-contrib-card">
               <h4>Activity pulse</h4>
               <ul id="rcContribPulse">
-                <li>Plays: <strong id="rcPulsePlays">0</strong></li>
+                <li>Lands: <strong id="rcPulsePlays">0</strong></li>
                 <li>Howls given: <strong id="rcPulseHowls">0</strong></li>
                 <li>Wins: <strong id="rcPulseWins">0</strong></li>
                 <li>Gate passes: <strong id="rcPulseCreates">0</strong></li>
@@ -22006,9 +22211,9 @@
           target="_blank"
           rel="noopener"
         >
-          ⚡ Enter the Citadel — Play
+          ⚡ Enter the Citadel — Land
         </a>
-        <span class="play-link-note">Live playable hall · starboltsprint.github.io/thunderwolf-citadel-play</span>
+        <span class="play-link-note">Live landable hall · starboltsprint.github.io/thunderwolf-citadel-play</span>
       </div>
 
       <div class="footer-seal">
@@ -22363,7 +22568,7 @@
         <button type="button" class="btn btn-ghost" id="detailEdit" hidden title="Owner · publish a new version">Edit</button>
         <button type="button" class="btn-play" id="detailPlay">
           <img src="assets/play-wolf.jpg" alt="" width="28" height="28" />
-          <span>Play</span>
+          <span>Land</span>
         </button>
       </div>
     </div>
@@ -22626,7 +22831,7 @@
         <button type="button" class="btn btn-ghost" id="relicEdit" hidden title="Owner · publish a new version of the Origin">Edit</button>
         <button type="button" class="btn-play" id="relicPlayOrigin">
           <img src="assets/play-wolf.jpg" alt="" width="28" height="28" />
-          <span>Play Origin</span>
+          <span>Land Origin</span>
         </button>
       </div>
     </div>
@@ -22636,7 +22841,7 @@
   <div class="modal-overlay play-modal" id="playModal" role="dialog" aria-modal="true" aria-labelledby="playTitle">
     <div class="modal">
       <div class="modal-head">
-        <h2 class="modal-title" id="playTitle">Play</h2>
+        <h2 class="modal-title" id="playTitle">Land</h2>
         <div class="play-head-actions">
           <button type="button" class="btn-fs" id="btnFullscreen" aria-label="Fullscreen" title="Fullscreen">
             <span class="fs-ico" aria-hidden="true">⛶</span>
@@ -22654,7 +22859,7 @@
         </button>
         <button type="button" class="btn-play" id="playAgain" style="display:none">
           <img src="assets/play-wolf.jpg" alt="" width="28" height="28" />
-          <span>Play again</span>
+          <span>Land again</span>
         </button>
       </div>
     </div>
@@ -22700,11 +22905,11 @@
 
         <div class="player-card__stats">
           <div class="player-card__stat">
-            <button type="button" class="forge-help-btn player-card-help" data-forge-help="player-plays" aria-label="What are Plays?" title="What are Plays?">!</button>
+            <button type="button" class="forge-help-btn player-card-help" data-forge-help="player-plays" aria-label="What are Lands?" title="What are Lands?">!</button>
             <div class="player-card__stat-media" aria-hidden="true">
               <img src="assets/creator/metric-plays.jpg" alt="" decoding="async" />
             </div>
-            <b>Plays</b>
+            <b>Lands</b>
             <span id="playerCardPlays">0</span>
           </div>
           <div class="player-card__stat">
@@ -23119,7 +23324,7 @@
           if (ok) {
             playHallSfx("chime");
             flashCopyButton(btn, "Copied");
-            toast("Play link sealed to clipboard");
+            toast("Land link sealed to clipboard");
           } else {
             toast("Could not copy link");
           }
@@ -26768,7 +26973,7 @@
         rim: [120, 150, 190],
         feel: "Published, waiting — barely woken in the Hall",
         explain:
-          "Steel / slate shell. Few plays or returns yet. The vessel is published and waiting — silence is honest. Play and Howl are the first fire.",
+          "Steel / slate shell. Few lands or returns yet. The vessel is published and waiting — silence is honest. Land and Howl are the first fire.",
       },
       echoing: {
         id: "echoing",
@@ -26830,6 +27035,15 @@
       return `<div class="tile-band-mark" title="${escapeAttr(title)}"><span class="tile-band-mark__label">${escapeHtml(short)}</span><span class="tile-band-mark__ladder" aria-hidden="true">${escapeHtml(ladder)}</span></div>`;
     }
 
+    /** Resonance score pill — "Res 99" so the number is not opaque. */
+    function tileResonanceHtml(item, band, opts = {}) {
+      const res = item && item.resonance != null ? item.resonance : 0;
+      const bandLab = (band && band.label) || "Quiet";
+      const kind = opts.relic ? "Relic Resonance" : "Standing Resonance";
+      const title = `${kind} · ${res} · ${bandLab}`;
+      return `<div class="tile-resonance" title="${escapeAttr(title)}"><span class="tile-resonance__lab">Res</span><span class="tile-resonance__val">${escapeHtml(String(res))}</span></div>`;
+    }
+
     /** Detail / Relic tag: full band name in ladder colors (replaces “Bronze border”). */
     function bandDetailBadgeHtml(band) {
       if (!band) band = PULSE_BAND_META.quiet;
@@ -26847,7 +27061,7 @@
       "hall-known": "assets/resonance/bands/hall-known.jpg",
     };
     const BAND_LEGEND_BLURB = {
-      quiet: "Steel shell · published, waiting. Play and Howl light the first fire.",
+      quiet: "Steel shell · published, waiting. Land and Howl light the first fire.",
       echoing: "Cyan shell · real entry has begun. Entered, not only glanced.",
       strong: "Violet shell · sustained play and returns. A true node others orbit.",
       "hall-known": "Gold shell · lasting echo. A landmark the Pack navigates by — not loot.",
@@ -28079,7 +28293,7 @@
       const series = buildCreatorSignalSeries(mine, mode, metric);
       const peak = series.points.reduce((mx, p) => Math.max(mx, p.energy || 0), 0);
       const peakPt = series.points.find((p) => p.energy === peak && peak > 0);
-      const metricLab = metric === "howls" ? "Howls" : metric === "views" ? "Views" : "Plays";
+      const metricLab = metric === "howls" ? "Howls" : metric === "views" ? "Views" : "Lands";
       const modeLab = mode === "life" ? "Life" : mode === "30d" ? "30 days" : "7 days";
       const sub = document.getElementById("signalGraphSub");
       const cap = document.getElementById("signalGraphCaption");
@@ -28175,9 +28389,9 @@
         </div>
 
         <div class="res-stats-metric-row" role="tablist" aria-label="Chart metric">
-          <button type="button" class="res-stats-metric-btn${m === "plays" ? " is-active" : ""}" data-res-stats-metric="plays" title="Chart plays over time">
+          <button type="button" class="res-stats-metric-btn${m === "plays" ? " is-active" : ""}" data-res-stats-metric="plays" title="Chart lands over time">
             <span class="res-stats-metric-btn__media"><img src="assets/creator/metric-plays.jpg" alt="" /></span>
-            <span class="res-stats-metric-btn__lab">Plays</span>
+            <span class="res-stats-metric-btn__lab">Lands</span>
           </button>
           <button type="button" class="res-stats-metric-btn${m === "howls" ? " is-active" : ""}" data-res-stats-metric="howls" title="Chart howls over time">
             <span class="res-stats-metric-btn__media"><img src="assets/creator/metric-howls.jpg" alt="" /></span>
@@ -28204,7 +28418,7 @@
 
         <div class="res-stats-meta res-stats-meta--visual">
           ${vchip("assets/creator/chip-resonance.jpg", escapeHtml(String(item.resonance || 0)), "Resonance", escapeHtml((band && band.label) || "Quiet"))}
-          ${vchip("assets/creator/metric-plays.jpg", escapeHtml(formatCount(playVal)), "Plays", escapeHtml(rangeHint))}
+          ${vchip("assets/creator/metric-plays.jpg", escapeHtml(formatCount(playVal)), "Lands", escapeHtml(rangeHint))}
           ${vchip("assets/creator/metric-howls.jpg", escapeHtml(formatCount(howlVal)), "Howls", escapeHtml(rangeHint))}
           ${vchip("assets/creator/metric-views.jpg", escapeHtml(formatCount(viewVal)), "Views", escapeHtml(rangeHint))}
           ${vchip("assets/creator/chip-age.jpg", escapeHtml(ageFmt.short), "Age", escapeHtml(ageFmt.hint))}
@@ -28214,12 +28428,12 @@
         <div class="res-stats-takeaway">
           ${peak > 0
             ? `<p><strong>${escapeHtml(peakPt?.label || "One day")}</strong> peaked at <strong>${escapeHtml(String(peak))}</strong> ${escapeHtml(metricLabel)} · <strong>${busyDays}</strong> active ${isLife ? (series.weekly ? "weeks" : "days") : "days"} · score <strong>${escapeHtml(String(item.resonance || 0))}</strong> (${escapeHtml((band && band.label) || "Quiet")}).</p>`
-            : `<p>Still quiet in this range. <strong>Play</strong>, <strong>howl</strong>, or open the vessel to fill the bars.</p>`}
+            : `<p>Still quiet in this range. <strong>Land</strong>, <strong>howl</strong>, or open the vessel to fill the bars.</p>`}
         </div>
 
         <div class="res-stats-actions-row">
           <button type="button" class="btn btn-primary" data-res-stats-open-detail="${escapeAttr(item.id)}">Open vessel page</button>
-          <button type="button" class="btn btn-ghost" data-res-stats-play="${escapeAttr(item.id)}">Play</button>
+          <button type="button" class="btn btn-ghost" data-res-stats-play="${escapeAttr(item.id)}">Land</button>
         </div>
 
         <p class="res-stats-foot">
@@ -28632,14 +28846,14 @@
         close: "Back to Standing Resonance",
       },
       play: {
-        title: "Play",
-        lead: "Play means someone entered the hologram — a finished run, not only a card open or a scroll-by.",
+        title: "Land",
+        lead: "Land means someone entered the hologram — a finished run, not only a card open or a scroll-by.",
         bullets: [
-          "Views can be a glance. Play is the vessel being used.",
-          "Deep play stacks when many wolves finish runs; that feeds Standing Resonance.",
-          "A vessel that is never played stays a quiet spark, even if it looks beautiful on the wall.",
+          "Views can be a glance. Land is the vessel being used.",
+          "Deep landings stack when many wolves finish runs; that feeds Standing Resonance.",
+          "A vessel that is never landed stays a quiet spark, even if it looks beautiful on the wall.",
         ],
-        close: "Back to Play",
+        close: "Back to Land",
       },
       return: {
         title: "Returns",
@@ -29602,14 +29816,16 @@
         ? `<div class="honor-seat-label"><span class="honor-crest" aria-hidden="true">${crestIco}</span><span class="honor-seat-name">${escapeHtml(seatName)}</span></div>`
         : "";
       const isR = isRelic(item);
-      const actionBtn = isR
-        ? `<button type="button" class="play-btn" data-open-relic="${item.id}" title="Open · inspect lineage">
+      // Honor CTA is always Land (enter vessel / Origin) — not "Open"
+      const landId = isR ? (item.originId || null) : item.id;
+      const actionBtn = landId
+        ? `<button type="button" class="play-btn" data-play="${escapeAttr(landId)}" title="${locked ? "Coming soon" : "Land · enter vessel"}" ${locked ? "disabled" : ""}>
                 <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
-                Open
+                ${locked ? "Soon" : "Land"}
               </button>`
-        : `<button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Play · enter vessel"}" ${locked ? "disabled" : ""}>
+        : `<button type="button" class="play-btn" data-open-relic="${item.id}" title="Land · Relic Origin">
                 <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
-                ${locked ? "Soon" : "Play"}
+                Land
               </button>`;
       const colClass = isTop ? ` honor-seat-col--${rank}` : " honor-seat-col--minor";
       return `
@@ -29624,7 +29840,7 @@
                   ${kindBadge}
                 </div>
                 ${bandMarkHtml(band)}
-                <div class="tile-resonance" title="Resonance · ${escapeAttr(band.label)}">${item.resonance}</div>
+                ${tileResonanceHtml(item, band)}
               </div>
               <div class="artifact-divider" aria-hidden="true">⚡</div>
               <div class="tile-body echo-body">
@@ -29843,7 +30059,7 @@
                   ${extraBadges}
                 </div>
                 ${bandMarkHtml(band)}
-                <div class="tile-resonance" title="Resonance · ${escapeAttr(band.label)}">${item.resonance}</div>
+                ${tileResonanceHtml(item, band)}
               </div>
               <div class="artifact-divider" aria-hidden="true">⚡</div>
               <div class="tile-body">
@@ -29857,9 +30073,9 @@
                       <span class="creator-name">${escapeHtml(item.creator)}</span>
                     </span>
                   </div>
-                  <button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Play · enter vessel"}" ${locked ? "disabled" : ""}>
+                  <button type="button" class="play-btn" data-play="${item.id}" title="${locked ? "Coming soon" : "Land · enter vessel"}" ${locked ? "disabled" : ""}>
                     <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
-                    ${locked ? "Soon" : "Play"}
+                    ${locked ? "Soon" : "Land"}
                   </button>
                 </div>
               </div>
@@ -29889,7 +30105,7 @@
                   ${item.featured ? '<span class="badge badge-featured">Featured</span>' : ""}
                 </div>
                 ${bandMarkHtml(band)}
-                <div class="tile-resonance" title="Relic Resonance · ${escapeAttr(band.label)}">${item.resonance}</div>
+                ${tileResonanceHtml(item, band, { relic: true })}
               </div>
               <div class="artifact-divider" aria-hidden="true">⚡</div>
               <div class="tile-body">
@@ -29906,10 +30122,15 @@
                       <span class="creator-name">${escapeHtml(item.creator)}</span>
                     </span>
                   </div>
-                  <button type="button" class="play-btn" data-open-relic="${item.id}" title="Open · inspect lineage">
+                  ${item.originId
+                    ? `<button type="button" class="play-btn" data-play="${escapeAttr(item.originId)}" title="Land · enter Origin vessel">
                     <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
-                    Open
-                  </button>
+                    Land
+                  </button>`
+                    : `<button type="button" class="play-btn" data-open-relic="${item.id}" title="Land · open Relic">
+                    <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
+                    Land
+                  </button>`}
                 </div>
               </div>
             </div>
@@ -32163,7 +32384,7 @@
         kicker.textContent = "Star selected";
         why.textContent = rec.quietDead
           ? "Quiet spark — play and howl first; the Hall invites forging where light already gathers."
-          : "Play this vessel, or forge nearby when it burns brighter.";
+          : "Land this vessel, or forge nearby when it burns brighter.";
         secondary.hidden = true;
       }
 
@@ -32199,7 +32420,7 @@
         html += `<button type="button" class="btn-rec-ghost" data-rec-action="forge" data-rec-type="build_near">Build near this</button>`;
       }
       if (playId) {
-        html += `<button type="button" class="btn-rec-ghost" data-rec-action="play" data-play-id="${escapeAttr(playId)}">Play</button>`;
+        html += `<button type="button" class="btn-rec-ghost" data-rec-action="play" data-play-id="${escapeAttr(playId)}">Land</button>`;
       }
       actions.innerHTML = html;
       el.hidden = false;
@@ -40165,7 +40386,7 @@
           <div class="lineage-node__actions">
             <button type="button" class="btn-play" data-lineage-play="${escapeAttr(m.id)}" ${locked ? "disabled" : ""}>
               <img src="assets/play-wolf.jpg" alt="" width="18" height="18" />
-              <span>${locked ? "Soon" : "Play"}</span>
+              <span>${locked ? "Soon" : "Land"}</span>
             </button>
             <button type="button" class="btn btn-ghost" data-lineage-remix="${escapeAttr(m.id)}" ${locked ? "disabled" : ""} title="${openFork ? "Remix" : "Sequel"}">${openFork ? "Remix" : "Sequel"}</button>
             <button type="button" class="btn btn-ghost" data-lineage-open="${escapeAttr(m.id)}">Open full</button>
@@ -40714,7 +40935,7 @@
           ${detailMetaCardHtml({
             help: "meta-plays",
             img: "assets/creator/metric-plays.jpg",
-            lab: "Plays",
+            lab: "Lands",
             val: formatCount(item.plays || 0),
           })}
           ${detailMetaCardHtml({
@@ -40749,7 +40970,7 @@
         </div>
         ${trueNameBlockHtml(item)}
         <p class="detail-play-route" style="margin:0.35rem 0 0.5rem;font-size:0.72rem;color:var(--text-dim)">
-          Play route · <a href="${escapeAttr(artifactPlayHash(item.id))}" style="color:var(--cyan-soft);font-weight:700;word-break:break-all">${escapeHtml(artifactPlayHash(item.id))}</a>
+          Land route · <a href="${escapeAttr(artifactPlayHash(item.id))}" style="color:var(--cyan-soft);font-weight:700;word-break:break-all">${escapeHtml(artifactPlayHash(item.id))}</a>
         </p>
         ${lineageLink}
         <div class="tile-stats" style="margin:0.75rem 0 0.25rem">
@@ -41535,7 +41756,7 @@
       const again = document.getElementById("playAgain");
       again.style.display = "inline-flex";
       again.onclick = () => startPlayExperience(item);
-      toast(win ? "Play complete · personal Resonance +28 ⚡" : "Try again, Pack Guardian");
+      toast(win ? "Land complete · personal Resonance +28 ⚡" : "Try again, Pack Guardian");
     }
 
     function toast(msg) {
@@ -41685,6 +41906,33 @@
       } catch { /* ok */ }
     }
 
+    function syncSoundMenuTrigger() {
+      const menuBtn = document.getElementById("btnSoundMenu");
+      if (!menuBtn) return;
+      const sfxOn = !hallSound.muted;
+      // citadelMusic is declared later — access must not hit TDZ (typeof still throws)
+      let musicOn = false;
+      try {
+        musicOn = !!(citadelMusic && citadelMusic.enabled);
+      } catch {
+        musicOn = false;
+      }
+      const live = sfxOn || musicOn;
+      menuBtn.classList.toggle("is-muted", !live);
+      menuBtn.classList.toggle("is-live", live);
+      const ico = menuBtn.querySelector(".sound-menu-ico");
+      if (ico) {
+        if (musicOn && sfxOn) ico.textContent = "🔊";
+        else if (musicOn) ico.textContent = "🎵";
+        else if (sfxOn) ico.textContent = "🔊";
+        else ico.textContent = "🔇";
+      }
+      const parts = [];
+      parts.push(sfxOn ? "SFX on" : "SFX off");
+      parts.push(musicOn ? "Music on" : "Music off");
+      menuBtn.title = "Sound · " + parts.join(" · ");
+    }
+
     function syncMuteButton() {
       const btn = document.getElementById("btnMute");
       if (!btn) return;
@@ -41694,8 +41942,11 @@
       const ico = btn.querySelector(".mute-ico");
       if (ico) ico.textContent = muted ? "🔇" : "🔊";
       btn.title = muted
-        ? "Sound off · click to enable Hall SFX"
-        : "Sound on · click to mute (bed stays off unless held)";
+        ? "SFX off · click to enable Hall sounds"
+        : "SFX on · click to mute";
+      const st = btn.querySelector("[data-sfx-state]");
+      if (st) st.textContent = muted ? "Off" : "On";
+      syncSoundMenuTrigger();
     }
 
     function setHallMuted(muted) {
@@ -41707,7 +41958,27 @@
       syncMuteButton();
     }
 
-    document.getElementById("btnMute")?.addEventListener("click", () => {
+    function setSoundMenuOpen(open) {
+      const menu = document.getElementById("soundMenu");
+      const btn = document.getElementById("btnSoundMenu");
+      if (!menu || !btn) return;
+      if (open) menu.removeAttribute("hidden");
+      else menu.setAttribute("hidden", "");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    function toggleSoundMenu() {
+      const menu = document.getElementById("soundMenu");
+      if (!menu) return;
+      setSoundMenuOpen(menu.hasAttribute("hidden"));
+    }
+
+    document.getElementById("btnSoundMenu")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleSoundMenu();
+    });
+    document.getElementById("btnMute")?.addEventListener("click", (e) => {
+      e.stopPropagation();
       const next = !hallSound.muted;
       setHallMuted(next);
       if (!next) {
@@ -41716,7 +41987,451 @@
         playHallSfx("click");
       }
     });
+    document.addEventListener("pointerdown", (e) => {
+      const root = document.getElementById("headerSound");
+      if (!root || root.contains(e.target)) return;
+      setSoundMenuOpen(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") setSoundMenuOpen(false);
+    });
     syncMuteButton();
+
+    /* ═══════════════════════════════════════════════════════════════════
+     * Chill space ambient music — real tracks + crossfade
+     * Tracks: assets/audio/*.mp3 (see CREDITS.md)
+     * Immortal Stand (intro video) · deep void · sun warmth · hall calm · sky open
+     * ═══════════════════════════════════════════════════════════════════ */
+    const MUSIC_KEY = "citadel-ambient-music-v1";
+    const MUSIC_TRACK_KEY = "citadel-ambient-music-track-v1";
+    const MUSIC_TRACKS = [
+      {
+        id: "immortal-stand",
+        src: "assets/audio/immortal-stand.mp3",
+        title: "Immortal Stand",
+        mixkit: "",
+        artist: "Intro film score",
+        toast: "Immortal Stand · intro",
+      },
+      {
+        id: "deep-void",
+        src: "assets/audio/deep-void.mp3",
+        title: "Deep Void",
+        mixkit: "Spirit in the Woods",
+        artist: "Alejandro Magaña",
+        toast: "Deep void",
+      },
+      {
+        id: "sun-warmth",
+        src: "assets/audio/sun-warmth.mp3",
+        title: "Sun Warmth",
+        mixkit: "Deep Meditation",
+        artist: "Alejandro Magaña",
+        toast: "Sun warmth",
+      },
+      {
+        id: "hall-calm",
+        src: "assets/audio/hall-calm.mp3",
+        title: "Hall Calm",
+        mixkit: "Feedback Dreams",
+        artist: "Eugenio Mininni",
+        toast: "Hall calm",
+      },
+      {
+        id: "sky-open",
+        src: "assets/audio/sky-open.mp3",
+        title: "Sky Open",
+        mixkit: "What it Takes",
+        artist: "Eugenio Mininni",
+        toast: "Sky open",
+      },
+    ];
+
+    const citadelMusic = {
+      enabled: false,
+      playing: false,
+      trackIndex: 0,
+      front: 0, // which dual player is currently audible
+      players: [null, null], // HTMLAudioElement pair for crossfade
+      fadeRaf: 0,
+      watchTimer: 0,
+      volume: 0.42,
+      crossfadeSec: 5.5,
+      unlocking: false,
+    };
+
+    function loadMusicPref() {
+      try {
+        return localStorage.getItem(MUSIC_KEY) === "1";
+      } catch {
+        return false;
+      }
+    }
+
+    function saveMusicPref(on) {
+      try {
+        localStorage.setItem(MUSIC_KEY, on ? "1" : "0");
+      } catch { /* ok */ }
+    }
+
+    function loadMusicTrackIndex() {
+      try {
+        const n = parseInt(localStorage.getItem(MUSIC_TRACK_KEY) || "0", 10);
+        if (!Number.isFinite(n)) return 0;
+        return ((n % MUSIC_TRACKS.length) + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
+      } catch {
+        return 0;
+      }
+    }
+
+    function saveMusicTrackIndex(i) {
+      try {
+        localStorage.setItem(MUSIC_TRACK_KEY, String(i));
+      } catch { /* ok */ }
+    }
+
+    function currentMusicTrack() {
+      return MUSIC_TRACKS[citadelMusic.trackIndex] || MUSIC_TRACKS[0];
+    }
+
+    function syncMusicButton() {
+      const btn = document.getElementById("btnMusic");
+      if (!btn) return;
+      const on = !!citadelMusic.enabled;
+      const tr = currentMusicTrack();
+      btn.classList.toggle("is-off", !on);
+      btn.classList.toggle("is-muted", !on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.title = on
+        ? `Chill space music · ${tr.title} · click to stop · right-click next track`
+        : "Chill space music · off · click for ambient loops";
+      const st = btn.querySelector("[data-music-state]");
+      if (st) st.textContent = on ? "On" : "Off";
+      if (typeof syncSoundMenuTrigger === "function") syncSoundMenuTrigger();
+    }
+
+    function citadelMusicDuckSky(on) {
+      try {
+        if (skyAudio.master && skyAudio.started && skyAudio.ctx) {
+          const t = skyAudio.ctx.currentTime;
+          skyAudio.master.gain.setTargetAtTime(on ? 0.16 : 0.4, t, 0.55);
+        }
+      } catch { /* ok */ }
+    }
+
+    function musicTrackUrl(track) {
+      if (!track || !track.src) return "";
+      try {
+        // Resolve relative to the page so file:// and http:// both work
+        return new URL(track.src, document.baseURI || location.href).href;
+      } catch {
+        return track.src;
+      }
+    }
+
+    function ensureMusicPlayers() {
+      if (citadelMusic.players[0] && citadelMusic.players[1]) return citadelMusic.players;
+      for (let i = 0; i < 2; i++) {
+        const a = new Audio();
+        a.preload = "auto";
+        a.loop = false;
+        a.volume = 0;
+        // Do NOT set crossOrigin — it breaks file:// local MP3 loads in Firefox/Chrome
+        a.setAttribute("playsinline", "");
+        a.setAttribute("data-citadel-music", String(i));
+        citadelMusic.players[i] = a;
+      }
+      return citadelMusic.players;
+    }
+
+    function cancelMusicFade() {
+      if (citadelMusic.fadeRaf) {
+        cancelAnimationFrame(citadelMusic.fadeRaf);
+        citadelMusic.fadeRaf = 0;
+      }
+    }
+
+    function cancelMusicWatch() {
+      if (citadelMusic.watchTimer) {
+        clearInterval(citadelMusic.watchTimer);
+        citadelMusic.watchTimer = 0;
+      }
+    }
+
+    /** Smooth volume ramp on one or two Audio elements. */
+    function musicFadeVolumes(specs, ms, done) {
+      cancelMusicFade();
+      const duration = Math.max(80, ms || 900);
+      const t0 = performance.now();
+      const starts = specs.map((s) => ({
+        el: s.el,
+        from: Math.max(0, Math.min(1, s.el.volume)),
+        to: Math.max(0, Math.min(1, s.to)),
+      }));
+      const step = (now) => {
+        const u = Math.min(1, (now - t0) / duration);
+        // smoothstep
+        const e = u * u * (3 - 2 * u);
+        starts.forEach((s) => {
+          try {
+            s.el.volume = s.from + (s.to - s.from) * e;
+          } catch { /* ok */ }
+        });
+        if (u < 1) {
+          citadelMusic.fadeRaf = requestAnimationFrame(step);
+        } else {
+          citadelMusic.fadeRaf = 0;
+          if (typeof done === "function") done();
+        }
+      };
+      citadelMusic.fadeRaf = requestAnimationFrame(step);
+    }
+
+    function stopCitadelMusic(fadeMs = 1200) {
+      cancelMusicWatch();
+      const players = citadelMusic.players.filter(Boolean);
+      if (!players.length) {
+        citadelMusic.playing = false;
+        return;
+      }
+      const ms = Math.max(200, fadeMs || 900);
+      musicFadeVolumes(
+        players.map((el) => ({ el, to: 0 })),
+        ms,
+        () => {
+          players.forEach((el) => {
+            try {
+              el.pause();
+              el.currentTime = 0;
+              el.removeAttribute("src");
+              el.load();
+            } catch { /* ok */ }
+          });
+        }
+      );
+      citadelMusic.playing = false;
+      citadelMusicDuckSky(false);
+    }
+
+    function musicNextIndex(from) {
+      return (from + 1) % MUSIC_TRACKS.length;
+    }
+
+    function loadTrackInto(player, track) {
+      return new Promise((resolve, reject) => {
+        if (!player || !track) {
+          reject(new Error("no player/track"));
+          return;
+        }
+        const url = musicTrackUrl(track);
+        let settled = false;
+        let timer = 0;
+        const finish = (fn, arg) => {
+          if (settled) return;
+          settled = true;
+          if (timer) clearTimeout(timer);
+          cleanup();
+          fn(arg);
+        };
+        const onReady = () => finish(resolve, player);
+        const onErr = () => {
+          const code = player.error ? player.error.code : "?";
+          finish(reject, new Error("load failed (" + code + "): " + url));
+        };
+        const cleanup = () => {
+          player.removeEventListener("canplay", onReady);
+          player.removeEventListener("canplaythrough", onReady);
+          player.removeEventListener("loadeddata", onReady);
+          player.removeEventListener("error", onErr);
+        };
+        player.addEventListener("canplay", onReady);
+        player.addEventListener("canplaythrough", onReady);
+        player.addEventListener("loadeddata", onReady);
+        player.addEventListener("error", onErr);
+        try {
+          player.pause();
+        } catch { /* ok */ }
+        player.loop = false;
+        player.volume = 0;
+        const same =
+          player.src === url ||
+          (player.currentSrc && player.currentSrc === url) ||
+          (player.getAttribute("src") && url.endsWith(player.getAttribute("src")));
+        if (!same) {
+          player.src = url;
+          try { player.load(); } catch { /* ok */ }
+        } else if (player.readyState >= 2) {
+          finish(resolve, player);
+          return;
+        } else {
+          try { player.load(); } catch { /* ok */ }
+        }
+        // safety timeout
+        timer = setTimeout(() => {
+          if (player.readyState >= 2) finish(resolve, player);
+          else finish(reject, new Error("timeout: " + url));
+        }, 12000);
+      });
+    }
+
+    async function musicStartTrack(index, { fadeInMs = 2200, fromZero = true } = {}) {
+      const players = ensureMusicPlayers();
+      const track = MUSIC_TRACKS[index];
+      if (!track) return;
+      citadelMusic.trackIndex = index;
+      saveMusicTrackIndex(index);
+      const front = citadelMusic.front;
+      const el = players[front];
+      try {
+        await loadTrackInto(el, track);
+        if (fromZero) {
+          try { el.currentTime = 0; } catch { /* ok */ }
+        }
+        el.volume = 0;
+        const p = el.play();
+        if (p && typeof p.then === "function") await p;
+        citadelMusic.playing = true;
+        musicFadeVolumes([{ el, to: citadelMusic.volume }], fadeInMs);
+        startMusicEndWatch();
+        syncMusicButton();
+        citadelMusicDuckSky(true);
+      } catch (err) {
+        console.warn("[citadel music]", err);
+        // file:// often blocks media — guide user to local server
+        const isFile = location.protocol === "file:";
+        toast(
+          isFile
+            ? "Music needs a local server (file:// blocked) · run serve.bat"
+            : "Could not load ambient track"
+        );
+        citadelMusic.enabled = false;
+        saveMusicPref(false);
+        syncMusicButton();
+      }
+    }
+
+    /** Crossfade from current front player into next track on the other slot. */
+    async function musicCrossfadeTo(nextIndex) {
+      if (!citadelMusic.enabled || !citadelMusic.playing) return;
+      const players = ensureMusicPlayers();
+      const fromEl = players[citadelMusic.front];
+      const toSlot = citadelMusic.front ^ 1;
+      const toEl = players[toSlot];
+      const track = MUSIC_TRACKS[nextIndex];
+      if (!track || !fromEl || !toEl) return;
+
+      try {
+        await loadTrackInto(toEl, track);
+        try { toEl.currentTime = 0; } catch { /* ok */ }
+        toEl.volume = 0;
+        const p = toEl.play();
+        if (p && typeof p.then === "function") await p;
+
+        const ms = Math.round(citadelMusic.crossfadeSec * 1000);
+        musicFadeVolumes(
+          [
+            { el: fromEl, to: 0 },
+            { el: toEl, to: citadelMusic.volume },
+          ],
+          ms,
+          () => {
+            try {
+              fromEl.pause();
+              fromEl.currentTime = 0;
+            } catch { /* ok */ }
+          }
+        );
+        citadelMusic.front = toSlot;
+        citadelMusic.trackIndex = nextIndex;
+        saveMusicTrackIndex(nextIndex);
+        citadelMusic.playing = true;
+        startMusicEndWatch();
+        syncMusicButton();
+      } catch (err) {
+        console.warn("[citadel music crossfade]", err);
+        // fallback hard cut
+        citadelMusic.front = toSlot;
+        musicStartTrack(nextIndex, { fadeInMs: 1200, fromZero: true });
+      }
+    }
+
+    function musicSkipNext() {
+      if (!citadelMusic.enabled) return;
+      const next = musicNextIndex(citadelMusic.trackIndex);
+      if (citadelMusic.playing) {
+        musicCrossfadeTo(next);
+        const tr = MUSIC_TRACKS[next];
+        if (tr) toast("Now · " + tr.toast);
+      } else {
+        citadelMusic.trackIndex = next;
+        saveMusicTrackIndex(next);
+        syncMusicButton();
+      }
+    }
+
+    /** Watch near-end of front track to start crossfade into next. */
+    function startMusicEndWatch() {
+      cancelMusicWatch();
+      citadelMusic.watchTimer = window.setInterval(() => {
+        if (!citadelMusic.enabled || !citadelMusic.playing) return;
+        const el = citadelMusic.players[citadelMusic.front];
+        if (!el || !el.duration || !Number.isFinite(el.duration)) return;
+        const remain = el.duration - el.currentTime;
+        if (remain <= citadelMusic.crossfadeSec + 0.15 && remain > 0) {
+          cancelMusicWatch();
+          musicCrossfadeTo(musicNextIndex(citadelMusic.trackIndex));
+        }
+      }, 250);
+    }
+
+    function startCitadelMusic() {
+      if (citadelMusic.playing) return;
+      ensureMusicPlayers();
+      citadelMusic.trackIndex = loadMusicTrackIndex();
+      musicStartTrack(citadelMusic.trackIndex, { fadeInMs: 2600, fromZero: true });
+    }
+
+    function setCitadelMusicEnabled(on) {
+      citadelMusic.enabled = !!on;
+      saveMusicPref(citadelMusic.enabled);
+      if (citadelMusic.enabled) {
+        startCitadelMusic();
+        const tr = currentMusicTrack();
+        toast("Chill space music · " + (tr ? tr.toast : "on"));
+      } else {
+        stopCitadelMusic(1100);
+        toast("Space music off");
+      }
+      syncMusicButton();
+    }
+
+    document.getElementById("btnMusic")?.addEventListener("click", () => {
+      setCitadelMusicEnabled(!citadelMusic.enabled);
+    });
+
+    // Right-click Music → next ambient loop (when on)
+    document.getElementById("btnMusic")?.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      if (!citadelMusic.enabled) {
+        setCitadelMusicEnabled(true);
+        return;
+      }
+      musicSkipNext();
+    });
+
+    // Restore preference after a gesture — browsers block autoplay
+    citadelMusic.enabled = loadMusicPref();
+    citadelMusic.trackIndex = loadMusicTrackIndex();
+    syncMusicButton();
+    if (citadelMusic.enabled) {
+      const unlockMusic = () => {
+        if (citadelMusic.enabled && !citadelMusic.playing) startCitadelMusic();
+        window.removeEventListener("pointerdown", unlockMusic);
+        window.removeEventListener("keydown", unlockMusic);
+      };
+      window.addEventListener("pointerdown", unlockMusic, { once: true, passive: true });
+      window.addEventListener("keydown", unlockMusic, { once: true });
+    }
 
     function setPreview(src) {
       state.pendingImage = src || "";
@@ -41965,7 +42680,7 @@
       { id: "planet-market", src: "covers/presets/preset-planet-market.jpg", title: "Planet Market", hint: "Story / Fun" },
       { id: "spirit-stadium", src: "covers/presets/preset-spirit-stadium.jpg", title: "Spirit Stadium", hint: "Howl / Event" },
       { id: "star-robot", src: "covers/presets/preset-star-robot.jpg", title: "Star Robot", hint: "Creator / Forge" },
-      { id: "bubble-surf", src: "covers/presets/preset-bubble-surf.jpg", title: "Bubble Surf", hint: "Sprint / Play" },
+      { id: "bubble-surf", src: "covers/presets/preset-bubble-surf.jpg", title: "Bubble Surf", hint: "Sprint / Land" },
       { id: "destiny-compass", src: "covers/presets/preset-destiny-compass.jpg", title: "Destiny Compass", hint: "Puzzle / Choice" },
       { id: "howl-fireflies", src: "covers/presets/preset-howl-fireflies.jpg", title: "Howl Fireflies", hint: "Story / Cub" },
       { id: "solar-frisbee", src: "covers/presets/preset-solar-frisbee.jpg", title: "Solar Frisbee", hint: "Sprint / Sport" },
@@ -41996,7 +42711,7 @@
       { id: "aurora-maypole", src: "covers/presets/preset-aurora-maypole.jpg", title: "Aurora Maypole", hint: "Howl / Festival" },
       { id: "paper-starships", src: "covers/presets/preset-paper-starships.jpg", title: "Paper Starships", hint: "Story / Dream" },
       { id: "director-wolf", src: "covers/presets/preset-director-wolf.jpg", title: "Director Wolf", hint: "Creator / Cinema" },
-      { id: "planet-seesaw", src: "covers/presets/preset-planet-seesaw.jpg", title: "Planet Seesaw", hint: "Puzzle / Play" },
+      { id: "planet-seesaw", src: "covers/presets/preset-planet-seesaw.jpg", title: "Planet Seesaw", hint: "Puzzle / Land" },
       { id: "star-mailbox", src: "covers/presets/preset-star-mailbox.jpg", title: "Star Mailbox", hint: "Howl / Message" },
       { id: "bolt-finale", src: "covers/presets/preset-bolt-finale.jpg", title: "Bolt Finale", hint: "Event / Glory" },
       // Wave 8 — submission pack (340 total)
@@ -42028,7 +42743,7 @@
       { id: "solar-butterfly", src: "covers/presets/preset-solar-butterfly.jpg", title: "Solar Butterfly", hint: "Story / Beauty" },
       { id: "rainbow-slide", src: "covers/presets/preset-rainbow-slide.jpg", title: "Rainbow Slide", hint: "Story / Cub" },
       { id: "puzzle-doors", src: "covers/presets/preset-puzzle-doors.jpg", title: "Puzzle Doors", hint: "Puzzle / Choice" },
-      { id: "galaxy-hopscotch", src: "covers/presets/preset-galaxy-hopscotch.jpg", title: "Galaxy Hopscotch", hint: "Mini-Quest / Play" },
+      { id: "galaxy-hopscotch", src: "covers/presets/preset-galaxy-hopscotch.jpg", title: "Galaxy Hopscotch", hint: "Mini-Quest / Land" },
       { id: "moon-spiral-stairs", src: "covers/presets/preset-moon-spiral-stairs.jpg", title: "Moon Spiral Stairs", hint: "Story / Climb" },
       { id: "aurora-scarf", src: "covers/presets/preset-aurora-scarf.jpg", title: "Aurora Scarf", hint: "Story / Wander" },
       { id: "lens-cub", src: "covers/presets/preset-lens-cub.jpg", title: "Lens Cub", hint: "Creator / Cub" },
@@ -43562,7 +44277,7 @@
         html:
           "This graph sums activity across <strong>all of your Artifacts</strong> — not a single vessel.<br/><br/>" +
           "Pick <strong>7 days</strong>, <strong>30 days</strong>, or <strong>Life</strong>, then chart " +
-          "<strong>Plays</strong>, <strong>Howls</strong>, or <strong>Views</strong>. " +
+          "<strong>Lands</strong>, <strong>Howls</strong>, or <strong>Views</strong>. " +
           "Taller bars mean more Pack activity that day (or week). Gold is the peak. " +
           "Open an Artifact for per-vessel analytics.",
       },
@@ -43619,11 +44334,11 @@
       },
       "player-plays": {
         kicker: "Player card",
-        title: "Plays",
+        title: "Lands",
         img: "assets/creator/metric-plays.jpg",
         html:
-          "<strong>Plays</strong> count how many times you have launched into living vessels in the Hall.<br/><br/>" +
-          "Each Play is a strong pulse — you entered the work, not only looked. Plays feed personal Resonance and daily quests.",
+          "<strong>Lands</strong> count how many times you have launched into living vessels in the Hall.<br/><br/>" +
+          "Each Land is a strong pulse — you entered the work, not only looked. Lands feed personal Resonance and daily quests.",
       },
       "player-wins": {
         kicker: "Player card",
@@ -43665,7 +44380,7 @@
         img: "assets/quests/quest-banner.jpg",
         html:
           "The <strong>Day path</strong> is today’s Pack Quest Board — a set of living challenges from sunrise to midnight (local time).<br/><br/>" +
-          "Play, howl, scry, open vessels, walk Constellation and Lineage. Progress counts automatically. " +
+          "Land, howl, scry, open vessels, walk Constellation and Lineage. Progress counts automatically. " +
           "Finish more quests for a fuller <strong>Resonance</strong> haul before the board resets.",
       },
       "quest-hero-weekly": {
@@ -43711,12 +44426,12 @@
       },
       "quest-kind-play": {
         kicker: "Quest kind",
-        title: "Play quests",
+        title: "Land quests",
         img: "assets/resonance/play.jpg",
         html:
-          "<strong>Play</strong> quests ask you to launch into living vessels in the Hall.<br/><br/>" +
-          "Open any Artifact or Origin and hit Play. Each launch counts toward the target. " +
-          "Deeper play paths need more launches for bigger Res.",
+          "<strong>Land</strong> quests ask you to launch into living vessels in the Hall.<br/><br/>" +
+          "Open any Artifact or Origin and hit Land. Each landing counts toward the target. " +
+          "Deeper land paths need more landings for bigger Res.",
       },
       "quest-kind-howl": {
         kicker: "Quest kind",
@@ -43814,7 +44529,7 @@
         img: "assets/resonance/play.jpg",
         html:
           "The <strong>Origin</strong> is the first spark of this Relic — the root Artifact the lineage grew from.<br/><br/>" +
-          "<strong>Play Origin</strong> opens that vessel. Remix and Edit (when allowed) also act on the Origin, " +
+          "<strong>Land Origin</strong> opens that vessel. Remix and Edit (when allowed) also act on the Origin, " +
           "because a Relic is a shell around living Artifacts, not a forkable package of its own.",
       },
       "relic-keeper": {
@@ -43858,7 +44573,7 @@
         img: "assets/creator/chip-resonance.jpg",
         html:
           "<strong>Resonance</strong> is this vessel’s living strength score in the Hall.<br/><br/>" +
-          "Plays, howls, views, and return visits shape it over time. It is earned by Pack activity, never by ownership.",
+          "Lands, howls, views, and return visits shape it over time. It is earned by Pack activity, never by ownership.",
       },
       "meta-howls": {
         kicker: "Artifact ledger",
@@ -43878,11 +44593,11 @@
       },
       "meta-plays": {
         kicker: "Artifact ledger",
-        title: "Plays",
+        title: "Lands",
         img: "assets/creator/metric-plays.jpg",
         html:
-          "<strong>Plays</strong> count launches into this Artifact’s live experience.<br/><br/>" +
-          "Each play is a strong pulse signal — the Pack did not only look; they entered the vessel.",
+          "<strong>Lands</strong> count launches into this Artifact’s live experience.<br/><br/>" +
+          "Each land is a strong pulse signal — the Pack did not only look; they entered the vessel.",
       },
       "meta-entered": {
         kicker: "Artifact ledger",
@@ -44074,7 +44789,7 @@
           `Class: <strong>${escapeHtml(typeLab)}</strong> · Policy: <strong>${escapeHtml(policyLab)}</strong>` +
           (item.version ? ` · <strong>v${escapeHtml(String(item.version))}</strong>` : "") +
           ".<br/><br/>" +
-          "Tap the card (not the !) to open <strong>Vessel analytics</strong> — graphs by 7 days / 30 days / Life, and Plays · Howls · Views.";
+          "Tap the card (not the !) to open <strong>Vessel analytics</strong> — graphs by 7 days / 30 days / Life, and Lands · Howls · Views.";
       }
       modal.classList.remove("is-help-portrait");
       const fsHost =
@@ -44472,7 +45187,7 @@
     const QUEST_PROGRESS_KEY = "citadel-quest-progress-v1";
     const QUEST_KIND_META = {
       play: {
-        hint: "Launch Play on any vessel in the Hall",
+        hint: "Launch Land on any vessel in the Hall",
         img: "assets/resonance/play.jpg",
       },
       howl: {
@@ -44509,24 +45224,24 @@
       },
     };
     const DAILY_QUEST_DEFS = [
-      { id: "d_play", label: "Play 3 vessels in the Hall", kind: "play", target: 3, reward: 40 },
+      { id: "d_play", label: "Land 3 vessels in the Hall", kind: "play", target: 3, reward: 40 },
       { id: "d_howl", label: "Howl on 2 creations", kind: "howl", target: 2, reward: 30 },
       { id: "d_open", label: "Open any vessel detail", kind: "open", target: 1, reward: 20 },
       { id: "d_scry", label: "Scry the Hall once", kind: "scry", target: 1, reward: 25 },
       { id: "d_open3", label: "Inspect 3 vessels", kind: "open", target: 3, reward: 35 },
       { id: "d_howl4", label: "Howl 4 times today", kind: "howl", target: 4, reward: 45 },
-      { id: "d_play5", label: "Play 5 vessels (deep path)", kind: "play", target: 5, reward: 55 },
+      { id: "d_play5", label: "Land 5 vessels (deep path)", kind: "play", target: 5, reward: 55 },
       { id: "d_constellation", label: "Open a Constellation", kind: "constellation", target: 1, reward: 30 },
       { id: "d_lineage", label: "Read a Lineage tree", kind: "lineage", target: 1, reward: 30 },
       { id: "d_return", label: "Return to 2 vessels", kind: "return", target: 2, reward: 25 },
     ];
     const WEEKLY_QUEST_DEFS = [
-      { id: "w_play", label: "Play 12 vessels this week", kind: "play", target: 12, reward: 120 },
+      { id: "w_play", label: "Land 12 vessels this week", kind: "play", target: 12, reward: 120 },
       { id: "w_howl", label: "Howl 8 times this week", kind: "howl", target: 8, reward: 90 },
       { id: "w_forge", label: "Pass the Gate once (publish)", kind: "forge", target: 1, reward: 150 },
       { id: "w_scry", label: "Scry the Hall 5 times", kind: "scry", target: 5, reward: 60 },
       { id: "w_open", label: "Open 10 vessel details", kind: "open", target: 10, reward: 80 },
-      { id: "w_play25", label: "Play 25 vessels (Pack runner)", kind: "play", target: 25, reward: 180 },
+      { id: "w_play25", label: "Land 25 vessels (Pack runner)", kind: "play", target: 25, reward: 180 },
       { id: "w_howl15", label: "Howl 15 times", kind: "howl", target: 15, reward: 120 },
       { id: "w_scry15", label: "Scry the Hall 15 times", kind: "scry", target: 15, reward: 90 },
       { id: "w_forge2", label: "Publish twice this week", kind: "forge", target: 2, reward: 200 },
@@ -44775,7 +45490,7 @@
           </div>
           <div class="quest-board-summary__meta">
             <h3 class="quest-board-summary__title">${isWeekly ? "This week’s Pack path" : "Today’s Pack path"}</h3>
-            <p class="quest-board-summary__sub">Play · Howl · Scry · Forge · Constellation · Lineage — progress counts automatically.</p>
+            <p class="quest-board-summary__sub">Land · Howl · Scry · Forge · Constellation · Lineage — progress counts automatically.</p>
             <div class="quest-board-summary__pills">
               <span class="quest-pill quest-pill--done">${doneN} complete</span>
               <span class="quest-pill quest-pill--res">${earned} / ${pot} Res</span>
